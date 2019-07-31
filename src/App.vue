@@ -1,17 +1,19 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="My New Vue Project."/>
+  <div id="Home">
+    <CurrentDate></CurrentDate>
+    <TodoMain></TodoMain>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import TodoMain from './components/TodoMain.vue'
+import CurrentDate from './components/CurrentDate.vue'
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
+  components:{
+    TodoMain,
+    CurrentDate,
   }
 }
 </script>
