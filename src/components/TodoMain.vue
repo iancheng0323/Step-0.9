@@ -4,8 +4,7 @@
     <ul>
       <li is="TodoItem" v-for="todo in sampleTodoList" :msg="todo.msg" :key="todo.key" :status="todo.status"></li>
     </ul>
-    <input v-model="inputMsg" type="text" placeholder="something">
-    <button @click="addTodo">Add Todo</button>
+    <AddTodoForm></AddTodoForm>
     <h1>Completed</h1>
     <ul>
       <li>foo</li>
@@ -18,11 +17,13 @@
 
 <script>
 import TodoItem from './TodoItem.vue'
+import AddTodoForm from './AddTodoForm'
 
 export default {
   name: 'TodoMain',
   components:{
-    TodoItem
+    TodoItem,
+    AddTodoForm
   },
   data: function(){
     return{
@@ -48,17 +49,6 @@ export default {
     }
   },
   methods:{
-    addTodo: function(){
-      // eslint-disable-next-line
-      console.log(this.inputMsg)
-      this.sampleTodoList.push({
-        msg: this.inputMsg,
-        status: 0,
-        key: this.sampleTodoList.length+1
-      })
-      this.inputMsg = ''
-      
-    }
   }
 }
 </script>

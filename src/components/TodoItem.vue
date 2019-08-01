@@ -1,5 +1,5 @@
 <template>
-    <li><input type="checkbox" v-bind:checked="checked()">{{msg}}</li>
+    <li><input type="checkbox" v-bind:checked="checked">{{msg}}</li>
 </template>
 
 <script>
