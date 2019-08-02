@@ -1,5 +1,5 @@
 <template>
-    <form action="" @submit.prevent="addTodo">
+    <form action="" @submit.prevent="addTodo()">
         <input v-model="inputMessage" type="text" placeholder="something">
         <input type="submit" value="Add Todo">
     </form>
@@ -14,9 +14,7 @@ export default {
     },
     methods:{
         addTodo: function(){
-        // eslint-disable-next-line
-        console.log(this.inputMessage)
-        // $emit(this.inputMessage)
+        this.$emit('addTodo',this.inputMessage)
         this.inputMessage = ''
         }
     }

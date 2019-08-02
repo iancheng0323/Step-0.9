@@ -4,7 +4,7 @@
     <ul>
       <li is="TodoItem" v-for="todo in sampleTodoList" :msg="todo.msg" :key="todo.key" :status="todo.status"></li>
     </ul>
-    <AddTodoForm></AddTodoForm>
+    <AddTodoForm v-on:addTodo="addTodo"></AddTodoForm>
     <h1>Completed</h1>
     <ul>
       <li>foo</li>
@@ -49,6 +49,9 @@ export default {
     }
   },
   methods:{
+    addTodo: function(val){
+      console.log(val)
+    }
   }
 }
 </script>
