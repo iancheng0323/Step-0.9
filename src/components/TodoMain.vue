@@ -1,56 +1,99 @@
 <template>
-  <div class="todo-main">
-    <h1>Todos</h1>
-    <ul>
-      <li is="TodoItem" v-for="todo in sampleTodoList" :msg="todo.msg" :key="todo.key" :status="todo.status"></li>
-    </ul>
-    <AddTodoForm v-on:addTodo="addTodo"></AddTodoForm>
-    <h1>Completed</h1>
-    <ul>
-      <li>foo</li>
-      <li>bar</li>
-      <li>pho</li>
-      <li>now</li>
-    </ul>
-  </div>
+  <v-layout class="mt-4">
+    <v-flex md12>
+      <v-card elevation="10">
+        <v-container>
+            <h1 class="display-1">Todos</h1>
+          <ul>
+            <li is="TodoItem" 
+            v-for="(todo,index) in firebaseList" 
+            :title="todo.title"
+            :key="index" 
+            :status="todo.status"
+            :todoID="todo.id"
+            v-on:changeStatus="changeStatus"
+            ></li>
+          </ul>
+          <AddTodoForm v-on:addTodo="addTodo" v-if="toggleAddTodo" v-on:addTodoFail="showFailSnackbar"></AddTodoForm>
+          <div v-if="!toggleAddTodo" @click="toggleAddTodo = true">click here to add new todo</div>
+          <h1 class="display-1">Completed</h1>
+          <ul>
+            <li>foo</li>
+            <li>bar</li>
+            <li>pho</li>
+            <li>now</li>
+          </ul>
+          <v-snackbar v-model="showSnackbar" :timeout="2000">
+            {{snackbarMessage}}
+          </v-snackbar>
+        </v-container>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
 import TodoItem from './TodoItem.vue'
 import AddTodoForm from './AddTodoForm'
+import db from '../firebaseConfig.js'
 
 export default {
   name: 'TodoMain',
+  props:[
+    'displayDate',
+    'currentDate'
+  ],
   components:{
     TodoItem,
     AddTodoForm
   },
+  firestore: {
+    firebaseList: db.collection('Todo Item'), 
+  },
   data: function(){
     return{
-      sampleTodoList:[
-        {
-          msg: 'foo',
-          status: 0,
-          key:1
-        },
-        {
-          msg: 'bar',
-          status: 1,
-          key:2
-        },
-        {
-          msg: 'pho',
-          status: 1,
-          key:3
-        }
-      ],
       inputMsg:'',
-
+      toggleAddTodo: true,
+      firebaseList: [],
+      snackbarMessage: '',
+      showSnackbar: false,
     }
+  },
+  created: function(){
   },
   methods:{
     addTodo: function(val){
-      console.log(val)
+      let v = this
+      db.collection('Todo Item').add( this.createNewTodoObject(val) ).then(function(){
+        v.snackbarMessage = `"${val}" Added.`
+        v.showSnackbar = true
+      })
+      this.toggleAddTodo = false
+    },
+    showFailSnackbar: function(message){
+      this.snackbarMessage = message
+      this.showSnackbar = true
+      // console.log(message)
+    },
+    createNewTodoObject: function(title){
+      let newTodoItem = {
+        title: title,
+        descriptopn:'',
+        status: 0,
+        creationTimeStamp: Date.now(),
+        creationTime: `${this.currentDate.getFullYear()}-${this.currentDate.getMonth()+1}-${this.currentDate.getDate()}`,
+        dueTime:`${this.currentDate.getFullYear()}-${this.currentDate.getMonth()+1}-${this.currentDate.getDate()}`,
+      }
+      return newTodoItem
+    },
+    changeStatus: function(res){
+      let todoID = res[0]
+      let toStatus = res[1]
+      db.collection('Todo Item').doc(todoID).update(
+        {
+          status: toStatus
+        }
+      )
     }
   }
 }
@@ -58,9 +101,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.todo-main{
-  background:white;
-  box-shadow: 0 3px 3px rgba(0,0,0,0.2);
-  border-radius: 10px;
-}
 </style>

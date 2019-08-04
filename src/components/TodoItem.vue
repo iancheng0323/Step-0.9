@@ -1,26 +1,60 @@
 <template>
-    <li><input type="checkbox" v-bind:checked="checked">{{msg}}</li>
+    <li>
+        <v-btn class="checkbox px-0"
+        :height="checkboxSize" 
+        :width="checkboxSize" 
+        min:width="0" 
+        tile x-small 
+        depressed
+        @click="changeStatus()"
+        :color="buttonColor"
+        ></v-btn>
+        {{title}}
+    </li>
 </template>
 
 <script>
 export default {
     name:'TodoItem',
     props:[
-        'msg',
-        'status'
+        'title',
+        'status',
+        'todoID'
     ],
     computed:{
-        checked: function(){
-            if( this.status == 1 ){
-                return true
+        buttonColor: function(){
+            if( this.status == 0 ){
+                return '#123456'
             }else{
-                return false
+                return '#f2f2f2'
             }
+        }
+    },
+    data: function(){
+        return{
+            checkboxSize: 15,
+
+        }
+    },
+    methods:{
+        changeStatus: function(){
+            let toStatus
+            if(this.status == 1){
+                toStatus = 0
+            }else{
+                toStatus = 1
+            }
+            this.$emit('changeStatus',[this.todoID,toStatus])
         }
     }
 }
 </script>
 
 <style scoped>
-
+li{
+    list-style: none;
+}
+.checkbox{
+    min-width:0px!important;
+}
 </style>
