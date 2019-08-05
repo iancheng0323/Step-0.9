@@ -11,7 +11,8 @@
             :key="index" 
             :status="todo.status"
             :todoID="todo.id"
-            v-on:changeStatus="changeStatus"
+            @changeStatus="changeStatus"
+            @editTodo="editTodo"
             ></li>
           </ul>
           <AddTodoForm v-on:addTodo="addTodo" v-if="toggleAddTodo" v-on:addTodoFail="showFailSnackbar"></AddTodoForm>
@@ -92,6 +93,16 @@ export default {
       db.collection('Todo Item').doc(todoID).update(
         {
           status: toStatus
+        }
+      )
+    },
+    editTodo: function(res){
+      console.log(eiditedTitle)
+      let todoID = res[0]
+      let eiditedTitle = res[1]
+      db.collection('Todo Item').doc(todoID).update(
+        {
+          title: eiditedTitle
         }
       )
     }
