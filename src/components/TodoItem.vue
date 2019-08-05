@@ -9,6 +9,7 @@
         @click="changeStatus()"
         ></v-btn>
         <input class="todoTitle" :value="title" @input="editTodo">
+        <v-icon class="moreIcon">more_horiz</v-icon>
     </li>
 </template>
 
@@ -31,7 +32,7 @@ export default {
     },
     data: function(){
         return{
-            checkboxSize: 15,
+            checkboxSize: 18,
             editedValue: ''
         }
     },
@@ -53,25 +54,43 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 li{
     list-style: none;
+    position: relative;
 }
 .todoMarkBox{
     min-width:0px!important;
+    position:absolute;
+    top:3px;
+}
+.todoTitle{
+    width:100%;
+    display:block;
+    padding-left:26px;
 }
 .todo .todoTitle{
     color:inherit;
     transition: 0.2s;
+    // border-bottom:2px solid rgba(12,34,46,0);
+}
+.todoTitle:focus{
+    outline: none;
+    // border-bottom:1px solid rgba(123,200,87,0.2);
+    background: rgba(0,0,0,0.03);
 }
 
 .done .todoTitle{
     color:#c8c8c8;
     text-decoration: line-through;
     transition: 0.2s;
+    // border-bottom:2px solid rgba(12,34,46,0);
+}
+.done .todoTitle:focus{
+    // border-bottom:2px solid rgba(123,200,87,0.5);
+    background: rgba(0,0,0,0.02);
 
 }
-
 
 .todo .todoMarkBox{
     background: #f8f8f8!important;
@@ -80,5 +99,11 @@ li{
 .done .todoMarkBox{
     background-color: #888!important;
     outline: 1px solid rgba(0,0,0,0.05);
-    }
+}
+.moreIcon{
+    position: absolute;
+    right:0;
+    top:0;
+    // float:right;
+}
 </style>

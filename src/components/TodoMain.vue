@@ -3,27 +3,27 @@
     <v-flex md12>
       <v-card elevation="10">
         <v-container>
-            <h1 class="display-1">Todos</h1>
+            <h1 class="display-1 my-2">Todos</h1>
           <ul>
-            <li is="TodoItem" 
-            v-for="(todo,index) in firebaseList" 
-            :title="todo.title"
-            :key="index" 
-            :status="todo.status"
-            :todoID="todo.id"
-            @changeStatus="changeStatus"
-            @editTodo="editTodo"
-            ></li>
+                <li is="TodoItem" 
+                  v-for="(todo,index) in firebaseList" 
+                  :title="todo.title"
+                  :key="index" 
+                  :status="todo.status"
+                  :todoID="todo.id"
+                  @changeStatus="changeStatus"
+                  @editTodo="editTodo"
+                  ></li>
           </ul>
           <AddTodoForm v-on:addTodo="addTodo" v-if="toggleAddTodo" v-on:addTodoFail="showFailSnackbar"></AddTodoForm>
           <div v-if="!toggleAddTodo" @click="toggleAddTodo = true">click here to add new todo</div>
-          <h1 class="display-1">Completed</h1>
+          <!-- <h1 class="display-1">Completed</h1>
           <ul>
             <li>foo</li>
             <li>bar</li>
             <li>pho</li>
             <li>now</li>
-          </ul>
+          </ul> -->
           <v-snackbar v-model="showSnackbar" :timeout="2000">
             {{snackbarMessage}}
           </v-snackbar>
@@ -112,4 +112,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+ul{
+  margin-left: 0!important;
+  padding-left: 0!important;
+}
 </style>
