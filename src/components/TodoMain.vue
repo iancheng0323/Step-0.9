@@ -6,24 +6,18 @@
             <h1 class="display-1 my-2">Todos</h1>
           <ul>
                 <li is="TodoItem" 
-                  v-for="(todo,index) in firebaseList" 
+                  v-for="(todo,index) in rawTodoList" 
                   :title="todo.title"
                   :key="index" 
                   :status="todo.status"
                   :todoID="todo.id"
                   @changeStatus="changeStatus"
                   @editTodo="editTodo"
+                  @deleteTodo="deleteTodo"
                   ></li>
           </ul>
           <AddTodoForm v-on:addTodo="addTodo" v-if="toggleAddTodo" v-on:addTodoFail="showFailSnackbar"></AddTodoForm>
-          <div v-if="!toggleAddTodo" @click="toggleAddTodo = true">click here to add new todo</div>
-          <!-- <h1 class="display-1">Completed</h1>
-          <ul>
-            <li>foo</li>
-            <li>bar</li>
-            <li>pho</li>
-            <li>now</li>
-          </ul> -->
+          <div v-if="!toggleAddTodo" @click="toggleAddTodo = true" class="pointer"><v-icon>add_box</v-icon> click here to add new todo</div>
           <v-snackbar v-model="showSnackbar" :timeout="2000">
             {{snackbarMessage}}
           </v-snackbar>
@@ -42,25 +36,35 @@ export default {
   name: 'TodoMain',
   props:[
     'displayDate',
-    'currentDate'
+    'currentDate',
+    'parsedDisplayDateInHyphen'
   ],
   components:{
     TodoItem,
     AddTodoForm
   },
-  firestore: {
-    firebaseList: db.collection('Todo Item'), 
-  },
+  // firestore: {
+  //   rawTodoList: db.collection('Todo Item'),
+  // },
   data: function(){
     return{
       inputMsg:'',
-      toggleAddTodo: true,
-      firebaseList: [],
+      toggleAddTodo: false,
+      rawTodoList: [],
       snackbarMessage: '',
       showSnackbar: false,
     }
   },
+  computed:{
+  },
   created: function(){
+    this.$bind(
+      'rawTodoList',
+      db
+      .collection('Todo Item')
+      .where('status','<',2)
+      .where('dueTime','==',this.parsedDisplayDateInHyphen)
+      )
   },
   methods:{
     addTodo: function(val){
@@ -97,7 +101,6 @@ export default {
       )
     },
     editTodo: function(res){
-      console.log(eiditedTitle)
       let todoID = res[0]
       let eiditedTitle = res[1]
       db.collection('Todo Item').doc(todoID).update(
@@ -105,7 +108,15 @@ export default {
           title: eiditedTitle
         }
       )
-    }
+    },
+    deleteTodo: function(res){
+      let todoID = res[0]
+      db.collection('Todo Item').doc(todoID).update(
+        {
+          status: 2
+        }
+      )
+    },
   }
 }
 </script>
@@ -115,5 +126,8 @@ export default {
 ul{
   margin-left: 0!important;
   padding-left: 0!important;
+}
+.pointer {
+  cursor: pointer;
 }
 </style>
