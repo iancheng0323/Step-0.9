@@ -1,15 +1,29 @@
 <template>
     <li :class="todoStatus">
-        <v-btn class="todoMarkBox"
-        :height="checkboxSize" 
-        :width="checkboxSize" 
-        min:width="0" 
-        tile x-small 
-        depressed
-        @click="changeStatus()"
-        ></v-btn>
-        <input class="todoTitle" :value="title" @input="editTodo">
-        <v-icon class="moreIcon">more_horiz</v-icon>
+        <v-container class="relative">
+            <v-btn class="todoMarkBox"
+            :height="checkboxSize" 
+            :width="checkboxSize" 
+            min:width="0" 
+            tile x-small 
+            depressed
+            @click="changeStatus()"
+            ></v-btn>
+            <input class="todoTitle" :value="title" @input="editTodo">
+            <v-icon class="moreIcon" @click="toggleActionMenu">more_horiz</v-icon>
+            <v-card class="actionMenu absolute" v-if="actionMenu">
+                <v-list dense flat inactive>
+                    <v-list-item-group>
+                        <v-list-item ripple>
+                            <v-list-item-content>
+                                <v-list-item-title class="text-center text-uppercase">Delete</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+            </v-card>
+        </v-container>
+        
     </li>
 </template>
 
@@ -33,7 +47,8 @@ export default {
     data: function(){
         return{
             checkboxSize: 18,
-            editedValue: ''
+            editedValue: '',
+            actionMenu: false
         }
     },
     methods:{
@@ -49,12 +64,21 @@ export default {
         editTodo: function(event){
             this.editedValue = event.target.value
             this.$emit('editTodo',[this.todoID,this.editedValue])
-        }
+        },
+        toggleActionMenu: function(){
+            this.actionMenu = !this.actionMenu
+        },
     }
 }
 </script>
 
 <style scoped lang="scss">
+.relative{
+    position:relative
+}
+.absolute{
+    position:absolute;
+}
 li{
     list-style: none;
     position: relative;
@@ -62,7 +86,7 @@ li{
 .todoMarkBox{
     min-width:0px!important;
     position:absolute;
-    top:3px;
+    top:15px;
 }
 .todoTitle{
     width:100%;
@@ -105,5 +129,11 @@ li{
     right:0;
     top:0;
     // float:right;
+}
+.actionMenu{
+    width:100px;
+    right:0;
+    top:20px;
+    z-index: 100;
 }
 </style>
