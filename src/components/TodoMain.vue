@@ -55,16 +55,15 @@ export default {
       showSnackbar: false,
     }
   },
+  watch:{
+    parsedDisplayDateInHyphen: function(){
+      this.updateDataBinding()
+    }
+  },
   computed:{
   },
   created: function(){
-    this.$bind(
-      'rawTodoList',
-      db
-      .collection('Todo Item')
-      .where('status','<',2)
-      .where('dueTime','==',this.parsedDisplayDateInHyphen)
-      )
+    this.bindToFirebase()
   },
   methods:{
     addTodo: function(val){
@@ -117,6 +116,19 @@ export default {
         }
       )
     },
+    updateDataBinding: function(){
+      this.$unbind('rawTodoList')
+      this.bindToFirebase()
+    },
+    bindToFirebase: function(){
+      this.$bind(
+      'rawTodoList',
+      db
+      .collection('Todo Item')
+      .where('status','<',2)
+      .where('dueTime','==',this.parsedDisplayDateInHyphen)
+      ).then(function(){console.log('data received')})
+    }
   }
 }
 </script>
