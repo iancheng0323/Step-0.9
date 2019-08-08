@@ -1,5 +1,5 @@
 <template>
-    <h1 class="display-2 my-2"><v-icon large @click="prevDay">chevron_left</v-icon>{{this.parsedDisplayDateInSlash}}<v-icon large @click="nextDay">chevron_right</v-icon></h1>
+    <h1 class="display-1 my-2"><v-icon large @click="prevDay">chevron_left</v-icon>{{this.parsedDisplayDateInSlash}}<v-icon large @click="nextDay">chevron_right</v-icon></h1>
 </template>
 <script>
 export default {

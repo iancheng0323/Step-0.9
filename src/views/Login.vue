@@ -38,17 +38,8 @@ export default {
         },
     },
     watch:{
-        auth: function(){
-            if(this.auth == true){
-                console.log('oasuhfoan')
-                this.$router.push({ path: '/' })
-            }
-        },
     },
     created: function(){
-        if(this.auth == true){
-            this.$router.push({ path: '/' })
-        }
     }
 }
 </script>

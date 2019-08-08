@@ -37,15 +37,13 @@ export default {
   props:[
     'displayDate',
     'currentDate',
-    'parsedDisplayDateInHyphen'
+    'parsedDisplayDateInHyphen',
+    'uid'
   ],
   components:{
     TodoItem,
     AddTodoForm
   },
-  // firestore: {
-  //   rawTodoList: db.collection('Todo Item'),
-  // },
   data: function(){
     return{
       inputMsg:'',
@@ -58,6 +56,10 @@ export default {
   watch:{
     parsedDisplayDateInHyphen: function(){
       this.updateDataBinding()
+    },
+    uid: function(){
+    this.bindToFirebase()
+
     }
   },
   computed:{
@@ -68,7 +70,9 @@ export default {
   methods:{
     addTodo: function(val){
       let v = this
-      db.collection('Todo Item').add( this.createNewTodoObject(val) ).then(function(){
+      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).add(
+        this.createNewTodoObject(val)
+        ).then(function(){
         v.snackbarMessage = `"${val}" Added.`
         v.showSnackbar = true
       })
@@ -93,7 +97,7 @@ export default {
     changeStatus: function(res){
       let todoID = res[0]
       let toStatus = res[1]
-      db.collection('Todo Item').doc(todoID).update(
+      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).doc(todoID).update(
         {
           status: toStatus
         }
@@ -102,7 +106,7 @@ export default {
     editTodo: function(res){
       let todoID = res[0]
       let eiditedTitle = res[1]
-      db.collection('Todo Item').doc(todoID).update(
+      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).doc(todoID).update(
         {
           title: eiditedTitle
         }
@@ -110,7 +114,7 @@ export default {
     },
     deleteTodo: function(res){
       let todoID = res[0]
-      db.collection('Todo Item').doc(todoID).update(
+      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).doc(todoID).update(
         {
           status: 2
         }
@@ -124,8 +128,10 @@ export default {
       this.$bind(
       'rawTodoList',
       db
-      .collection('Todo Item')
-      .where('status','<',2)
+      .collection(`${this.uid}`)
+      .doc('todoItem')
+      .collection(this.parsedDisplayDateInHyphen)
+      // .where('status','<',2)
       .where('dueTime','==',this.parsedDisplayDateInHyphen)
       ).then(function(){console.log('data received')})
     }

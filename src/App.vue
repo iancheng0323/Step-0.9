@@ -7,6 +7,7 @@
       :auth="auth"
       :userName="userName"
       :userEmail="userEmail"
+      :uid="uid"
       >
 
       </router-view>
@@ -27,6 +28,7 @@ export default {
       user: Object,
       userName: String,
       userEmail: String,
+      uid: 0,
       token: 0,
     }
   },
@@ -37,9 +39,7 @@ export default {
           // This gives you a Google Access Token. You can use it to access the Google API.
           v.token = result.credential.accessToken
           // The signed-in user info.
-          v.user = result.user
-          v.userName = result.user.displayName
-          v.userEmail = result.user.email
+          v.setUserDetail(result.user)
           console.log(v.userName, v.userEmail)
           // ...
           }).catch(function(error) {
@@ -55,22 +55,46 @@ export default {
       })
     },
     logout: function(){
-      let v = this
-      firebase.auth().signOut().then(function(){
-        // console.log(res)
-        v.auth = false
+      // let v = this
+      firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+        console.log('signed out')
+      }).catch(function(error) {
+        // An error happened.
+        console.log(error)
       })
     },
+    setUserDetail: function(user){
+          // The signed-in user info.
+          this.user = user
+          this.userName = user.displayName
+          this.userEmail = user.email
+          this.uid = user.uid
+    }
   },
   created:function(){
     let v = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         v.auth = true
+        v.setUserDetail(user)
+        console.log('Signed In')
       } else {
-        console.log('NOT logged in')
+        v.auth = false
+        console.log('Enter page as non-user')
       }
     });
+  },
+  watch:{
+    auth: function(){
+      if(this.auth == false){
+        console.log('auth changed to false')
+        this.$router.push({ path: '/login' })
+      } else{
+        console.log('auth changed to true')
+        this.$router.push({ path: '/' })
+      }
+    }
   }
 }
 </script>

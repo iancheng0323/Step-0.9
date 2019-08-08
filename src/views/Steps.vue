@@ -9,10 +9,10 @@
         :displayDate="displayDate" 
         :currentDate="currentDate"
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+        :uid="uid"
         >
     </TodoMain>
-    <v-btn to="/login">Login</v-btn>
-    <v-btn @click="logout" to="/login">Logout</v-btn>
+    <v-btn @click="logout" text right bottom absolute>Logout</v-btn>
     </v-container>
 </template>
 
@@ -25,6 +25,7 @@ export default {
   props:[
     'userName',
     'userEmail',
+    'uid',
     'auth',
   ],
   components:{
@@ -65,10 +66,6 @@ export default {
     this.currentDate = new Date()
     this.displayDate = new Date()
     this.parseDate()
-    if(this.auth == false){
-      console.log('no user')
-      this.$router.push({ path: '/login' })
-    }
   },
   methods:{
     changeDate:function(val){
@@ -86,16 +83,9 @@ export default {
     },
     logout:function(){
       this.$emit('logout')
-      this.$router.push({ path: '/login' })
     },
   },
   watch: {
-    auth: function(){
-      if(this.auth == false){
-        console.log('no user')
-        this.$router.push({ path: '/login' })
-      }
-    }
   }
 }
 </script>
