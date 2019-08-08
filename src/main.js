@@ -9,19 +9,24 @@ Vue.use(firestorePlugin)
 Vue.use(VueRouter)
 Vue.config.productionTip = false
 
+
+
+
+//Router Setting
 import Steps from './views/Steps.vue'
 import Login from './views/Login.vue'
-
 const routes = [
   {
     path: '/',
     name: 'Steps',
-    component: Steps
+    component: Steps,
+    // props:[],
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
+    // props:[],
   },
   // { path: '/bar', component: Bar }
 ]

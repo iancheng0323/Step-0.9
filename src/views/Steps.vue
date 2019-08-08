@@ -11,7 +11,8 @@
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
         >
     </TodoMain>
-    <v-btn to="/login">Test</v-btn>
+    <v-btn to="/login">Login</v-btn>
+    <v-btn @click="logout" to="/login">Logout</v-btn>
     </v-container>
 </template>
 
@@ -21,6 +22,11 @@ import DisplayDate from '../components/DisplayDate.vue'
 
 export default {
   name: 'app',
+  props:[
+    'userName',
+    'userEmail',
+    'auth',
+  ],
   components:{
     TodoMain,
     DisplayDate,
@@ -59,6 +65,10 @@ export default {
     this.currentDate = new Date()
     this.displayDate = new Date()
     this.parseDate()
+    if(this.auth == false){
+      console.log('no user')
+      this.$router.push({ path: '/login' })
+    }
   },
   methods:{
     changeDate:function(val){
@@ -73,6 +83,18 @@ export default {
       let dd = String(this.displayDate.getDate())
       this.parsedDisplayDateInSlash = `${yyyy}/${mm}/${dd}, ${this.computedDate}`
       this.parsedDisplayDateInHyphen = `${yyyy}-${mm}-${dd}`
+    },
+    logout:function(){
+      this.$emit('logout')
+      this.$router.push({ path: '/login' })
+    },
+  },
+  watch: {
+    auth: function(){
+      if(this.auth == false){
+        console.log('no user')
+        this.$router.push({ path: '/login' })
+      }
     }
   }
 }
