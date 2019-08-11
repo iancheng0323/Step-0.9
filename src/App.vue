@@ -70,6 +70,15 @@ export default {
           this.userName = user.displayName
           this.userEmail = user.email
           this.uid = user.uid
+    },
+    redirect: function(){
+      if(this.auth == false){
+        console.log('auth changed to false')
+        this.$router.push({ path: '/login' })
+      } else{
+        console.log('auth changed to true')
+        this.$router.push({ path: '/' })
+      }
     }
   },
   created:function(){
@@ -79,22 +88,19 @@ export default {
         v.auth = true
         v.setUserDetail(user)
         console.log('Signed In')
+        v.redirect()
       } else {
         v.auth = false
         console.log('Enter page as non-user')
+        v.redirect()
       }
-    });
+      v.redirect()
+    })
   },
   watch:{
-    auth: function(){
-      if(this.auth == false){
-        console.log('auth changed to false')
-        this.$router.push({ path: '/login' })
-      } else{
-        console.log('auth changed to true')
-        this.$router.push({ path: '/' })
-      }
-    }
+    // auth: function(){
+    //   this.redirect()
+    // }
   }
 }
 </script>

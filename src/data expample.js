@@ -23,3 +23,23 @@
     registerTime: 1212121212//time stamp
     
 }
+
+// new
+
+{
+    title: '',
+    description: '',
+    creationTime: '',
+    dueTime: '', //not-set == bacllog
+    lastEditTime: '',
+    status: '', // 0 == deleted, 1 == open, 2 == done, 3 == backlog
+}
+
+todoItem
+--account
+----todoInfo
+----changeHistory
+
+user
+--users
+----userInfo

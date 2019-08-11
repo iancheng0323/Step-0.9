@@ -1,34 +1,42 @@
 <template>
     <v-form action="" @submit.prevent="addTodo()" lazy-validation>
-        <v-container>
+        <v-container v-if="isAddingTodo">
             <v-layout row wrap>
-                <v-flex md8>
+                <v-flex md12>
                     <v-text-field
                         name="name"
                         label=" "
-                        id="id"
-                        v-model="inputMessage"
+                        id="todoInput"
                         ref="todoInput"
+                        v-model="inputMessage"
                         autofocus
                         clearable
                         placeholder="Write Your Todo"
                         autocomplete="off"
+                        @blur="isAddingTodo = false"
+                        @click:clear="isAddingTodo = false"                        
+                        hint="Press Enter To Add Todo"
                     ></v-text-field>
-                </v-flex>
-                <v-flex md4>
-                    <v-btn color="success" type="submit">Add Todo</v-btn>                    
                 </v-flex>
             </v-layout>
         </v-container>
+        <div v-if="!isAddingTodo" @click="isAddingTodo = true" class="pointer mt-8">
+            <v-icon>add_box</v-icon> click here to add new todo
+        </div>
     </v-form>
 </template>
 <script>
 export default {
     name: 'AddTodoForm',
+    props:[
+    ],
     data:function(){
         return{
             inputMessage: '',
+            isAddingTodo:false
         }
+    },
+    computed:{
     },
     methods:{
         addTodo: function(){
@@ -38,9 +46,17 @@ export default {
             }else{
                 this.$emit('addTodoFail','Empty Input')
             }
-        }
+        },
+        toggleAddTodo: function(){
+            this.isAddingTodo = !this.isAddingTodo
+        },
     },
     mounted: function(){
+        document.body.addEventListener('focus',function(){
+            console.log('wow focus')
+        })
+    },
+    watch:{
     }
 }
 </script>

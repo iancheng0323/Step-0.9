@@ -1,30 +1,34 @@
 <template>
-  <v-layout class="mt-4">
-    <v-flex md12>
-      <v-card elevation="10">
-        <v-container>
-            <h1 class="display-1 my-2">Todos</h1>
-          <ul>
-                <li is="TodoItem" 
-                  v-for="(todo,index) in rawTodoList" 
-                  :title="todo.title"
-                  :key="index" 
-                  :status="todo.status"
-                  :todoID="todo.id"
-                  @changeStatus="changeStatus"
-                  @editTodo="editTodo"
-                  @deleteTodo="deleteTodo"
-                  ></li>
-          </ul>
-          <AddTodoForm v-on:addTodo="addTodo" v-if="toggleAddTodo" v-on:addTodoFail="showFailSnackbar"></AddTodoForm>
-          <div v-if="!toggleAddTodo" @click="toggleAddTodo = true" class="pointer"><v-icon>add_box</v-icon> click here to add new todo</div>
-          <v-snackbar v-model="showSnackbar" :timeout="2000">
-            {{snackbarMessage}}
-          </v-snackbar>
-        </v-container>
-      </v-card>
-    </v-flex>
-  </v-layout>
+  <v-card elevation="4" min-height="500">
+    <v-container>
+        <h1 class="display-1 my-2">Todos</h1>
+      <ul v-show="dataRecieved" ref="mainTodoUl">
+            <li is="TodoItem" 
+              v-for="(todo,index) in rawTodoList" 
+              :title="todo.title"
+              :key="index" 
+              :status="todo.status"
+              :todoID="todo.id"
+              :activeElement="activeElement"
+              @changeStatus="changeStatus"
+              @editTodo="editTodo"
+              @deleteTodo="deleteTodo"
+              ></li>
+      </ul>
+      <p v-if="rederedTodoItemCount == 0 && dataRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
+      <v-progress-linear indeterminate color="#888" v-show="!dataRecieved"></v-progress-linear>
+      <AddTodoForm 
+        @addTodo="addTodo"
+        @addTodoFail="showErrorSnackbar"
+        @toggleAddTodo="toggleAddTodo"
+        ref="AddTodoForm"
+        v-if="dataRecieved"
+      ></AddTodoForm>
+      <v-snackbar v-model="showSnackbar" :timeout="2000" :color="snackbarColor">
+        {{snackbarMessage}}
+      </v-snackbar>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
@@ -36,9 +40,10 @@ export default {
   name: 'TodoMain',
   props:[
     'displayDate',
-    'currentDate',
+    'parsedCurrentDateInHyphen',
     'parsedDisplayDateInHyphen',
-    'uid'
+    'uid',
+    'activeElement'
   ],
   components:{
     TodoItem,
@@ -47,10 +52,12 @@ export default {
   data: function(){
     return{
       inputMsg:'',
-      toggleAddTodo: false,
       rawTodoList: [],
       snackbarMessage: '',
       showSnackbar: false,
+      snackbarColor: '',
+      dataRecieved: false,
+      rederedTodoItemCount: 0,
     }
   },
   watch:{
@@ -59,10 +66,10 @@ export default {
     },
     uid: function(){
     this.bindToFirebase()
-
     }
   },
   computed:{
+    
   },
   created: function(){
     this.bindToFirebase()
@@ -70,34 +77,28 @@ export default {
   methods:{
     addTodo: function(val){
       let v = this
-      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).add(
-        this.createNewTodoObject(val)
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
+        v.createNewTodoObject(val)
         ).then(function(){
-        v.snackbarMessage = `"${val}" Added.`
-        v.showSnackbar = true
+        v.showSuccessSnackbar(`"${val}" Added.`)
       })
-      this.toggleAddTodo = false
-    },
-    showFailSnackbar: function(message){
-      this.snackbarMessage = message
-      this.showSnackbar = true
-      // console.log(message)
+      this.$refs.AddTodoForm.isAddingTodo = false
     },
     createNewTodoObject: function(title){
       let newTodoItem = {
         title: title,
         descriptopn:'',
-        status: 0,
+        status: 1,
         creationTimeStamp: Date.now(),
-        creationTime: `${this.currentDate.getFullYear()}-${this.currentDate.getMonth()+1}-${this.currentDate.getDate()}`,
-        dueTime:`${this.currentDate.getFullYear()}-${this.currentDate.getMonth()+1}-${this.currentDate.getDate()}`,
+        creationTime: `${this.parsedCurrentDateInHyphen}`,
+        dueTime:`${this.parsedDisplayDateInHyphen}`,
       }
       return newTodoItem
     },
     changeStatus: function(res){
       let todoID = res[0]
       let toStatus = res[1]
-      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).doc(todoID).update(
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
         {
           status: toStatus
         }
@@ -106,7 +107,7 @@ export default {
     editTodo: function(res){
       let todoID = res[0]
       let eiditedTitle = res[1]
-      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).doc(todoID).update(
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
         {
           title: eiditedTitle
         }
@@ -114,26 +115,57 @@ export default {
     },
     deleteTodo: function(res){
       let todoID = res[0]
-      db.collection(`${this.uid}`).doc('todoItem').collection(this.parsedDisplayDateInHyphen).doc(todoID).update(
+      let title = res[1]
+      let v = this
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
         {
-          status: 2
+          status: 0
         }
-      )
+      ).then(function(){
+        v.showNeutralSnackbar(`"${title}" Deleted.`)
+      })
     },
     updateDataBinding: function(){
       this.$unbind('rawTodoList')
+      this.dataRecieved = false
+      this.countRenderedTodoItem()
       this.bindToFirebase()
     },
     bindToFirebase: function(){
+      let v = this
       this.$bind(
       'rawTodoList',
       db
-      .collection(`${this.uid}`)
-      .doc('todoItem')
-      .collection(this.parsedDisplayDateInHyphen)
-      // .where('status','<',2)
+      .collection('todoItem')
+      .doc(`${this.uid}`)
+      .collection('all')
       .where('dueTime','==',this.parsedDisplayDateInHyphen)
-      ).then(function(){console.log('data received')})
+      ).then(function(){
+        console.log('Todo-main data received')
+        v.dataRecieved = true
+        v.countRenderedTodoItem()
+        })
+    },
+    toggleAddTodo: function(){
+      this.isAddingTodo = !this.isAddingTodo
+    },
+    showSuccessSnackbar:function(message){
+      this.snackbarMessage = message
+      this.snackbarColor = 'success'
+      this.showSnackbar = true
+    },
+    showNeutralSnackbar:function(message){
+      this.snackbarMessage = message
+      this.snackbarColor = ''
+      this.showSnackbar = true
+    },
+    showErrorSnackbar: function(message){
+      this.snackbarMessage = message
+      this.snackbarColor = 'error'
+      this.showSnackbar = true
+    },
+    countRenderedTodoItem: function(){
+      this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     }
   }
 }

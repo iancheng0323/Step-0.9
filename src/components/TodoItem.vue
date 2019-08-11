@@ -1,5 +1,5 @@
 <template>
-    <li :class="todoStatus" v-if="status != 2">
+    <li :class="todoStatus" v-if="status != 0">
         <v-container class="relative py-1">
             <v-btn class="todoMarkBox"
             :height="checkboxSize" 
@@ -11,13 +11,47 @@
             ref="todoMarkBox"
             ></v-btn>
             <input class="todoTitle" :value="title" @input="editTodo">
-            <v-icon class="moreIcon" @click="toggleActionMenu">more_horiz</v-icon>
-            <v-card class="actionMenu absolute" v-if="actionMenu">
-                <v-list dense flat inactive>
+            <v-btn 
+            text
+            x-small
+            right
+            tile
+            absolute
+            icon
+            :ripple="false"
+            class="moreIcon"
+            @click="toggleActionMenu"
+            :class="{opacity1: actionMenu}"
+            >
+                <v-icon>more_horiz</v-icon>
+            </v-btn>
+            <v-card 
+            class="actionMenu absolute" 
+            v-if="actionMenu" 
+            elevation="1"
+            transition="scroll-y-transition">
+                <v-list dense>
                     <v-list-item-group>
-                        <v-list-item ripple>
+                        <v-list-item
+                        @click="deletePop = true"
+                        class="text-center text-uppercase" 
+                        >
                             <v-list-item-content>
-                                <v-list-item-title class="text-center text-uppercase" @click="deletePop = true">Delete</v-list-item-title>
+                                <v-list-item-title 
+                                >
+                                Delete
+                                </v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item
+                        @click="movetoBacklog"
+                        class="text-center text-uppercase" 
+                        >
+                            <v-list-item-content>
+                                <v-list-item-title 
+                                >
+                                Move To Backlog
+                                </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-list-item-group>
@@ -60,10 +94,11 @@ export default {
         'title',
         'status',
         'todoID',
+        'activeElement'
     ],
     computed:{
         todoStatus:function(){
-            if( this.status == 0 ){
+            if( this.status == 1 ){
                 return 'todo todoItem'
             }else{
                 return 'done todoItem'
@@ -82,12 +117,11 @@ export default {
         changeStatus: function(){
             let toStatus
             if(this.status == 1){
-                toStatus = 0
+                toStatus = 2
             }else{
                 toStatus = 1
             }
             this.$emit('changeStatus',[this.todoID,toStatus])
-            // this.$refs.todoMarkBox.blur()
         },
         editTodo: function(event){
             this.editedValue = event.target.value
@@ -98,8 +132,18 @@ export default {
         },
         deleteTodo: function(){
             this.deletePop = false;
-            this.$emit('deleteTodo',[this.todoID])
+            this.$emit('deleteTodo',[this.todoID, this.title])
         },
+        movetoBacklog: function(){
+            console.log('movetoBacklog')
+        }
+    },
+    watch:{
+        activeElement: function(newVal){
+            if(this.actionMenu && newVal == 'BODY'){
+                this.actionMenu = false
+            }
+        }
     }
 }
 </script>
@@ -124,33 +168,24 @@ li{
     width:100%;
     display:block;
     padding-left:26px;
-}
-.todoTitle:hover{
-    background-color: rgba(0,0,0,0.02);
+    border-bottom: 1px solid rgba(0,0,0,0);
+    &:focus{
+        outline: none;
+        border-bottom: 1px solid rgba(0,0,0,0.2);
+    }
 }
 .todo .todoTitle{
     color:inherit;
     transition: 0.1s;
-    // border-bottom:2px solid rgba(12,34,46,0);
 }
-.todoTitle:focus{
-    outline: none;
-    // border-bottom:1px solid rgba(123,200,87,0.2);
-    background: rgba(0,0,0,0.03);
-}
-
 .done .todoTitle{
     color:#c8c8c8;
     text-decoration: line-through;
     transition: 0.1s;
-    // border-bottom:2px solid rgba(12,34,46,0);
 }
 .done .todoTitle:focus{
-    // border-bottom:2px solid rgba(123,200,87,0.5);
     background: rgba(0,0,0,0.02);
-
 }
-
 .todo .todoMarkBox{
     background: #f8f8f8!important;
     outline: 1px solid rgba(0,0,0,0.1);
@@ -160,24 +195,28 @@ li{
     outline: 1px solid rgba(0,0,0,0.05);
 }
 .moreIcon{
-    position: absolute;
-    right:0;
+    opacity: 0;
+    transition:0.05s;
     top:0;
-    // float:right;
+    // &:focus{
+    //     opacity: 1;
+    // }
+}
+.todoItem{
+    &:hover{
+        background-color: rgba(0,0,0,0.02);
+        .moreIcon{
+            opacity: 1;
+        }
+    }
 }
 .actionMenu{
-    width:100px;
+    width:150px;
     right:0;
     top:20px;
     z-index: 100;
 }
-.todoItem:hover .moreIcon{
-    opacity: 1;
-    
-}
-
-.todoItem .moreIcon{
-    opacity: 0;
-    transition:0.05s
+.opacity1{
+    opacity:1!important;
 }
 </style>

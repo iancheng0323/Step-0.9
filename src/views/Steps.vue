@@ -5,23 +5,41 @@
         :key="displayDateKey"
         :parsedDisplayDateInSlash="parsedDisplayDateInSlash">
     </DisplayDate>
-    <TodoMain 
-        :displayDate="displayDate" 
-        :currentDate="currentDate"
-        :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-        :uid="uid"
-        >
-    </TodoMain>
-    <v-btn @click="logout" text right bottom absolute>Logout</v-btn>
+    <v-container grid-list-md>
+        <v-layout>
+            <v-flex md8>
+                <TodoMain 
+                :displayDate="displayDate" 
+                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+                :uid="uid"
+                :activeElement="activeElement"
+                >
+                </TodoMain>
+            </v-flex>
+            <v-flex md4>
+                <TodoSide
+                :uid="uid"
+                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+                :activeElement="activeElement"
+                >
+                </TodoSide>
+            </v-flex>
+        </v-layout>
+    </v-container>
+    <v-btn @click="logout" text right top absolute>Logout</v-btn>
     </v-container>
 </template>
 
 <script>
 import TodoMain from '../components/TodoMain.vue'
 import DisplayDate from '../components/DisplayDate.vue'
+import TodoSide from '../components/TodoSide.vue'
+
 
 export default {
-  name: 'app',
+  name: 'Steps',
   props:[
     'userName',
     'userEmail',
@@ -31,7 +49,7 @@ export default {
   components:{
     TodoMain,
     DisplayDate,
-    // MdButton
+    TodoSide,
   },
   data: function(){
     return{
@@ -40,46 +58,61 @@ export default {
       displayDateKey: 0,
       parsedDisplayDateInSlash:0,
       parsedDisplayDateInHyphen:0,
+      parsedCurrentDateInHyphen:0,
+      activeElement: '',
     }
   },
   computed: {
-    computedDate: function(){
-        switch(this.displayDate.getDay()){
-            case 0:
-                return 'Sunday'
-            case 1:
-                return 'Monday'
-            case 2:
-                return 'Tuesday'
-            case 3:
-                return 'Wednesday'
-            case 4:
-                return 'Thursday'
-            case 5:
-                return 'Friday'
-            default:
-                return 'Saturday'
-        }
-    },
   },
   created: function(){
     this.currentDate = new Date()
     this.displayDate = new Date()
-    this.parseDate()
+    this.setDates()
+    let v = this
+    document.body.addEventListener('mouseup',function(){
+        v.activeElement = document.activeElement.tagName
+    })
   },
   methods:{
     changeDate:function(val){
-      // console.log(this.currentDate)
       this.displayDate.setDate(this.displayDate.getDate() + val)
       this.displayDateKey += 1
-      this.parseDate()
+      this.setDates()
     },
-    parseDate: function(){
-      let yyyy = this.displayDate.getFullYear()
-      let mm = String(this.displayDate.getMonth() + 1) //January is 0!
-      let dd = String(this.displayDate.getDate())
-      this.parsedDisplayDateInSlash = `${yyyy}/${mm}/${dd}, ${this.computedDate}`
-      this.parsedDisplayDateInHyphen = `${yyyy}-${mm}-${dd}`
+    setDates: function(){
+      this.parsedCurrentDateInHyphen = this.parseDateInHyphen(this.currentDate)
+      this.parsedDisplayDateInSlash =  this.parseDateInSlash(this.displayDate)
+      this.parsedDisplayDateInHyphen = this.parseDateInHyphen(this.displayDate)
+    },
+    parseDateInHyphen: function(date){
+      let yyyy = date.getFullYear()
+      let mm = String(date.getMonth() + 1) //January is 0!
+      let dd = String(date.getDate())
+      return `${yyyy}-${mm}-${dd}`
+    },
+    parseDateInSlash: function(date){
+      let yyyy = date.getFullYear()
+      let mm = String(date.getMonth() + 1) //January is 0!
+      let dd = String(date.getDate())
+      return `${yyyy}/${mm}/${dd}, ${this.parseWeekDay(date)}`
+    },
+    parseWeekDay: function(date){
+      switch(date.getDay()){
+        case 0:
+            return 'Sunday'
+        case 1:
+            return 'Monday'
+        case 2:
+            return 'Tuesday'
+        case 3:
+            return 'Wednesday'
+        case 4:
+            return 'Thursday'
+        case 5:
+            return 'Friday'
+        default:
+            return 'Saturday'
+      }
     },
     logout:function(){
       this.$emit('logout')
