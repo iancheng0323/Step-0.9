@@ -1,6 +1,10 @@
 <template>
-    <v-card height="500" elevation="4">
-        <Calender></Calender>
+    <v-card min-height="500" elevation="4">
+        <Calender
+        :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+        :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+        @changeDate="changeDate"
+        ></Calender>
         <Backlog
         :uid="uid"
         :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -24,6 +28,12 @@ export default {
         Backlog,
         Calender
     },
+    methods:{
+        changeDate:function(res){
+            this.$emit('changeDate',res)
+            // console.log(res)
+        }
+    }
 }
 </script>
 <style scope>

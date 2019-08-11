@@ -23,6 +23,7 @@
                 :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                 :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                 :activeElement="activeElement"
+                @changeDate="changeDate"
                 >
                 </TodoSide>
             </v-flex>

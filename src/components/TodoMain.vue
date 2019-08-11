@@ -13,6 +13,7 @@
               @changeStatus="changeStatus"
               @editTodo="editTodo"
               @deleteTodo="deleteTodo"
+              @moveToBacklog="moveToBacklog"
               ></li>
       </ul>
       <p v-if="rederedTodoItemCount == 0 && dataRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
@@ -125,10 +126,22 @@ export default {
         v.showNeutralSnackbar(`"${title}" Deleted.`)
       })
     },
+    moveToBacklog:function(res){
+      let todoID = res[0]
+      let title = res[1]
+      let v = this
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+        {
+          status: 3,
+          dueDate: 'not set'
+        }
+      ).then(function(){
+        v.showSuccessSnackbar(`"${title}" moved to backlog.`)
+      })
+    },
     updateDataBinding: function(){
       this.$unbind('rawTodoList')
       this.dataRecieved = false
-      this.countRenderedTodoItem()
       this.bindToFirebase()
     },
     bindToFirebase: function(){
@@ -143,7 +156,6 @@ export default {
       ).then(function(){
         console.log('Todo-main data received')
         v.dataRecieved = true
-        v.countRenderedTodoItem()
         })
     },
     toggleAddTodo: function(){
@@ -167,6 +179,9 @@ export default {
     countRenderedTodoItem: function(){
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     }
+  },
+  updated:function(){
+    this.countRenderedTodoItem()
   }
 }
 </script>

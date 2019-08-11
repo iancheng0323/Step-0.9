@@ -1,5 +1,5 @@
 <template>
-    <li :class="todoStatus" v-if="status != 0">
+    <li :class="todoStatus" v-if="status != 0 && status != 3">
         <v-container class="relative py-1">
             <v-btn class="todoMarkBox"
             :height="checkboxSize" 
@@ -25,6 +25,7 @@
             >
                 <v-icon>more_horiz</v-icon>
             </v-btn>
+            <v-expand-transition>
             <v-card 
             class="actionMenu absolute" 
             v-if="actionMenu" 
@@ -57,6 +58,7 @@
                     </v-list-item-group>
                 </v-list>
             </v-card>
+            </v-expand-transition>
         </v-container>
         <v-dialog
             v-model="deletePop"
@@ -135,7 +137,7 @@ export default {
             this.$emit('deleteTodo',[this.todoID, this.title])
         },
         movetoBacklog: function(){
-            console.log('movetoBacklog')
+            this.$emit('moveToBacklog',[this.todoID, this.title])
         }
     },
     watch:{
@@ -212,8 +214,8 @@ li{
 }
 .actionMenu{
     width:150px;
-    right:0;
-    top:20px;
+    right:15px;
+    top:30px;
     z-index: 100;
 }
 .opacity1{
