@@ -34,7 +34,7 @@
                 <v-list dense>
                     <v-list-item-group>
                         <v-list-item
-                        @click="moveToDate"
+                        @click.stop="moveToDate"
                         class="text-center text-uppercase" 
                         >
                             <v-list-item-content>

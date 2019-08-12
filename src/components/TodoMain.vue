@@ -30,9 +30,11 @@
         {{snackbarMessage}}
       </v-snackbar>
     </v-container>
-    <v-overlay z-index="200" :value="showDatePicker" ref="overlay">
-          <v-date-picker v-model="datePickerValue" @change="pickDate"></v-date-picker>
-      </v-overlay>
+    <!-- <v-overlay z-index="200" :value="showDatePicker" ref="overlay"> -->
+      <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
+          <v-date-picker v-model="datePickerValue" @change="pickDate"></v-date-picker>        
+      </v-dialog>
+      <!-- </v-overlay> -->
   </v-card>
 </template>
 
@@ -64,12 +66,13 @@ export default {
       dataRecieved: false,
       rederedTodoItemCount: 0,
       datePickerValue: '',
-      showDatePicker:false,
+      showDatePicker: false,
     }
   },
   watch:{
     parsedDisplayDateInHyphen: function(){
       this.updateDataBinding()
+      this.datePickerValue = this.parsedDisplayDateInHyphen
     },
     uid: function(){
     this.bindToFirebase()
@@ -186,9 +189,14 @@ export default {
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     },
     moveToDate: function(res){
-      this.showDatePicker = true
+      // let userPickedDate = false
       let todoID = res[0]
-      console.log(todoID, ' moved to date')
+      // while(!userPickedDate){
+      //   this.showDatePicker = true
+      //   userPickedDate = true
+      // }
+      // userPickedDate = false
+      console.log(todoID, ' moved to date', this.datePickerValue)      
     },
     pickDate: function(){
       console.log(this.datePickerValue)
