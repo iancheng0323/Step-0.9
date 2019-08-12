@@ -1,35 +1,35 @@
 <template>
     <v-container>     
-    <DisplayDate
-        @changeDate="changeDate" 
-        :key="displayDateKey"
-        :parsedDisplayDateInSlash="parsedDisplayDateInSlash">
-    </DisplayDate>
-    <v-container grid-list-md>
-        <v-layout>
-            <v-flex md8>
-                <TodoMain 
-                :displayDate="displayDate" 
-                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-                :uid="uid"
-                :activeElement="activeElement"
-                >
-                </TodoMain>
-            </v-flex>
-            <v-flex md4>
-                <TodoSide
-                :uid="uid"
-                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-                :activeElement="activeElement"
-                @changeDate="changeDate"
-                >
-                </TodoSide>
-            </v-flex>
-        </v-layout>
-    </v-container>
-    <v-btn @click="logout" text right top absolute>Logout</v-btn>
+      <DisplayDate
+          @changeDate="changeDate" 
+          :key="displayDateKey"
+          :parsedDisplayDateInSlash="parsedDisplayDateInSlash">
+      </DisplayDate>
+      <v-container grid-list-md>
+          <v-layout>
+              <v-flex md8>
+                  <TodoMain 
+                  :displayDate="displayDate" 
+                  :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                  :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+                  :uid="uid"
+                  :activeElement="activeElement"
+                  >
+                  </TodoMain>
+              </v-flex>
+              <v-flex md4>
+                  <TodoSide
+                  :uid="uid"
+                  :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                  :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+                  :activeElement="activeElement"
+                  @changeDate="changeDate"
+                  >
+                  </TodoSide>
+              </v-flex>
+          </v-layout>
+      </v-container>
+      <v-btn @click="logout" text right top absolute>Logout</v-btn>
     </v-container>
 </template>
 
@@ -84,6 +84,7 @@ export default {
       this.parsedCurrentDateInHyphen = this.parseDateInHyphen(this.currentDate)
       this.parsedDisplayDateInSlash =  this.parseDateInSlash(this.displayDate)
       this.parsedDisplayDateInHyphen = this.parseDateInHyphen(this.displayDate)
+      this.datePickerValue = this.parseDateInHyphen(this.displayDate)
     },
     parseDateInHyphen: function(date){
       let yyyy = date.getFullYear()

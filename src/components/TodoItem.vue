@@ -34,6 +34,28 @@
                 <v-list dense>
                     <v-list-item-group>
                         <v-list-item
+                        @click="moveToDate"
+                        class="text-center text-uppercase" 
+                        >
+                            <v-list-item-content>
+                                <v-list-item-title 
+                                >
+                                Move To Date
+                                </v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item
+                        @click="moveToBacklog"
+                        class="text-center text-uppercase" 
+                        >
+                            <v-list-item-content>
+                                <v-list-item-title 
+                                >
+                                Move To Backlog
+                                </v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item
                         @click="deletePop = true"
                         class="text-center text-uppercase" 
                         >
@@ -41,17 +63,6 @@
                                 <v-list-item-title 
                                 >
                                 Delete
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item
-                        @click="movetoBacklog"
-                        class="text-center text-uppercase" 
-                        >
-                            <v-list-item-content>
-                                <v-list-item-title 
-                                >
-                                Move To Backlog
                                 </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
@@ -136,8 +147,11 @@ export default {
             this.deletePop = false;
             this.$emit('deleteTodo',[this.todoID, this.title])
         },
-        movetoBacklog: function(){
+        moveToBacklog: function(){
             this.$emit('moveToBacklog',[this.todoID, this.title])
+        },
+        moveToDate: function(){
+            this.$emit('moveToDate',[this.todoID])
         }
     },
     watch:{

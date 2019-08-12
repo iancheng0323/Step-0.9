@@ -14,6 +14,7 @@
               @editTodo="editTodo"
               @deleteTodo="deleteTodo"
               @moveToBacklog="moveToBacklog"
+              @moveToDate="moveToDate"
               ></li>
       </ul>
       <p v-if="rederedTodoItemCount == 0 && dataRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
@@ -29,6 +30,9 @@
         {{snackbarMessage}}
       </v-snackbar>
     </v-container>
+    <v-overlay z-index="200" :value="showDatePicker" ref="overlay">
+          <v-date-picker v-model="datePickerValue" @change="pickDate"></v-date-picker>
+      </v-overlay>
   </v-card>
 </template>
 
@@ -59,6 +63,8 @@ export default {
       snackbarColor: '',
       dataRecieved: false,
       rederedTodoItemCount: 0,
+      datePickerValue: '',
+      showDatePicker:false,
     }
   },
   watch:{
@@ -178,6 +184,15 @@ export default {
     },
     countRenderedTodoItem: function(){
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
+    },
+    moveToDate: function(res){
+      this.showDatePicker = true
+      let todoID = res[0]
+      console.log(todoID, ' moved to date')
+    },
+    pickDate: function(){
+      console.log(this.datePickerValue)
+      this.showDatePicker = false
     }
   },
   updated:function(){

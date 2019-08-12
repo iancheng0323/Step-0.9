@@ -4,8 +4,8 @@
     <v-calendar
           color="teal lighten-4"
           :now="parsedDisplayDateInHyphen"
-          @click:date="changeDateTo()"
           v-model="pickedDate"
+          @click:date="changeDate"
         ></v-calendar>
 </v-container>
 </template>
@@ -17,33 +17,34 @@ export default {
     ],
     data: function(){
         return{
-            pickedDate:''
+            pickedDate:'',
+            beforeValue:'',
+            afterValue:'',
         }
     },
     methods:{
-        changeDateTo:function(){
-            // this.$emit('changeDateTo',[this.pickedDate])
-            // console.log([this.pickedDate])
+        changeDate: function(){
+            let startDate = Date.parse(this.beforeValue)
+            let endDate = Date.parse(this.pickedDate)
+            const aDay = 86400000
+            let diff = Math.floor((endDate - startDate)/aDay)
+            console.log(this.beforeValue,this.pickedDate,diff)
+            this.beforeValue = this.pickedDate
+            this.$emit('changeDate',diff)
+        },
+        resetDate:function(){
+            this.pickedDate = this.parsedDisplayDateInHyphen
+            this.beforeValue = this.parsedDisplayDateInHyphen
         }
     },
     created: function(){
-        this.pickedDate = this.parsedDisplayDateInHyphen
+        this.resetDate()
     },
     watch:{
-        pickedDate:function(next, prev){
-            if(prev != ''){
-            // console.log(prev, '->', next)
-            let startDate = Date.parse(prev)
-            let endDate = Date.parse(next)
-            const aDay = 86400000
-            let diff = Math.floor((endDate - startDate)/aDay)
-            this.$emit('changeDate',diff)
-            }
-        },
         parsedDisplayDateInHyphen:function(){
-            // this.pickedDate = this.parsedDisplayDateInHyphen
+            this.resetDate()
         }
-    }
+    },
 }
 </script>
 <style>
