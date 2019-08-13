@@ -34,7 +34,7 @@
                 <v-list dense>
                     <v-list-item-group>
                         <v-list-item
-                        @click.stop="moveToDate"
+                        @click.stop="showDatePicker = true"
                         class="text-center text-uppercase" 
                         >
                             <v-list-item-content>
@@ -97,6 +97,11 @@
             </v-card-actions>
         </v-card>
         </v-dialog>
+        <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
+            <v-date-picker v-model="datePickerValue">
+                <v-btn block @click="moveToDate">Move</v-btn>
+            </v-date-picker>
+        </v-dialog>
     </li>
 </template>
 
@@ -107,7 +112,8 @@ export default {
         'title',
         'status',
         'todoID',
-        'activeElement'
+        'activeElement',
+        'parsedDisplayDateInHyphen'
     ],
     computed:{
         todoStatus:function(){
@@ -123,8 +129,13 @@ export default {
             checkboxSize: 18,
             editedValue: '',
             actionMenu: false,
-            deletePop: false
+            deletePop: false,
+            showDatePicker: false,
+            datePickerValue: ''
         }
+    },
+    created: function(){
+        this.datePickerValue = this.parsedDisplayDateInHyphen
     },
     methods:{
         changeStatus: function(){
@@ -151,7 +162,9 @@ export default {
             this.$emit('moveToBacklog',[this.todoID, this.title])
         },
         moveToDate: function(){
-            this.$emit('moveToDate',[this.todoID])
+            this.showDatePicker= false
+            this.actionMenu = false
+            this.$emit('moveToDate',[this.todoID,this.datePickerValue])
         }
     },
     watch:{

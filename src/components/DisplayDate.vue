@@ -1,5 +1,13 @@
 <template>
-    <h1 class="display-1 my-2"><v-icon large @click="prevDay">chevron_left</v-icon>{{this.parsedDisplayDateInSlash}}<v-icon large @click="nextDay">chevron_right</v-icon></h1>
+    <h1 class="display-1 my-2 text-md-justify font-weight-bold">
+        <v-btn text icon @click="prevDay" class="prev">
+            <v-icon large >chevron_left</v-icon>
+        </v-btn>
+        {{this.parsedDisplayDateInSlash}}
+        <v-btn text icon @click="nextDay" class="next">
+            <v-icon large @click="nextDay">chevron_right</v-icon>
+        </v-btn>
+    </h1>
 </template>
 <script>
 export default {
@@ -26,5 +34,8 @@ export default {
 }
 </script>
 <style scoped>
-
+.relative{
+    position:relative
+}
+.next{}
 </style>

@@ -1,12 +1,14 @@
 <template>
 <v-container fluid>
     <h1 class="my-2 display-1" >Calender</h1>
-    <v-calendar
+    <v-card height="300" outlined>
+        <v-calendar
           color="teal lighten-4"
           :now="parsedDisplayDateInHyphen"
           v-model="pickedDate"
           @click:date="changeDate"
-        ></v-calendar>
+    ></v-calendar>
+    </v-card>
 </v-container>
 </template>
 <script>

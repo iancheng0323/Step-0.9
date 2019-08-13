@@ -10,6 +10,7 @@
               :status="todo.status"
               :todoID="todo.id"
               :activeElement="activeElement"
+              :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
               @changeStatus="changeStatus"
               @editTodo="editTodo"
               @deleteTodo="deleteTodo"
@@ -30,11 +31,6 @@
         {{snackbarMessage}}
       </v-snackbar>
     </v-container>
-    <!-- <v-overlay z-index="200" :value="showDatePicker" ref="overlay"> -->
-      <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
-          <v-date-picker v-model="datePickerValue" @change="pickDate"></v-date-picker>        
-      </v-dialog>
-      <!-- </v-overlay> -->
   </v-card>
 </template>
 
@@ -65,8 +61,6 @@ export default {
       snackbarColor: '',
       dataRecieved: false,
       rederedTodoItemCount: 0,
-      datePickerValue: '',
-      showDatePicker: false,
     }
   },
   watch:{
@@ -189,19 +183,18 @@ export default {
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     },
     moveToDate: function(res){
-      // let userPickedDate = false
       let todoID = res[0]
-      // while(!userPickedDate){
-      //   this.showDatePicker = true
-      //   userPickedDate = true
-      // }
-      // userPickedDate = false
-      console.log(todoID, ' moved to date', this.datePickerValue)      
+      let toDate = res[1]
+      let v = this
+      console.log(todoID, ' moved to date', toDate)
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+        {
+          dueTime: toDate
+        }
+      ).then(function(){
+        v.showSuccessSnackbar(`"Moved to ${toDate}.`)
+      })
     },
-    pickDate: function(){
-      console.log(this.datePickerValue)
-      this.showDatePicker = false
-    }
   },
   updated:function(){
     this.countRenderedTodoItem()
