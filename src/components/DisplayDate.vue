@@ -1,5 +1,5 @@
 <template>
-    <h1 class="display-1 my-2 text-md-justify font-weight-bold">
+    <h1 class="display-1 mt-2 font-weight-medium">
         <v-btn text icon @click="prevDay" class="prev">
             <v-icon large >chevron_left</v-icon>
         </v-btn>

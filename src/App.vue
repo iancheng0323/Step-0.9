@@ -19,53 +19,18 @@
         <v-container>
           <v-list>
           <v-list-item-group>
-            <v-list-item link :to="{path:'/'}">
-              <v-list-item-icon left>
-                  <v-icon size="24">fa-paw</v-icon>
+            <v-list-item
+            v-for="(item,index) in listItem"
+            :key="index"
+            link
+            :to="item.link"
+            >
+            <v-list-item-icon left>
+                  <v-icon :size="item.fontSize">{{item.iconText}}</v-icon>
                 </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title class="text-uppercase font-weight-medium">
-                  Steps
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item link :to="{path:'/mountains'}">
-              <v-list-item-icon>
-                  <v-icon size="20">fa-mountain</v-icon>
-                </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-uppercase font-weight-medium">
-                  Mountains
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item link :to="{path:'/numbers'}">
-              <v-list-item-icon>
-                  <v-icon size="24">fa-cubes</v-icon>
-                </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-uppercase font-weight-medium">
-                  Numbers
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item link :to="{path:'/Routines'}">
-              <v-list-item-icon>
-                  <v-icon size="24">fa-clock</v-icon>
-                </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-uppercase font-weight-medium">
-                  Routines
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item link>
-              <v-list-item-icon>
-                  <v-icon size="20">fa-tags</v-icon>
-                </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-uppercase font-weight-medium">
-                  Label
+                  {{item.title}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -74,6 +39,7 @@
         <v-btn text icon absolute bottom class="mb-10 toggleNav" @click="toggleNav"><v-icon :class="{rotate180:minNav}">chevron_left</v-icon></v-btn>
         </v-container>
       </v-navigation-drawer>
+      
   </v-app>
 </template>
 
@@ -93,6 +59,32 @@ export default {
       uid: 0,
       token: 0,
       minNav: true,
+      listItem: [
+        {
+          title: 'Step',
+          link: '/',
+          iconText: 'fa-paw',
+          fontSize: '24'
+        },
+        {
+          title: 'Mountain',
+          link: '/mountains',
+          iconText: 'fa-mountain',
+          fontSize: '20'
+        },
+        {
+          title: 'number',
+          link: '/numbers',
+          iconText: 'fa-cube',
+          fontSize: '24'
+        },
+        {
+          title: 'routine',
+          link: '/routines',
+          iconText: 'fa-clock',
+          fontSize: '24'
+        },
+      ],
     }
   },
   computed:{

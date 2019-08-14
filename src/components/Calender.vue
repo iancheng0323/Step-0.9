@@ -1,7 +1,6 @@
 <template>
-<v-container fluid>
-    <h1 class="my-2 display-1" >Calender</h1>
-    <v-card height="300" outlined>
+<!-- <v-container fluid> -->
+    <v-card height="300" flat tile>
         <v-calendar
           color="teal lighten-4"
           :now="parsedDisplayDateInHyphen"
@@ -9,7 +8,7 @@
           @click:date="changeDate"
     ></v-calendar>
     </v-card>
-</v-container>
+<!-- </v-container> -->
 </template>
 <script>
 export default {

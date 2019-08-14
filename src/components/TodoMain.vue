@@ -1,7 +1,7 @@
 <template>
   <v-card elevation="4" min-height="500">
     <v-container>
-        <h1 class="display-1 my-2">Todos</h1>
+        <h1 class="headline my-2">Todos</h1>
       <ul v-show="dataRecieved" ref="mainTodoUl">
             <li is="TodoItem" 
               v-for="(todo,index) in rawTodoList" 

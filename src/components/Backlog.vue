@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <h1 class="my-2 display-1">
+        <h1 class="my-2 headline">
             Backlog
         </h1>
         <ul>

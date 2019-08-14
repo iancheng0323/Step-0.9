@@ -1,13 +1,15 @@
 <template>
-    <v-container relative>     
-      <DisplayDate
+    <v-container relative>
+      <!-- <v-layout offset-md-2> -->
+        <DisplayDate  
           @changeDate="changeDate" 
           :key="displayDateKey"
           :parsedDisplayDateInSlash="parsedDisplayDateInSlash">
-      </DisplayDate>
+        </DisplayDate>
+      <!-- </v-layout> -->
       <v-container grid-list-md>
           <v-layout>
-              <v-flex md8>
+              <v-flex md6>
                   <TodoMain 
                   :displayDate="displayDate" 
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -29,7 +31,9 @@
               </v-flex>
           </v-layout>
       </v-container>
-      <v-btn @click="logout" text right top absolute>Logout</v-btn>
+      <v-btn @click="logout" text right bottom absolute class="ma-4" color="grey">
+        Logout <v-icon class="ml-2" small>fa-sign-out-alt</v-icon>
+      </v-btn>
         <!-- <template v-slot:append>
         <div class="pa-2">
           <v-btn block>Logout</v-btn>

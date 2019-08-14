@@ -32,10 +32,10 @@
             elevation="1"
             transition="scroll-y-transition">
                 <v-list dense>
-                    <v-list-item-group>
+                    <!-- <v-list-item-group> -->
                         <v-list-item
                         @click.stop="showDatePicker = true"
-                        class="text-center text-uppercase" 
+                        class="text-uppercase" 
                         >
                             <v-list-item-content>
                                 <v-list-item-title 
@@ -46,7 +46,7 @@
                         </v-list-item>
                         <v-list-item
                         @click="moveToBacklog"
-                        class="text-center text-uppercase" 
+                        class="text-uppercase" 
                         >
                             <v-list-item-content>
                                 <v-list-item-title 
@@ -55,9 +55,36 @@
                                 </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
+                        <v-list-group
+                        @click="paintColor"
+                        class="text-uppercase" 
+                        >
+
+                        <template v-slot:activator>
+                        <v-list-item-title>Paint Color</v-list-item-title>
+                        </template>
+                            <v-list-item-group>
+                                <v-list-item>
+                                    <v-list-item-title >
+                                    Red
+                                    </v-list-item-title>
+                                </v-list-item>
+                                <v-list-item>
+                                    <v-list-item-title >
+                                    Yellow
+                                    </v-list-item-title>
+                                </v-list-item>
+                                <v-list-item>
+                                    <v-list-item-title >
+                                    Blue
+                                    </v-list-item-title>
+                                </v-list-item>
+                            </v-list-item-group>
+                            
+                        </v-list-group>
                         <v-list-item
                         @click="deletePop = true"
-                        class="text-center text-uppercase" 
+                        class="text-uppercase" 
                         >
                             <v-list-item-content>
                                 <v-list-item-title 
@@ -66,7 +93,7 @@
                                 </v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
-                    </v-list-item-group>
+                    <!-- </v-list-item-group> -->
                 </v-list>
             </v-card>
             </v-expand-transition>
@@ -165,6 +192,9 @@ export default {
             this.showDatePicker= false
             this.actionMenu = false
             this.$emit('moveToDate',[this.todoID,this.datePickerValue])
+        },
+        paintColor:function(){
+            console.log('paint')
         }
     },
     watch:{
@@ -240,7 +270,7 @@ li{
     }
 }
 .actionMenu{
-    width:150px;
+    width:200px;
     right:15px;
     top:30px;
     z-index: 100;
