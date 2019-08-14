@@ -15,6 +15,13 @@ Vue.config.productionTip = false
 //Router Setting
 import Steps from './views/Steps.vue'
 import Login from './views/Login.vue'
+import Mountains from './views/Mountains.vue'
+import Numbers from './views/Numbers.vue'
+import Routines from './views/Routines.vue'
+
+
+
+
 const routes = [
   {
     path: '/',
@@ -28,7 +35,24 @@ const routes = [
     component: Login,
     // props:[],
   },
-  // { path: '/bar', component: Bar }
+  {
+    path: '/mountains',
+    name: 'Mountains',
+    component: Mountains,
+    // props:[],
+  },
+  {
+    path: '/numbers',
+    name: 'Numbers',
+    component: Numbers,
+    // props:[],
+  },
+  {
+    path: '/routines',
+    name: 'Routines',
+    component: Routines,
+    // props:[],
+  },
 ]
 
 const router = new VueRouter({
