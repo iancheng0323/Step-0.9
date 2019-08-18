@@ -8,11 +8,10 @@
 {
     title: 'string',
     creationTimeStamp: 1212121212 //timestamp
-    description: 'stinrg' 
+    description: 'string' 
     creationTime: 'YYYY-MM-DD',
     dueTime: 'YYYY-MM-DD'
     status: 0 // 0 == not-done; 1==done
-
 }
 
 //User

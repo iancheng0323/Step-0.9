@@ -9,13 +9,17 @@
             depressed
             @click="changeStatus()"
             ref="todoMarkBox"
-            ></v-btn>
+            :ripple="{ 'center' :true}"
+            icon
+            >
+            <v-icon size="22" :color="todoColor" class="colorLabel" v-show="status == 1">brightness_1</v-icon>
+            <v-icon size="22" color="grey" class="uncheckedCheckbox" v-show="status == 1">check_circle_outline</v-icon>
+            <v-icon size="22" color="#81C784" class="checkedCheckbox" v-if="status == 2">check</v-icon>
+            </v-btn>
             <input class="todoTitle" :value="title" @input="editTodo">
-            <v-btn 
-            text
+            <v-btn
             x-small
             right
-            tile
             absolute
             icon
             :ripple="false"
@@ -25,78 +29,17 @@
             >
                 <v-icon>more_horiz</v-icon>
             </v-btn>
-            <v-expand-transition>
-            <v-card 
-            class="actionMenu absolute" 
-            v-if="actionMenu" 
-            elevation="1"
-            transition="scroll-y-transition">
-                <v-list dense>
-                    <!-- <v-list-item-group> -->
-                        <v-list-item
-                        @click.stop="showDatePicker = true"
-                        class="text-uppercase" 
-                        >
-                            <v-list-item-content>
-                                <v-list-item-title 
-                                >
-                                Move To Date
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item
-                        @click="moveToBacklog"
-                        class="text-uppercase" 
-                        >
-                            <v-list-item-content>
-                                <v-list-item-title 
-                                >
-                                Move To Backlog
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-group
-                        @click="paintColor"
-                        class="text-uppercase" 
-                        >
-
-                        <template v-slot:activator>
-                        <v-list-item-title>Paint Color</v-list-item-title>
-                        </template>
-                            <v-list-item-group>
-                                <v-list-item>
-                                    <v-list-item-title >
-                                    Red
-                                    </v-list-item-title>
-                                </v-list-item>
-                                <v-list-item>
-                                    <v-list-item-title >
-                                    Yellow
-                                    </v-list-item-title>
-                                </v-list-item>
-                                <v-list-item>
-                                    <v-list-item-title >
-                                    Blue
-                                    </v-list-item-title>
-                                </v-list-item>
-                            </v-list-item-group>
-                            
-                        </v-list-group>
-                        <v-list-item
-                        @click="deletePop = true"
-                        class="text-uppercase" 
-                        >
-                            <v-list-item-content>
-                                <v-list-item-title 
-                                >
-                                Delete
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                    <!-- </v-list-item-group> -->
-                </v-list>
-            </v-card>
-            </v-expand-transition>
+            <TodoItemActionMenu
+            v-show="actionMenu"
+            :status="status"
+            :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+            :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+            @moveToToday="moveToToday"
+            @showDatePicker="showDatePicker = true"
+            @moveToBacklog="moveToBacklog"
+            @paintColor="paintColor"
+            @deletePop="deletePop = true"
+            ></TodoItemActionMenu>
         </v-container>
         <v-dialog
             v-model="deletePop"
@@ -131,16 +74,23 @@
         </v-dialog>
     </li>
 </template>
-
 <script>
+
+import TodoItemActionMenu from './TodoItemActionMenu.vue'
+
 export default {
     name:'TodoItem',
+    components:{
+        TodoItemActionMenu
+    },
     props:[
         'title',
         'status',
         'todoID',
         'activeElement',
-        'parsedDisplayDateInHyphen'
+        'parsedDisplayDateInHyphen',
+        'parsedCurrentDateInHyphen',
+        'color'
     ],
     computed:{
         todoStatus:function(){
@@ -149,6 +99,15 @@ export default {
             }else{
                 return 'done todoItem'
             }
+        },
+        todoColor:function(){
+            let r
+            if(this.color){
+                r = this.color
+            }else{
+                r = '#BDBDBD'
+            }
+            return r
         }
     },
     data: function(){
@@ -158,7 +117,8 @@ export default {
             actionMenu: false,
             deletePop: false,
             showDatePicker: false,
-            datePickerValue: ''
+            datePickerValue: '',
+            onHov:false
         }
     },
     created: function(){
@@ -172,6 +132,7 @@ export default {
             }else{
                 toStatus = 1
             }
+            this.$refs.todoMarkBox.$el.blur()
             this.$emit('changeStatus',[this.todoID,toStatus])
         },
         editTodo: function(event){
@@ -193,8 +154,14 @@ export default {
             this.actionMenu = false
             this.$emit('moveToDate',[this.todoID,this.datePickerValue])
         },
-        paintColor:function(){
-            console.log('paint')
+        paintColor:function(res){
+            let color = res[0]
+            this.actionMenu = false
+            this.$emit('paintColor',[this.todoID,color])
+        },
+        moveToToday:function(){
+            this.actionMenu = false
+            this.$emit('moveToToday',[this.todoID])
         }
     },
     watch:{
@@ -222,6 +189,8 @@ li{
     min-width:0px!important;
     position:absolute;
     top:7px;
+    outline-color: transparent;
+    transition:0.01s
 }
 .todoTitle{
     width:100%;
@@ -245,13 +214,8 @@ li{
 .done .todoTitle:focus{
     background: rgba(0,0,0,0.02);
 }
-.todo .todoMarkBox{
-    background: #f8f8f8!important;
-    outline: 1px solid rgba(0,0,0,0.1);
-}
 .done .todoMarkBox{
-    background-color: #888!important;
-    outline: 1px solid rgba(0,0,0,0.05);
+    outline-color: transparent!important;
 }
 .moreIcon{
     opacity: 0;
@@ -267,15 +231,23 @@ li{
         .moreIcon{
             opacity: 1;
         }
+        .colorLabel{
+            display: none;
+        }
+        .uncheckedCheckbox{
+            display: inline-flex;
+        }
     }
-}
-.actionMenu{
-    width:200px;
-    right:15px;
-    top:30px;
-    z-index: 100;
 }
 .opacity1{
     opacity:1!important;
 }
+.colorLabel{
+    opacity: 1;
+    transition:0.1s;
+}
+.uncheckedCheckbox{
+    display: none;
+}
+
 </style>

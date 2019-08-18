@@ -13,6 +13,7 @@
     "normalize.css": "^8.0.1",
     "vue": "^2.6.10",
     "vue-router": "^3.1.1",
+    "vuedraggable": "^2.23.0",
     "vuefire": "^2.1.0",
     "vuetify": "^2.0.0"
   },

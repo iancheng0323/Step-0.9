@@ -1,9 +1,10 @@
 <template>
   <v-card elevation="4" min-height="500">
     <v-container>
-        <h1 class="headline my-2">Todos</h1>
+      <h1 class="headline my-2">Todos</h1>
       <ul v-show="dataRecieved" ref="mainTodoUl">
-            <li is="TodoItem" 
+        <draggable :model='rawTodoList' @end="dragTest">
+          <li is="TodoItem" 
               v-for="(todo,index) in rawTodoList" 
               :title="todo.title"
               :key="index" 
@@ -11,12 +12,17 @@
               :todoID="todo.id"
               :activeElement="activeElement"
               :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+              :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+              :color="todo.color"
               @changeStatus="changeStatus"
               @editTodo="editTodo"
               @deleteTodo="deleteTodo"
               @moveToBacklog="moveToBacklog"
               @moveToDate="moveToDate"
+              @paintColor="paintColor"
+              @moveToToday="moveToToday"
               ></li>
+        </draggable>
       </ul>
       <p v-if="rederedTodoItemCount == 0 && dataRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
       <v-progress-linear indeterminate color="#888" v-show="!dataRecieved"></v-progress-linear>
@@ -38,6 +44,7 @@
 import TodoItem from './TodoItem.vue'
 import AddTodoForm from './AddTodoForm'
 import db from '../firebaseConfig.js'
+import draggable from 'vuedraggable'
 
 export default {
   name: 'TodoMain',
@@ -46,11 +53,12 @@ export default {
     'parsedCurrentDateInHyphen',
     'parsedDisplayDateInHyphen',
     'uid',
-    'activeElement'
+    'activeElement',
   ],
   components:{
     TodoItem,
-    AddTodoForm
+    AddTodoForm,
+    draggable
   },
   data: function(){
     return{
@@ -81,8 +89,9 @@ export default {
   methods:{
     addTodo: function(val){
       let v = this
-      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
-        v.createNewTodoObject(val)
+      // db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('Daily').collection(v.parsedDisplayDateInHyphen).add(
+        db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
+          v.createNewTodoObject(val)
         ).then(function(){
         v.showSuccessSnackbar(`"${val}" Added.`)
       })
@@ -96,6 +105,7 @@ export default {
         creationTimeStamp: Date.now(),
         creationTime: `${this.parsedCurrentDateInHyphen}`,
         dueTime:`${this.parsedDisplayDateInHyphen}`,
+        color: '',
       }
       return newTodoItem
     },
@@ -156,6 +166,7 @@ export default {
       .doc(`${this.uid}`)
       .collection('all')
       .where('dueTime','==',this.parsedDisplayDateInHyphen)
+      .orderBy('creationTimeStamp','desc')
       ).then(function(){
         console.log('Todo-main data received')
         v.dataRecieved = true
@@ -194,6 +205,30 @@ export default {
       ).then(function(){
         v.showSuccessSnackbar(`"Moved to ${toDate}.`)
       })
+    },
+    paintColor:function(res){
+      let todoID = res[0]
+      let color = res[1]
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+        {
+          color: color
+        }
+      )
+    },
+    moveToToday:function(res){
+      let todoID = res[0]
+      let v = this
+      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+        {
+          dueTime: v.parsedCurrentDateInHyphen
+        }
+      ).then(function(){
+        v.showSuccessSnackbar(`"Moved to ${v.parsedCurrentDateInHyphen}.`)
+      })
+    },
+    dragTest:function(evt){
+      console.log(evt)
+
     },
   },
   updated:function(){
