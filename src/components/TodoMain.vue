@@ -69,6 +69,9 @@ export default {
       snackbarColor: '',
       dataRecieved: false,
       rederedTodoItemCount: 0,
+      todoList:{
+        todos:[]
+      }
     }
   },
   watch:{
@@ -85,18 +88,20 @@ export default {
   },
   created: function(){
     this.bindToFirebase()
+    
   },
   methods:{
-    addTodo: function(val){
+    updateFirebaseTodo:function(){
       let v = this
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-        // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
-            v.createNewTodoObject(val)
-          ,{merge: false}
-        ).then(function(){
-        v.showSuccessSnackbar(`"${val}" Added.`)
-      })
+        {todos: v.todoList.todos}
+      ).then(function(){console.log('updated')})
+    },
+    addTodo: function(val){
+      let v = this
+      this.todoList.todos.push(v.createNewTodoObject(val))
       this.$refs.AddTodoForm.isAddingTodo = false
+      this.updateFirebaseTodo()
     },
     createNewTodoObject: function(title){
       let newTodoItem = {
