@@ -89,9 +89,10 @@ export default {
   methods:{
     addTodo: function(val){
       let v = this
-      // db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('Daily').collection(v.parsedDisplayDateInHyphen).add(
-        db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
-          v.createNewTodoObject(val)
+      db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
+        // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
+            v.createNewTodoObject(val)
+          ,{merge: false}
         ).then(function(){
         v.showSuccessSnackbar(`"${val}" Added.`)
       })
