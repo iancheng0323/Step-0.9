@@ -229,7 +229,6 @@ export default {
     },
     dragTest:function(evt){
       console.log(evt)
-
     },
   },
   updated:function(){

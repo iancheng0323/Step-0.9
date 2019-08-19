@@ -4,14 +4,15 @@
 
 
 
-//Todo Item
+todoItem = 
 {
     title: 'string',
-    creationTimeStamp: 1212121212 //timestamp
-    description: 'string' 
+    creationTimeStamp: 1212121212, //timestamp
+    description: 'string',
     creationTime: 'YYYY-MM-DD',
-    dueTime: 'YYYY-MM-DD'
-    status: 0 // 0 == not-done; 1==done
+    dueTime: 'YYYY-MM-DD',
+    status: 0, // 0 == not-done; 1==done
+    color: 'string',
 }
 
 //User
