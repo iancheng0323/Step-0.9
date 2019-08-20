@@ -3,13 +3,13 @@
     <v-container>
       <h1 class="headline my-2">Todos</h1>
       <ul v-show="dataRecieved" ref="mainTodoUl">
-        <draggable :model='rawTodoList' @end="dragTest">
+        <draggable :model='todoList.todos' @end="dragTest">
           <li is="TodoItem" 
-              v-for="(todo,index) in rawTodoList" 
+              v-for="(todo,index) in todoList.todos" 
               :title="todo.title"
               :key="index" 
               :status="todo.status"
-              :todoID="todo.id"
+              :todoID="index"
               :activeElement="activeElement"
               :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
               :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -71,7 +71,7 @@ export default {
       rederedTodoItemCount: 0,
       todoList:{
         todos:[]
-      }
+      },
     }
   },
   watch:{
@@ -80,29 +80,16 @@ export default {
       this.datePickerValue = this.parsedDisplayDateInHyphen
     },
     uid: function(){
-    this.bindToFirebase()
+    // this.bindToFirebase()
+    this.getFirebaseData()
     }
   },
   computed:{
-    
   },
   created: function(){
-    this.bindToFirebase()
-    
+    // this.bindToFirebase()
   },
   methods:{
-    updateFirebaseTodo:function(){
-      let v = this
-      db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-        {todos: v.todoList.todos}
-      ).then(function(){console.log('updated')})
-    },
-    addTodo: function(val){
-      let v = this
-      this.todoList.todos.push(v.createNewTodoObject(val))
-      this.$refs.AddTodoForm.isAddingTodo = false
-      this.updateFirebaseTodo()
-    },
     createNewTodoObject: function(title){
       let newTodoItem = {
         title: title,
@@ -115,67 +102,112 @@ export default {
       }
       return newTodoItem
     },
-    changeStatus: function(res){
-      let todoID = res[0]
-      let toStatus = res[1]
-      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-        {
-          status: toStatus
+    getFirebaseData: function(){
+      let v= this
+      let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen)
+      dbRef.get().then(function(doc){
+        if(doc.exists && doc.data().todos){
+          console.log(doc.data().todos)
+          v.todoList = doc.data()
+          console.log(v.todoList)
+        } else{
+          console.log('No doc found.')
         }
-      )
+      }).catch(function(err){
+        console.log(err)
+      })
+      v.dataRecieved = true
+    },
+    updateFirebaseTodo:function(){
+      let v = this
+      db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
+        {todos: v.todoList.todos}
+      ).then(function(){console.log('updated')})
+    },
+    addTodo: function(val){
+      let v = this
+      this.todoList.todos.push(v.createNewTodoObject(val))
+      this.$refs.AddTodoForm.isAddingTodo = false
+      this.updateFirebaseTodo()
     },
     editTodo: function(res){
       let todoID = res[0]
       let eiditedTitle = res[1]
-      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-        {
-          title: eiditedTitle
-        }
-      )
+      this.todoList.todos[todoID].title = eiditedTitle
+      this.updateFirebaseTodo()
+      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+      //   {
+      //     title: eiditedTitle
+      //   }
+      // )
+    },
+    changeStatus: function(res){
+      let todoID = res[0]
+      let toStatus = res[1]
+      this.todoList.todos[todoID].status = toStatus
+      this.updateFirebaseTodo()
+      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+      //   {
+      //     status: toStatus
+      //   }
+      // )
     },
     deleteTodo: function(res){
       let todoID = res[0]
       let title = res[1]
-      let v = this
-      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-        {
-          status: 0
-        }
-      ).then(function(){
-        v.showNeutralSnackbar(`"${title}" Deleted.`)
-      })
+      // let v = this
+      this.todoList.todos[todoID].status = 0
+      this.updateFirebaseTodo()
+      this.showNeutralSnackbar(`"${title}" Deleted.`)
+      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+      //   {
+      //     status: 0
+      //   }
+      // ).then(function(){
+      //   v.showNeutralSnackbar(`"${title}" Deleted.`)
+      // })
     },
     moveToBacklog:function(res){
       let todoID = res[0]
       let title = res[1]
-      let v = this
-      db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-        {
-          status: 3,
-          dueDate: 'not set'
-        }
-      ).then(function(){
-        v.showSuccessSnackbar(`"${title}" moved to backlog.`)
-      })
+      // let v = this
+      this.todoList.todos[todoID].status = 3
+      this.todoList.todos[todoID].dueDate = 'not set'
+      this.updateFirebaseTodo()
+      this.showSuccessSnackbar(`"${title}" moved to backlog.`)
+      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+      //   {
+      //     status: 3,
+      //     dueDate: 'not set'
+      //   }
+      // ).then(function(){
+      //   v.showSuccessSnackbar(`"${title}" moved to backlog.`)
+      // })
     },
     updateDataBinding: function(){
-      this.$unbind('rawTodoList')
+      this.$unbind('todoList')
       this.dataRecieved = false
       this.bindToFirebase()
     },
     bindToFirebase: function(){
       let v = this
       this.$bind(
-      'rawTodoList',
+      'todoList',
       db
-      .collection('todoItem')
+      .collection('Main')
       .doc(`${this.uid}`)
-      .collection('all')
-      .where('dueTime','==',this.parsedDisplayDateInHyphen)
-      .orderBy('creationTimeStamp','desc')
-      ).then(function(){
-        console.log('Todo-main data received')
-        v.dataRecieved = true
+      .collection('todoItem')
+      .doc(this.parsedDisplayDateInHyphen)
+      // .orderBy('creationTimeStamp','desc')
+      ).then(function(doc){
+        if(doc){
+          console.log('Todo-main data received')
+          v.dataRecieved = true
+        }else{
+          v.todoList = {
+            todos:[]
+          }
+        }
         })
     },
     toggleAddTodo: function(){
