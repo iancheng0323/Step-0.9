@@ -3,9 +3,9 @@
     <v-container>
       <h1 class="headline my-2">Todos</h1>
       <ul v-show="dataRecieved" ref="mainTodoUl">
-        <draggable :model='todoList.todos' @end="dragTest">
+        <draggable :model='dailyTodoList.todos' @end="dragTest">
           <li is="TodoItem" 
-              v-for="(todo,index) in todoList.todos" 
+              v-for="(todo,index) in dailyTodoList.todos" 
               :title="todo.title"
               :key="index" 
               :status="todo.status"
@@ -69,19 +69,24 @@ export default {
       snackbarColor: '',
       dataRecieved: false,
       rederedTodoItemCount: 0,
-      todoList:{
+      backlog:{
+        todos:[]
+      },
+      dailyTodoList:{
         todos:[]
       },
     }
   },
   watch:{
     parsedDisplayDateInHyphen: function(){
-      this.updateDataBinding()
+      // this.updateDataBinding()
+      this.dataRecieved = false
+      this.dailyTodoList.todo = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
+      this.getMainTodoList()
     },
     uid: function(){
-    // this.bindToFirebase()
-    this.getFirebaseData()
+      this.getMainTodoList()
     }
   },
   computed:{
@@ -102,14 +107,14 @@ export default {
       }
       return newTodoItem
     },
-    getFirebaseData: function(){
+    getMainTodoList: function(){
       let v= this
       let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen)
       dbRef.get().then(function(doc){
         if(doc.exists && doc.data().todos){
-          console.log(doc.data().todos)
-          v.todoList = doc.data()
-          console.log(v.todoList)
+          console.log(v.parsedDisplayDateInHyphen, doc.data().todos)
+          v.dailyTodoList = doc.data()
+          // console.log(v.dailyTodoList)
         } else{
           console.log('No doc found.')
         }
@@ -118,97 +123,56 @@ export default {
       })
       v.dataRecieved = true
     },
-    updateFirebaseTodo:function(){
+    updateMainTodoList:function(){
       let v = this
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-        {todos: v.todoList.todos}
-      ).then(function(){console.log('updated')})
+        {todos: v.dailyTodoList.todos}
+      ).then(function(){console.log('daily todo updated')})
+    },
+    updateBacklogTodoList:function(){
+      let v = this
+      let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
+      backlogDbRef.set(
+        {todos: v.backlog.todos}
+      ).then(function(){console.log('backlog updated')})
     },
     addTodo: function(val){
       let v = this
-      this.todoList.todos.push(v.createNewTodoObject(val))
+      this.dailyTodoList.todos.push(v.createNewTodoObject(val))
       this.$refs.AddTodoForm.isAddingTodo = false
-      this.updateFirebaseTodo()
+      this.updateMainTodoList()
+      this.showSuccessSnackbar(`"${val}" added.`)
     },
     editTodo: function(res){
       let todoID = res[0]
       let eiditedTitle = res[1]
-      this.todoList.todos[todoID].title = eiditedTitle
-      this.updateFirebaseTodo()
-      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-      //   {
-      //     title: eiditedTitle
-      //   }
-      // )
+      this.dailyTodoList.todos[todoID].title = eiditedTitle
+      this.updateMainTodoList()
     },
     changeStatus: function(res){
       let todoID = res[0]
       let toStatus = res[1]
-      this.todoList.todos[todoID].status = toStatus
-      this.updateFirebaseTodo()
-      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-      //   {
-      //     status: toStatus
-      //   }
-      // )
+      this.dailyTodoList.todos[todoID].status = toStatus
+      this.updateMainTodoList()
     },
     deleteTodo: function(res){
       let todoID = res[0]
       let title = res[1]
-      // let v = this
-      this.todoList.todos[todoID].status = 0
-      this.updateFirebaseTodo()
+      this.dailyTodoList.todos[todoID].status = 0
+      this.updateMainTodoList()
       this.showNeutralSnackbar(`"${title}" Deleted.`)
-      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-      //   {
-      //     status: 0
-      //   }
-      // ).then(function(){
-      //   v.showNeutralSnackbar(`"${title}" Deleted.`)
-      // })
     },
     moveToBacklog:function(res){
+      let v = this
       let todoID = res[0]
       let title = res[1]
-      // let v = this
-      this.todoList.todos[todoID].status = 3
-      this.todoList.todos[todoID].dueDate = 'not set'
-      this.updateFirebaseTodo()
+      let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
+      this.backlog.todos.push(v.createNewTodoObject(title))
+      this.updateBacklogTodoList()
+      this.dailyTodoList.todos[todoID].status = 3
+      this.dailyTodoList.todos[todoID].dueDate = 'not set'
+      this.updateMainTodoList()
       this.showSuccessSnackbar(`"${title}" moved to backlog.`)
-      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-      //   {
-      //     status: 3,
-      //     dueDate: 'not set'
-      //   }
-      // ).then(function(){
-      //   v.showSuccessSnackbar(`"${title}" moved to backlog.`)
-      // })
-    },
-    updateDataBinding: function(){
-      this.$unbind('todoList')
-      this.dataRecieved = false
-      this.bindToFirebase()
-    },
-    bindToFirebase: function(){
-      let v = this
-      this.$bind(
-      'todoList',
-      db
-      .collection('Main')
-      .doc(`${this.uid}`)
-      .collection('todoItem')
-      .doc(this.parsedDisplayDateInHyphen)
-      // .orderBy('creationTimeStamp','desc')
-      ).then(function(doc){
-        if(doc){
-          console.log('Todo-main data received')
-          v.dataRecieved = true
-        }else{
-          v.todoList = {
-            todos:[]
-          }
-        }
-        })
     },
     toggleAddTodo: function(){
       this.isAddingTodo = !this.isAddingTodo

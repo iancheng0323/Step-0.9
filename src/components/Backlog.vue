@@ -97,17 +97,33 @@ export default {
         }
         return newTodoItem
         },
-        bindToFirebase: function(){
-        this.$bind(
-        'rawBacklogList',
-        db
-        .collection('todoItem')
-        .doc(`${this.uid}`)
-        .collection('all')
-        .where('status','==', 3)
-        ).then(function(){
-            console.log('Backlog data received'
-        )})},
+        // bindToFirebase: function(){
+        // this.$bind(
+        // 'rawBacklogList',
+        // db
+        // .collection('todoItem')
+        // .doc(`${this.uid}`)
+        // .collection('all')
+        // .where('status','==', 3)
+        // ).then(function(){
+        //     console.log('Backlog data received'
+        // )})},
+        getBacklogTodoList: function(){
+            let v= this
+            let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
+            backlogDbRef.get().then(function(doc){
+                if(doc.exists && doc.data().todos){
+                    console.log(v.parsedDisplayDateInHyphen, doc.data().todos)
+                    v.dailyTodoList = doc.data()
+                    // console.log(v.dailyTodoList)
+                } else{
+                    console.log('No doc found.')
+                }
+            }).catch(function(err){
+                    console.log(err)
+            })
+            v.dataRecieved = true
+        },
         moveToToday: function(res){
             let todoID = res[0]
             let title = res[1]

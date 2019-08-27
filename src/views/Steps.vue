@@ -47,6 +47,7 @@
 import TodoMain from '../components/TodoMain.vue'
 import DisplayDate from '../components/DisplayDate.vue'
 import TodoSide from '../components/TodoSide.vue'
+import db from '../firebaseConfig.js'
 
 
 export default {
@@ -71,6 +72,12 @@ export default {
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
       activeElement: '',
+      backlog:{
+        todos:[]
+      },
+      dailyTodoList:{
+        todos:[]
+      },
     }
   },
   computed: {
