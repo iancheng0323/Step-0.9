@@ -16,43 +16,17 @@
             >
                 <v-icon>more_horiz</v-icon>
             </v-btn>
-            <v-card 
-            class="actionMenu absolute" 
-            v-if="actionMenu" 
-            elevation="1">
-                <v-list dense>
-                    <v-list-item-group>
-                        <v-list-item
-                        @click="moveToToday()"
-                        class="text-center text-uppercase" 
-                        >
-                            <v-list-item-content>
-                                <v-list-item-title 
-                                >
-                                Move To Today
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item
-                        @click="deletePop = true"
-                        class="text-center text-uppercase" 
-                        >
-                            <v-list-item-content>
-                                <v-list-item-title 
-                                >
-                                Delete
-                                </v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list-item-group>
-                </v-list>
-            </v-card>
+            <TodoItemActionMenu
+            :status="status"
+            @deletTodo="deletePop = true"
+            @moveToTOday="moveToToday"
+            ></TodoItemActionMenu>>
         </v-container>
         <v-dialog
             v-model="deletePop"
             max-width="290"
         >
-        <v-card>
+            <v-card>
             <v-card-title class="headline">Delete "{{title}}" ?</v-card-title>
             <v-card-actions>
             <v-spacer></v-spacer>
@@ -71,13 +45,17 @@
                 Delete
             </v-btn>
             </v-card-actions>
-        </v-card>
+            </v-card>
         </v-dialog>
     </li>
 </template>
 <script>
+import TodoItemActionMenu from './TodoItemActionMenu.vue'
 export default {
     name: 'BacklogItem',
+    components:{
+        TodoItemActionMenu,
+    },
     props: [
         'title',
         'todoID',
@@ -152,12 +130,6 @@ li{
             opacity: 1;
         }
     }
-}
-.actionMenu{
-    width:150px;
-    right:0;
-    top:20px;
-    z-index: 100;
 }
 .opacity1{
     opacity:1!important;

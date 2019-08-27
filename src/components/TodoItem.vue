@@ -45,27 +45,27 @@
             v-model="deletePop"
             max-width="290"
         >
-        <v-card>
-            <v-card-title class="headline">Delete "{{title}}" ?</v-card-title>
-            <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-                color="grey darken-1"
-                text
-                @click="deletePop = actionMenu = false"
-            >
-                No
-            </v-btn>
+            <v-card>
+                <v-card-title class="headline">Delete "{{title}}" ?</v-card-title>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                    color="grey darken-1"
+                    text
+                    @click="deletePop = actionMenu = false"
+                >
+                    No
+                </v-btn>
 
-            <v-btn
-                color="red darken-1"
-                text
-                @click="deleteTodo"
-            >
-                Delete
-            </v-btn>
-            </v-card-actions>
-        </v-card>
+                <v-btn
+                    color="red darken-1"
+                    text
+                    @click="deleteTodo"
+                >
+                    Delete
+                </v-btn>
+                </v-card-actions>
+            </v-card>
         </v-dialog>
         <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
             <v-date-picker v-model="datePickerValue">

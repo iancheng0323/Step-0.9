@@ -1,6 +1,6 @@
 <template>
   <v-container>
-      <h1>Mountains - Uder Development</h1>
+      <h1>Mountains - Under Development</h1>
   </v-container>
 </template>
 

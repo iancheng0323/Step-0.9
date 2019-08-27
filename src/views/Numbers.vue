@@ -1,6 +1,6 @@
 <template>
   <v-container>
-      <h1>Numbers - Uder Development</h1>
+      <h1>Numbers - Under Development</h1>
   </v-container>
 </template>
 
