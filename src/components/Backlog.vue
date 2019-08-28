@@ -5,19 +5,19 @@
         </h1>
         <ul>
             <li is="BacklogItem" 
-              v-for="(todo,index) in rawBacklogList" 
+              v-for="(todo,index) in backlog.todos" 
               :title="todo.title"
               :key="index" 
               :status="todo.status"
               :todoID="todo.id"
               :activeElement="activeElement"
-              @editTodo="editTodo"
-              @deleteTodo="deleteTodo"
-              @moveToToday="moveToToday"
+              @editTodo="editBacklogItem"
+              @deleteTodo="deleteBacklogItem"
+              @moveToToday="moveBacllogItemToToday"
               ></li>
       </ul>
       <AddTodoForm
-        @addTodo="addTodo"
+        @addTodo="addBacklogItem"
         ref="AddTodoForm"
       ></AddTodoForm>
       <v-snackbar v-model="showSnackbar" :timeout="2000">
@@ -29,7 +29,6 @@
 <script>
 import BacklogItem from './BacklogItem.vue'
 import AddTodoForm from './AddTodoForm'
-import db from '../firebaseConfig.js'
 
 export default {
     name: 'Backlog',
@@ -37,7 +36,8 @@ export default {
         'uid',
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
-        'activeElement'
+        'activeElement',
+        'backlog'
     ],
     components:{
         BacklogItem,
@@ -45,46 +45,47 @@ export default {
     },
     data:function(){
         return{
-            rawBacklogList: {},
             isAddingTodo: false,
             showSnackbar: false,
             snackbarMessage: ''
         }
     },
     created: function(){
-        this.bindToFirebase()
     },
     methods:{
-        addTodo: function(val){
-        let v = this
-        db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
-            v.createNewTodoObject(val)
+        addBacklogItem: function(val){
+            let v = this
+            db.collection(`todoItem`).doc(`${this.uid}`).collection('all').add(
+                v.createNewTodoObject(val)
+                ).then(function(){
+                console.log('backlog added')
+            })
+            this.$refs.AddTodoForm.isAddingTodo = false
+            this.$emit('addBacklogItem',val)
+        },
+        editBacklogItem: function(res){
+            let todoID = res[0]
+            let eiditedTitle = res[1]
+            db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+                {
+                title: eiditedTitle
+                }
+            )
+            this.$emit('editBacklogItem',res)
+        },
+        deleteBacklogItem: function(res){
+            let todoID = res[0]
+            let title = res[1]
+            let v = this
+            db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
+                {
+                status: 0
+                }
             ).then(function(){
-            console.log('backlog added')
-        })
-        this.$refs.AddTodoForm.isAddingTodo = false
-        },
-        editTodo: function(res){
-        let todoID = res[0]
-        let eiditedTitle = res[1]
-        db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-            {
-            title: eiditedTitle
-            }
-        )
-        },
-        deleteTodo: function(res){
-        let todoID = res[0]
-        let title = res[1]
-        let v = this
-        db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-            {
-            status: 0
-            }
-        ).then(function(){
-            v.snackbarMessage = `"${title}" Deleted.`
-            v.showSnackbar = true
-        })
+                v.snackbarMessage = `"${title}" Deleted.`
+                v.showSnackbar = true
+            })
+            this.$emit('deleteBacklogItem',res)
         },
         createNewTodoObject: function(title){
         let newTodoItem = {
@@ -97,34 +98,7 @@ export default {
         }
         return newTodoItem
         },
-        // bindToFirebase: function(){
-        // this.$bind(
-        // 'rawBacklogList',
-        // db
-        // .collection('todoItem')
-        // .doc(`${this.uid}`)
-        // .collection('all')
-        // .where('status','==', 3)
-        // ).then(function(){
-        //     console.log('Backlog data received'
-        // )})},
-        getBacklogTodoList: function(){
-            let v= this
-            let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
-            backlogDbRef.get().then(function(doc){
-                if(doc.exists && doc.data().todos){
-                    console.log(v.parsedDisplayDateInHyphen, doc.data().todos)
-                    v.dailyTodoList = doc.data()
-                    // console.log(v.dailyTodoList)
-                } else{
-                    console.log('No doc found.')
-                }
-            }).catch(function(err){
-                    console.log(err)
-            })
-            v.dataRecieved = true
-        },
-        moveToToday: function(res){
+        moveBacllogItemToToday: function(res){
             let todoID = res[0]
             let title = res[1]
             let v = this
@@ -137,13 +111,9 @@ export default {
                 v.snackbarMessage = `"${title}" added to ${v.parsedDisplayDateInHyphen}.`
                 v.showSnackbar = true
             })
+            this.$emit('moveBacllogItemToToday',res)
         }
     },
-    watch:{
-        uid: function(){
-            this.bindToFirebase()
-        }
-    }
 }
 </script>
 <style scope>

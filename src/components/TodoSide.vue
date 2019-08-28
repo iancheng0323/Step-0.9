@@ -9,7 +9,12 @@
         :uid="uid"
         :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-        :activeElement="activeElement">
+        :activeElement="activeElement"
+        :backlog="backlog"
+        @addBacklogItem="addBacklogItem"
+        @editBacklogItem="editBacklogItem"
+        @deleteBacklogItem="deleteBacklogItem"
+        @moveBacllogItemToToday="moveBacllogItemToToday">
         </Backlog>
     </v-card>
 </template>
@@ -22,16 +27,28 @@ export default {
         'uid',
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
-        'activeElement'
+        'activeElement',
+        'backlog'
     ],    
     components: {
         Backlog,
         Calender
     },
     methods:{
-        changeDate:function(res){
+        changeDate(res){
             this.$emit('changeDate',res)
-            // console.log(res)
+        },
+        addBacklogItem(val){
+            this.$emit('addBacklogItem',val)
+        },
+        editBacklogItem(res){
+            this.$emit('editBacklogItem',res)
+        },
+        deleteBacklogItem: function(res){
+            this.$emit('deleteTodo',res)
+        },
+        moveBacllogItemToToday: function(res){
+            this.$emit('moveBacllogItemToToday',res)
         }
     }
 }

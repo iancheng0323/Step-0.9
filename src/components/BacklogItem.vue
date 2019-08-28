@@ -20,31 +20,32 @@
             :status="status"
             @deletTodo="deletePop = true"
             @moveToTOday="moveToToday"
-            ></TodoItemActionMenu>>
+            v-show="actionMenu"
+            ></TodoItemActionMenu>
         </v-container>
         <v-dialog
             v-model="deletePop"
             max-width="290"
         >
             <v-card>
-            <v-card-title class="headline">Delete "{{title}}" ?</v-card-title>
-            <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-                color="grey darken-1"
-                text
-                @click="deletePop = actionMenu = false"
-            >
-                Move To Today
-            </v-btn>
-            <v-btn
-                color="red darken-1"
-                text
-                @click="deleteTodo"
-            >
-                Delete
-            </v-btn>
-            </v-card-actions>
+                <v-card-title class="headline">Delete "{{title}}" ?</v-card-title>
+                <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                    color="grey darken-1"
+                    text
+                    @click="deletePop = actionMenu = false"
+                >
+                    Move To Today
+                </v-btn>
+                <v-btn
+                    color="red darken-1"
+                    text
+                    @click="deleteTodo"
+                >
+                    Delete
+                </v-btn>
+                </v-card-actions>
             </v-card>
         </v-dialog>
     </li>
@@ -59,7 +60,8 @@ export default {
     props: [
         'title',
         'todoID',
-        'activeElement'
+        'activeElement',
+        'status'
     ],
     data: function(){
         return{

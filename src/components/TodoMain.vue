@@ -73,21 +73,12 @@ export default {
     }
   },
   watch:{
-    // parsedDisplayDateInHyphen: function(){
-    //   // this.updateDataBinding()
-    //   this.dataRecieved = false
-    //   this.dailyTodoList.todo = []
-    //   this.datePickerValue = this.parsedDisplayDateInHyphen
-    //   this.getMainTodoList()
-    // },
     uid: function(){
-      this.getMainTodoList()
     }
   },
   computed:{
   },
   created: function(){
-    // this.bindToFirebase()
   },
   methods:{
     addTodo: function(val){
