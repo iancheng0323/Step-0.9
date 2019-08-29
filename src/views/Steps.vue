@@ -38,6 +38,10 @@
                   :activeElement="activeElement"
                   :backlog="backlog"
                   @changeDate="changeDate"
+                  @addBacklogItem="addBacklogItem"
+                  @editBacklogItem="editBacklogItem"
+                  @deleteBacklogItem="deleteBacklogItem"
+                  @moveBacllogItemToToday="moveBacllogItemToToday"
                   >
                   </TodoSide>
               </v-flex>
@@ -99,14 +103,15 @@ export default {
   watch: {
     parsedDisplayDateInHyphen(){
       this.dataRecieved = false
-      this.dailyTodoList.todo = []
+      this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
-      this.getMainTodoList()
-      this.getBacklogTodoList()
+      this.setTodoListByDate(this.parsedDisplayDateInHyphen)
+      this.setBacklogTodoList()
     },
     uid(){
-      this.getMainTodoList()
-      this.getBacklogTodoList()
+      this.setTodoListByDate(this.parsedDisplayDateInHyphen)
+      console.log('not me')
+      this.setBacklogTodoList()
     }
   },
   created: function(){
@@ -205,28 +210,26 @@ export default {
       }
       return newTodoItem
     },
-    getMainTodoList: function(){
-      let v= this
-      let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen)
+    setTodoListByDate: function(date){
+      let v = this
+      let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date)
       dbRef.get().then(function(doc){
         if(doc.exists && doc.data().todos){
-          console.log(v.parsedDisplayDateInHyphen, doc.data().todos)
           v.dailyTodoList = doc.data()
-          // console.log(v.dailyTodoList)
         } else{
           console.log('No doc found.')
         }
+        v.dataRecieved = true
       }).catch(function(err){
         console.log(err)
       })
-      v.dataRecieved = true
     },
-    getBacklogTodoList: function(){
+    setBacklogTodoList: function(){
       let v= this
       let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')      
       backlogDbRef.get().then(function(doc){
         if(doc.exists && doc.data().todos){
-          console.log(v.parsedDisplayDateInHyphen, doc.data().todos)
+          console.log('found backlog')
           v.backlog = doc.data()
           // console.log(v.dailyTodoList)
         } else{
@@ -273,28 +276,39 @@ export default {
       this.updateMainTodoList()
     },
     moveToBacklog:function(res){
-      let v = this
       let todoID = res[0]
-      let title = res[1]
-      this.backlog.todos.push(v.createNewTodoObject(title))
-      this.updateBacklogTodoList()
+      // let title = res[1]
       this.dailyTodoList.todos[todoID].status = 3
       this.dailyTodoList.todos[todoID].dueDate = 'not set'
+      this.backlog.todos.push(this.dailyTodoList.todos[todoID])
+      this.updateBacklogTodoList()
       this.updateMainTodoList()
     },
     moveToDate: function(res){
-      // let todoID = res[0]
-      // let toDate = res[1]
-      // let v = this
-      // console.log(todoID, ' moved to date', toDate)
-      // db.collection(`todoItem`).doc(`${this.uid}`).collection('all').doc(todoID).update(
-      //   {
-      //     dueTime: toDate
-      //   }
-      // ).then(function(){
-      //   v.showSuccessSnackbar(`"Moved to ${toDate}.`)
-      // })
-      console.log('moveToDate PENDING DEV')
+      let todoID = res[0]
+      let toDate = res[1]
+      let v = this
+      let holder = { todos: [] }
+      //get the todo list of the to-date
+      let toDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(toDate)
+      toDateDBRef.get().then(function(doc){
+        if(doc.exists && doc.data().todos){
+           holder = doc.data()
+           holder.todos.push(v.dailyTodoList.todos[todoID])
+        } else{
+           holder.todos.push(v.dailyTodoList.todos[todoID])          
+        }
+        //update to firebase
+           toDateDBRef.set({
+             todos: holder.todos
+           })
+          //set the todo to status 3
+          v.dailyTodoList.todos[todoID].status = 3
+          //update to firebase
+          v.updateMainTodoList()
+      }).catch(function(err){
+        console.log(err)
+      })
     },
     paintColor:function(res){
       let todoID = res[0]
@@ -305,9 +319,42 @@ export default {
     moveToToday:function(res){
       let todoID = res[0]
       let v = this
-      // this.dailyTodoList.todos[todoID].dueTime = v.parsedCurrentDateInHyphen
-      this.updateMainTodoList()
-      console.log('PENDING DEV')
+      let holder = { todos: [] }
+      //get the todo list of the to-date
+      let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
+      currentDateDBRef.get().then(function(doc){
+        if(doc.exists && doc.data().todos){
+           holder = doc.data()
+           holder.todos.push(v.dailyTodoList.todos[todoID])
+        } else{
+           holder.todos.push(v.dailyTodoList.todos[todoID])          
+        }
+        //update to firebase
+           currentDateDBRef.set({
+             todos: holder.todos
+           })
+          //set the todo to status 3
+          v.dailyTodoList.todos[todoID].status = 3
+          //update to firebase
+          v.updateMainTodoList()
+      }).catch(function(err){
+        console.log(err)
+      })
+    },
+    addBacklogItem(res){
+      console.log(res)
+    },
+    editBacklogItem(res){
+      console.log(res)
+
+    },
+    deleteBacklogItem(res){
+      console.log(res)
+
+    },
+    moveBacllogItemToToday(res){
+      console.log(res)
+
     },
   }
 }

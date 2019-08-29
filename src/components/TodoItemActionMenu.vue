@@ -31,6 +31,7 @@
                     <v-list-item
                     @click="moveToBacklog"
                     class="text-uppercase" 
+                    v-if="status != 3"
                     >
                         <v-list-item-content>
                             <v-list-item-title 

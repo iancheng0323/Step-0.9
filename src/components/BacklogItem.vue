@@ -17,10 +17,12 @@
                 <v-icon>more_horiz</v-icon>
             </v-btn>
             <TodoItemActionMenu
-            :status="status"
-            @deletTodo="deletePop = true"
-            @moveToTOday="moveToToday"
-            v-show="actionMenu"
+                :status="status"
+                @deletePop="deletePop = true"
+                @moveToToday="moveToToday"
+                @showDatePicker="showDatePicker"
+                @paintColor="paintColor"
+                v-show="actionMenu"
             ></TodoItemActionMenu>
         </v-container>
         <v-dialog
@@ -36,7 +38,7 @@
                     text
                     @click="deletePop = actionMenu = false"
                 >
-                    Move To Today
+                    No Thanks
                 </v-btn>
                 <v-btn
                     color="red darken-1"
@@ -85,7 +87,13 @@ export default {
         },
         moveToToday: function(){
             this.$emit('moveToToday',[this.todoID,this.title])
-        }
+        },
+        showDatePicker(){
+            console.log('DEV')
+        },
+        paintColor(){
+            console.log('DEV')
+        },
 
     },
     watch:{
