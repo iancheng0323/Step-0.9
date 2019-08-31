@@ -1,5 +1,9 @@
 <template>
     <li :class="todoStatus" v-if="status != 0 && status != 3">
+        <v-icon
+        class="dragIndicator absolute"
+        size="20"
+        >drag_indicator</v-icon>
         <v-container class="relative py-1">
             <v-btn class="todoMarkBox"
             :height="checkboxSize" 
@@ -226,8 +230,9 @@ li{
     // }
 }
 .todoItem{
+    border-radius: 6px;
     &:hover{
-        background-color: rgba(0,0,0,0.02);
+        background-color: rgba(0,0,0,0.01);
         .moreIcon{
             opacity: 1;
         }
@@ -236,6 +241,9 @@ li{
         }
         .uncheckedCheckbox{
             display: inline-flex;
+        }
+        .dragIndicator{
+            opacity: 0.2;
         }
     }
 }
@@ -249,5 +257,14 @@ li{
 .uncheckedCheckbox{
     display: none;
 }
-
+.dragIndicator{
+    cursor: grab;
+    left:-14px;
+    top:6px;
+    opacity:0;
+    transition:0.1s;
+    &:active{
+        cursor:grabbing;
+    }
+}
 </style>

@@ -8,7 +8,7 @@
                     <v-list-item
                     @click="moveToToday"
                     class="text-uppercase" 
-                    v-if="parsedDisplayDateInHyphen != parsedCurrentDateInHyphen"
+                    v-if="parsedDisplayDateInHyphen != parsedCurrentDateInHyphen || status == 3"
                     >
                         <v-list-item-content>
                             <v-list-item-title 
@@ -123,7 +123,6 @@ export default {
         deletePop: function(){
             this.$emit('deletePop')
         }
-
     },
 }
 </script>

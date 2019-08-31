@@ -3,7 +3,13 @@
     <v-container>
       <h1 class="headline my-2">Todos</h1>
       <ul v-show="dataRecieved" ref="mainTodoUl">
-        <draggable :model='dailyTodoList.todos' @end="dragTest">
+        <draggable 
+        :list='dailyTodoList.todos' 
+        handle=".dragIndicator"
+        ghost-class="ghost"
+        drag-class="sortable-drag"
+        chosen-Class = "sortable-chosen"
+        @end="dragTodo">
           <li is="TodoItem" 
               v-for="(todo,index) in dailyTodoList.todos" 
               :title="todo.title"
@@ -137,8 +143,8 @@ export default {
       this.showSuccessSnackbar(`"Moved to ${v.parsedCurrentDateInHyphen}.`)
       
     },
-    dragTest:function(evt){
-      console.log(evt)
+    dragTodo:function(){
+      this.$emit('dragTodo')
     },
   },
   updated:function(){
@@ -155,5 +161,12 @@ ul{
 }
 .pointer {
   cursor: pointer;
+}
+.sortable-drag{
+    opacity: 0;
+}
+.sortable-chosen{
+    background: rgba(12,120,120,0.2);
+
 }
 </style>

@@ -14,7 +14,7 @@
         @addBacklogItem="addBacklogItem"
         @editBacklogItem="editBacklogItem"
         @deleteBacklogItem="deleteBacklogItem"
-        @moveBacllogItemToToday="moveBacllogItemToToday">
+        @moveBacklogItemToToday="moveBacklogItemToToday">
         </Backlog>
     </v-card>
 </template>
@@ -45,10 +45,10 @@ export default {
             this.$emit('editBacklogItem',res)
         },
         deleteBacklogItem: function(res){
-            this.$emit('deleteTodo',res)
+            this.$emit('deleteBacklogItem',res)
         },
-        moveBacllogItemToToday: function(res){
-            this.$emit('moveBacllogItemToToday',res)
+        moveBacklogItemToToday: function(res){
+            this.$emit('moveBacklogItemToToday',res)
         }
     }
 }
