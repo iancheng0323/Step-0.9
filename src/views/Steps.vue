@@ -11,6 +11,7 @@
           <v-layout>
               <v-flex md6>
                   <TodoMain 
+                  ref="TodoMain"
                   :displayDate="displayDate" 
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                   :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
@@ -107,11 +108,9 @@ export default {
       this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
-      this.setBacklogTodoList()
     },
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
-      console.log('not me')
       this.setBacklogTodoList()
     }
   },
@@ -241,23 +240,25 @@ export default {
       })
       v.dataRecieved = true
     },
-    updateMainTodoList:function(){
+    updateMainTodoList:function(callbackFunc){
       let v = this
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
         {todos: v.dailyTodoList.todos}
-      ).then(function(){console.log('daily todo updated')})
+      ).then(callbackFunc)
     },
-    updateBacklogTodoList:function(){
+    updateBacklogTodoList:function(callbackFunc){
       let v = this
       let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
       backlogDbRef.set(
         {todos: v.backlog.todos}
-      ).then(function(){console.log('backlog updated')})
+      ).then(callbackFunc)
     },
     addTodo: function(val){
       let v = this
       this.dailyTodoList.todos.push(v.createNewTodoObject(val,1))
-      this.updateMainTodoList()
+      this.updateMainTodoList(
+        this.$refs.TodoMain.showSuccessSnackbar(`"${val}" added.`)
+      )
     },
     editTodo: function(res){
       let todoID = res[0]
@@ -273,12 +274,15 @@ export default {
     },
     deleteTodo: function(res){
       let todoID = res[0]
+      let title = res[1]
       this.dailyTodoList.todos[todoID].status = 0
-      this.updateMainTodoList()
+      this.updateMainTodoList(
+        this.$refs.TodoMain.showNeutralSnackbar(`"${title}" Deleted.`)
+      )
     },
     moveToBacklog:function(res){
       let todoID = res[0]
-      // let title = res[1]
+      let title = res[1]
       // set current todo item status to 3, due date to not set
       this.dailyTodoList.todos[todoID].status = 3
       this.dailyTodoList.todos[todoID].dueDate = 'not set'
@@ -286,11 +290,14 @@ export default {
       this.backlog.todos.push(this.dailyTodoList.todos[todoID])
       // update changes to firebase
       this.updateBacklogTodoList()
-      this.updateMainTodoList()
+      this.updateMainTodoList(
+        this.$refs.TodoMain.showSuccessSnackbar(`"${title}" moved to backlog.`)
+      )
     },
     moveToDate: function(res){
       let todoID = res[0]
-      let toDate = res[1]
+      let title = res[1]
+      let toDate = res[2]
       let v = this
       let holder = { todos: [] }
       //get the todo list of the to-date
@@ -309,7 +316,9 @@ export default {
           //set the todo to status 3
           v.dailyTodoList.todos[todoID].status = 3
           //update to firebase
-          v.updateMainTodoList()
+          v.updateMainTodoList(
+            v.$refs.TodoMain.showSuccessSnackbar(`${title} moved to ${toDate}.`)
+          )
       }).catch(function(err){
         console.log(err)
       })
@@ -322,6 +331,7 @@ export default {
     },
     moveToToday:function(res){
       let todoID = res[0]
+      let title = res[1]
       let v = this
       let holder = { todos: [] }
       //get the todo list of the to-date
@@ -340,7 +350,9 @@ export default {
           //set the todo to status 3
           v.dailyTodoList.todos[todoID].status = 3
           //update to firebase
-          v.updateMainTodoList()
+          v.updateMainTodoList(
+            v.$refs.TodoMain.showSuccessSnackbar(`${title} moved to ${v.parsedCurrentDateInHyphen}.`)
+          )
       }).catch(function(err){
         console.log(err)
       })

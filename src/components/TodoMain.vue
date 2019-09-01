@@ -90,7 +90,6 @@ export default {
     addTodo: function(val){
       this.$refs.AddTodoForm.isAddingTodo = false
       this.$emit('addTodo',val)
-      this.showSuccessSnackbar(`"${val}" added.`)
     },
     editTodo: function(res){
       this.$emit('editTodo',res)
@@ -99,14 +98,10 @@ export default {
       this.$emit('changeStatus',res)
     },
     deleteTodo: function(res){
-      let title = res[1]
       this.$emit('deleteTodo',res)
-      this.showNeutralSnackbar(`"${title}" Deleted.`)
     },
     moveToBacklog:function(res){
-      let title = res[1]
       this.$emit('moveToBacklog',res)
-      this.showSuccessSnackbar(`"${title}" moved to backlog.`)
     },
     toggleAddTodo: function(){
       this.isAddingTodo = !this.isAddingTodo
@@ -130,18 +125,13 @@ export default {
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     },
     moveToDate: function(res){
-      let toDate = res[1]
       this.$emit('moveToDate',res)
-      this.showSuccessSnackbar(`"Moved to ${toDate}.`)
     },
     paintColor:function(res){
       this.$emit('paintColor',res)
     },
     moveToToday:function(res){
-      let v = this
       this.$emit('moveToToday',res)
-      this.showSuccessSnackbar(`"Moved to ${v.parsedCurrentDateInHyphen}.`)
-      
     },
     dragTodo:function(){
       this.$emit('dragTodo')

@@ -156,7 +156,7 @@ export default {
         moveToDate: function(){
             this.showDatePicker= false
             this.actionMenu = false
-            this.$emit('moveToDate',[this.todoID,this.datePickerValue])
+            this.$emit('moveToDate',[this.todoID,this.title,this.datePickerValue])
         },
         paintColor:function(res){
             let color = res[0]
@@ -165,7 +165,7 @@ export default {
         },
         moveToToday:function(){
             this.actionMenu = false
-            this.$emit('moveToToday',[this.todoID])
+            this.$emit('moveToToday',[this.todoID,this.title])
         }
     },
     watch:{
