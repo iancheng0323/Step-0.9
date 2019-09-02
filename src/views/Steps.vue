@@ -89,6 +89,7 @@ export default {
       parsedDisplayDateInSlash:0,
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
+      currentWeekdayIndex:0,
       activeElement: '',
       backlog:{
         todos:[]
@@ -96,11 +97,12 @@ export default {
       dailyTodoList:{
         todos:[]
       },
-      dataRecieved: false
+      routineList:{},
+      dataRecieved: false,
+      routineDataRecieved: false,
     }
   },
   computed: {
-    
   },
   watch: {
     parsedDisplayDateInHyphen(){
@@ -112,10 +114,13 @@ export default {
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
+      this.setRoutineList()
+      
     }
   },
   created: function(){
     this.currentDate = new Date()
+    this.currentWeekdayIndex = this.currentDate.getDay()    
     this.displayDate = new Date()
     this.setDates()
     let v = this
@@ -396,6 +401,28 @@ export default {
     },
     dragTodo(){
       this.updateMainTodoList()
+    },
+    setRoutineList(){
+      let v = this
+      let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('routineList')
+      dbRef.get().then(function(doc){
+        if(doc.exists && doc.data().list){
+          v.routineList = doc.data()
+          v.setDailyRoutine(v.routineList)
+        } else{
+          console.log('Steps: No routine doc found.')
+        }
+        v.routineDataRecieved = true
+      }).catch(function(err){
+        console.log(err)
+      })      
+    },
+    setDailyRoutine(routineList){
+      for(let i = 0; i < routineList.list.length; i++){
+        if(routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0){
+          console.log(routineList.list[i].title)
+        }
+      }
     },
   }
 }

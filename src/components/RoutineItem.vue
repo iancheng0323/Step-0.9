@@ -1,6 +1,6 @@
 <template>
-    <li class="relative">
-        <h3>{{title}}</h3>
+    <li class="relative mt-3">
+        <h3 class="title">{{title}}</h3>
         <v-btn
         icon
         absolute
@@ -8,9 +8,9 @@
         class="editIcon"
         @click="editPop=true"
         >
-            <v-icon>edit</v-icon>
+            <v-icon small>edit</v-icon>
         </v-btn>
-        <p>{{weeklyRoutine}}</p>
+        <p>{{routineDes}}</p>
         <v-dialog 
         :value="editPop"
         persistent
@@ -41,10 +41,12 @@
                     ripple
                     >
                     </v-switch>
+                <v-btn @click="deleteRoutine" class="editRoutineFormButton">Delete</v-btn>
+
                 </v-form>
             </v-card-text>
-                <v-btn @click="editRoutine" class="addRoutineFormButton">Edit</v-btn>
-                <v-btn @click="editPop = false" text class="addRoutineFormButton">Discard</v-btn>
+                <v-btn @click="editRoutine" class="editRoutineFormButton">Edit</v-btn>
+                <v-btn @click="editPop = false" text class="editRoutineFormButton">Discard</v-btn>
             </v-container>
             </v-card>
         </v-dialog>
@@ -55,6 +57,7 @@
 export default {
     name: 'RoutinesItem',
     props:[
+        'routineIndex',
         'title',
         'weeklyRoutine',
         'monthlyRoutine',
@@ -97,7 +100,7 @@ export default {
         ],
         editedWeeklyRoutine:[],
         editedRoutineTitle:'',
-        editedStatus:0
+        editedStatus:true
       }
     },
     created(){
@@ -107,16 +110,59 @@ export default {
     },
     methods:{
         editRoutine(){
-            console.log('edited')
+            this.editPop = false
+            this.$emit('editRoutine',[this.routineIndex,this.editedRoutineTitle,this.editedWeeklyRoutine,this.editedStatus])
+        },
+        deleteRoutine(){
+            this.editPop = false
+            this.$emit('deleteRoutine',[this.routineIndex])
+        },
+        translateWeekday(n){
+            let day = ''
+            switch (n) {
+                case 0:
+                    day = "Sunday"
+                    break
+                case 1:
+                    day = "Monday"
+                    break
+                case 2:
+                    day = "Tuesday"
+                    break
+                case 3:
+                    day = "Wednesday"
+                    break
+                case 4:
+                    day = "Thursday"
+                    break
+                case 5:
+                    day = "Friday"
+                    break
+                case 6:
+                    day = "Saturday"
+            }
+            return day
         }
     },
     computed:{
         switchLabel(){
-            if (this.editedStatus == 0){
-                return 'OFF'
+            if (this.editedStatus == false){
+                return 'Status: OFF'
             }else{
-                return 'ON'
+                return 'Status: ON'
             }
+        },
+        routineDes(){
+            let m = 'On every '
+            for(let i=0;i<this.weeklyRoutine.length;i++){
+                m += this.translateWeekday(this.weeklyRoutine[i])
+                if(i<this.weeklyRoutine.length-1){
+                    m += ', '
+                }else{
+                    m +='.'
+                }
+            }
+            return m
         }
     }
 
@@ -133,6 +179,9 @@ li{
 .editIcon{
     right:0;
     top:2px;
+}
+.editRoutineFormButton{
+    margin-right: 10px;
 }
 
 </style>

@@ -16,11 +16,14 @@
             <li
             is="RoutineItem"
             v-for="(item,index) in routineList.list"
+            :routineIndex="index"
             :key="index"
             :title="item.title"
             :weeklyRoutine="item.weeklyRoutine"
             :monthlyRoutine="item.monthlyRoutine"
             :status="item.status"
+            @deleteRoutine="deleteRoutine"
+            @editRoutine="editRoutine"
             ></li>
           </ul>
         </v-container>
@@ -62,30 +65,24 @@
 </template>
 
 <script>
+import db from '../firebaseConfig.js'
 import RoutineItem from '../components/RoutineItem.vue'
 export default {
     name: 'Routines',
     components:{
       RoutineItem
     },
+    props:[
+      'userName',
+      'userEmail',
+      'uid',
+      'auth',
+    ],
     data(){
       return{
         addNewPop:false,
         routineList:{
-          list:[
-            {
-              title: '1. Check email',
-              weeklyRoutine: [1,2,3,4,5],
-              monthlyRoutine: [],
-              status:1
-            },
-            {
-              title: '2. Data report',
-              weeklyRoutine: [2,3,4],
-              monthlyRoutine: [],
-              status:1
-            },
-          ]
+          list:[]
         },
         weeklyRoutineItems:[
           {
@@ -119,16 +116,40 @@ export default {
         ],
         selectedWeeklyRoutine:[],
         newRoutineTitle:'',
-
+        dataRecieved: false
       }
     },
+    created(){
+      this.setRoutineList()
+    },
     methods:{
+      setRoutineList(){
+        let v = this
+        let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('routineList')
+        dbRef.get().then(function(doc){
+          if(doc.exists && doc.data().list){
+            v.routineList = doc.data()
+          } else{
+            console.log('Routine: No doc found.')
+          }
+          v.dataRecieved = true
+        }).catch(function(err){
+          console.log(err)
+        })
+      },
+      updateRoutineList(callbackFunc){
+        let v = this
+        db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('routineList').set(
+          {list: v.routineList.list}
+        ).then(callbackFunc)
+      },
       createNewRoutine(title, weeklyRoutine){
         weeklyRoutine = weeklyRoutine.sort()
         let newRoutine = {
           title: title,
           weeklyRoutine: weeklyRoutine,
-          monthlyRoutine: []
+          monthlyRoutine: [],
+          status: true
         }
         return newRoutine
       },
@@ -143,7 +164,23 @@ export default {
         this.newRoutineTitle = ''
         this.selectedWeeklyRoutine = []
         this.addNewPop = false
+        this.updateRoutineList(console.log('added Routine to firebase'))
       },
+      editRoutine(res){
+        let routineID = res[0]
+        let editedRoutineTitle = res[1]
+        let editedWeeklyRoutine = res[2].sort()
+        let editedStatus = res[3]
+        this.routineList.list[routineID].title = editedRoutineTitle
+        this.routineList.list[routineID].weeklyRoutine = editedWeeklyRoutine
+        this.routineList.list[routineID].status = editedStatus
+        this.updateRoutineList(console.log('edited Routine to firebase'))        
+      },
+      deleteRoutine(res){
+        let routineID = res[0]
+        this.routineList.list.splice(routineID,1)
+        this.updateRoutineList(console.log('deleted Routine to firebase'))        
+      }
     }
 
 }
