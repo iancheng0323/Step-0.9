@@ -95,7 +95,10 @@ export default {
         todos:[]
       },
       dailyTodoList:{
-        todos:[]
+        todos:[],
+        meta:{
+          addedRoutine: false
+        }
       },
       routineList:{},
       dataRecieved: false,
@@ -115,7 +118,6 @@ export default {
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
       this.setRoutineList()
-      
     }
   },
   created: function(){
@@ -203,7 +205,7 @@ export default {
     logout:function(){
       this.$emit('logout')
     },
-    createNewTodoObject: function(title,status){
+    createNewTodoObject: function(title,status,todoSrc){
       let newTodoItem = {
         title: title,
         descriptopn:'',
@@ -212,6 +214,7 @@ export default {
         creationTime: `${this.parsedCurrentDateInHyphen}`,
         dueTime:`${this.parsedDisplayDateInHyphen}`,
         color: '',
+        src: todoSrc
       }
       return newTodoItem
     },
@@ -248,7 +251,10 @@ export default {
     updateMainTodoList:function(callbackFunc){
       let v = this
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-        {todos: v.dailyTodoList.todos}
+        {
+          todos: v.dailyTodoList.todos,
+          meta: v.dailyTodoList.meta
+        }
       ).then(callbackFunc)
     },
     updateBacklogTodoList:function(callbackFunc){
@@ -260,7 +266,7 @@ export default {
     },
     addTodo: function(val){
       let v = this
-      this.dailyTodoList.todos.push(v.createNewTodoObject(val,1))
+      this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
       this.updateMainTodoList(
         this.$refs.TodoMain.showSuccessSnackbar(`"${val}" added.`)
       )
@@ -412,16 +418,23 @@ export default {
         } else{
           console.log('Steps: No routine doc found.')
         }
+        this.dailyTodoList.meta.addedRoutine = true
+        v.updateMainTodoList()
         v.routineDataRecieved = true
       }).catch(function(err){
         console.log(err)
       })      
     },
     setDailyRoutine(routineList){
-      for(let i = 0; i < routineList.list.length; i++){
-        if(routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0){
-          console.log(routineList.list[i].title)
+      let v = this
+      if(this.dailyTodoList.meta.addedRoutine == false){
+        for(let i = 0; i < routineList.list.length; i++){
+          if(routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0){
+            this.dailyTodoList.todos.push(v.createNewTodoObject(routineList.list[i].title,1,'routine'))
+          }
         }
+      }else{
+        console.log('Routine Added')
       }
     },
   }
