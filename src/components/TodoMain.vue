@@ -2,7 +2,7 @@
   <v-card elevation="4" min-height="500">
     <v-container>
       <h1 class="headline my-2">Todos</h1>
-      <ul v-show="dataRecieved" ref="mainTodoUl">
+      <ul v-show="mainTodoListRecieved" ref="mainTodoUl">
         <draggable 
         :list='dailyTodoList.todos' 
         handle=".dragIndicator"
@@ -30,14 +30,14 @@
               ></li>
         </draggable>
       </ul>
-      <p v-if="rederedTodoItemCount == 0 && dataRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
-      <v-progress-linear indeterminate color="#888" v-show="!dataRecieved"></v-progress-linear>
+      <p v-if="rederedTodoItemCount == 0 && mainTodoListRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
+      <v-progress-linear indeterminate color="#888" v-show="!mainTodoListRecieved"></v-progress-linear>
       <AddTodoForm 
         @addTodo="addTodo"
         @addTodoFail="showErrorSnackbar"
         @toggleAddTodo="toggleAddTodo"
         ref="AddTodoForm"
-        v-if="dataRecieved"
+        v-if="mainTodoListRecieved"
       ></AddTodoForm>
       <v-snackbar v-model="showSnackbar" :timeout="2000" :color="snackbarColor">
         {{snackbarMessage}}
@@ -61,7 +61,7 @@ export default {
     'activeElement',
     'backlog',
     'dailyTodoList',
-    'dataRecieved'
+    'mainTodoListRecieved'
   ],
   components:{
     TodoItem,

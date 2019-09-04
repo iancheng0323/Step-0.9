@@ -19,7 +19,7 @@
                   :activeElement="activeElement"
                   :backlog="backlog"
                   :dailyTodoList="dailyTodoList"
-                  :dataRecieved="dataRecieved"
+                  :mainTodoListRecieved="mainTodoListRecieved"
                   @addTodo="addTodo"
                   @editTodo="editTodo"
                   @changeStatus="changeStatus"
@@ -101,34 +101,44 @@ export default {
         }
       },
       routineList:{},
-      dataRecieved: false,
+      mainTodoListRecieved: false,
       routineDataRecieved: false,
+      backlogRecieved:false,
+      addedRoutine:false,
     }
   },
   computed: {
   },
   watch: {
     parsedDisplayDateInHyphen(){
-      this.dataRecieved = false
+      this.mainTodoListRecieved = false
+      this.dailyTodoList.meta.addedRoutine = false
       this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
+      if(this.routineDataRecieved){
+        this.addRoutineToDailyTodoList()
+      }
     },
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
       this.setRoutineList()
-    }
-  },
-  created: function(){
-    this.currentDate = new Date()
-    this.currentWeekdayIndex = this.currentDate.getDay()    
-    this.displayDate = new Date()
-    this.setDates()
-    let v = this
-    document.body.addEventListener('mouseup',function(){
-        v.activeElement = document.activeElement.tagName
-    })
+    },
+    routineDataRecieved(){
+      // if(this.routineDataRecieved){
+        this.addRoutineToDailyTodoList()
+      // }else{
+      //   console.log('routineDataRecieved == false')
+      // }
+    },
+    addedRoutine(){
+      if(this.routineDataRecieved){
+        this.addRoutineToDailyTodoList()
+      }else{
+        console.log('addedRoutine == false')
+      }
+    },
   },
   methods:{
     changeDate:function(val){
@@ -223,11 +233,11 @@ export default {
       let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date)
       dbRef.get().then(function(doc){
         if(doc.exists && doc.data().todos){
-          v.dailyTodoList = doc.data()
+          v.dailyTodoList.todos = doc.data().todos
         } else{
           console.log('No doc found.')
         }
-        v.dataRecieved = true
+        v.mainTodoListRecieved = true
       }).catch(function(err){
         console.log(err)
       })
@@ -239,17 +249,17 @@ export default {
         if(doc.exists && doc.data().todos){
           console.log('found backlog')
           v.backlog = doc.data()
-          // console.log(v.dailyTodoList)
         } else{
           console.log('No backlog doc found.')
         }
       }).catch(function(err){
         console.log(err)
       })
-      v.dataRecieved = true
+      v.backlogRecieved = true
     },
     updateMainTodoList:function(callbackFunc){
       let v = this
+      this.dailyTodoList.meta.addedRoutine = this.addedRoutine
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
         {
           todos: v.dailyTodoList.todos,
@@ -414,30 +424,39 @@ export default {
       dbRef.get().then(function(doc){
         if(doc.exists && doc.data().list){
           v.routineList = doc.data()
-          v.setDailyRoutine(v.routineList)
-        } else{
+          v.routineDataRecieved = true
+        }else{
           console.log('Steps: No routine doc found.')
         }
-        this.dailyTodoList.meta.addedRoutine = true
-        v.updateMainTodoList()
-        v.routineDataRecieved = true
       }).catch(function(err){
         console.log(err)
-      })      
+      })
     },
-    setDailyRoutine(routineList){
+    addRoutineToDailyTodoList(){
       let v = this
-      if(this.dailyTodoList.meta.addedRoutine == false){
-        for(let i = 0; i < routineList.list.length; i++){
-          if(routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0){
-            this.dailyTodoList.todos.push(v.createNewTodoObject(routineList.list[i].title,1,'routine'))
+      if(this.dailyTodoList.meta.addedRoutine){
+        console.log('this.dailyTodoList.meta.addedRoutine')
+      }else{
+        for(let i = 0; i < this.routineList.list.length; i++){
+          if(this.routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0){
+            this.dailyTodoList.todos.push(v.createNewTodoObject(this.routineList.list[i].title,1,'routine'))
           }
         }
-      }else{
-        console.log('Routine Added')
+        this.addedRoutine = true
+        // this.updateMainTodoList()
       }
     },
-  }
+  },
+  created: function(){
+    this.currentDate = new Date()
+    this.currentWeekdayIndex = this.currentDate.getDay()    
+    this.displayDate = new Date()
+    this.setDates()
+    let v = this
+    document.body.addEventListener('mouseup',function(){
+        v.activeElement = document.activeElement.tagName
+    })
+  },
 }
 </script>
 
