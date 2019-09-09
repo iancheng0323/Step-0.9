@@ -116,29 +116,18 @@ export default {
       this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
-      if(this.routineDataRecieved){
-        this.addRoutineToDailyTodoList()
-      }
+      
     },
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
       this.setRoutineList()
     },
-    routineDataRecieved(){
-      // if(this.routineDataRecieved){
+    mainTodoListRecieved(){
+      if(this.mainTodoListRecieved){
         this.addRoutineToDailyTodoList()
-      // }else{
-      //   console.log('routineDataRecieved == false')
-      // }
-    },
-    addedRoutine(){
-      if(this.routineDataRecieved){
-        this.addRoutineToDailyTodoList()
-      }else{
-        console.log('addedRoutine == false')
       }
-    },
+    }
   },
   methods:{
     changeDate:function(val){
@@ -235,7 +224,7 @@ export default {
         if(doc.exists && doc.data().todos){
           v.dailyTodoList.todos = doc.data().todos
         } else{
-          console.log('No doc found.')
+          console.log('No Todo list found.')
         }
         v.mainTodoListRecieved = true
       }).catch(function(err){
@@ -435,15 +424,25 @@ export default {
     addRoutineToDailyTodoList(){
       let v = this
       if(this.dailyTodoList.meta.addedRoutine){
-        console.log('this.dailyTodoList.meta.addedRoutine')
+        console.log('Routines for today are already added.')
       }else{
+        // console.log('run')
         for(let i = 0; i < this.routineList.list.length; i++){
-          if(this.routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0){
-            this.dailyTodoList.todos.push(v.createNewTodoObject(this.routineList.list[i].title,1,'routine'))
+          let isOn = this.routineList.list[i].status
+          let isToday = this.routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0
+          console.log(i,isOn,isToday)
+          if( isOn && isToday){
+            this.dailyTodoList.todos.push(v.createNewTodoObject(
+              this.routineList.list[i].title,
+              1,
+              'routine'))
+              console.log(i,'added')
           }
+        // console.log('run')
+        // console.log(this.routineList.list[i])
+
         }
         this.addedRoutine = true
-        // this.updateMainTodoList()
       }
     },
   },
