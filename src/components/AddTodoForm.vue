@@ -14,7 +14,8 @@
                         placeholder="Write Your Todo"
                         autocomplete="off"
                         @blur="isAddingTodo = false"
-                        @click:clear="isAddingTodo = false"                        
+                        @click:clear="isAddingTodo = false"    
+                        @keydown.esc="isAddingTodo = false"
                         hint="Press Enter To Add Todo"
                     ></v-text-field>
                 </v-flex>
@@ -40,11 +41,11 @@ export default {
     },
     methods:{
         addTodo: function(){
-            if(this.inputMessage.length>0){
+            if(this.inputMessage.trim().length>0){
                 this.$emit('addTodo',this.inputMessage)
                 this.inputMessage = ''
             }else{
-                this.$emit('addTodoFail','Empty Input')
+                this.$emit('addTodoFail',[2,'Invalid Input'])
             }
         },
         toggleAddTodo: function(){

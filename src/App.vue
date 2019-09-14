@@ -4,6 +4,7 @@
       <router-view 
       @signInWithGoogle="signInWithGoogle"
       @logout="logout"
+      @showSnackbar="showSnackbar"
       :auth="auth"
       :userName="userName"
       :userEmail="userEmail"
@@ -24,12 +25,13 @@
             :key="index"
             link
             :to="item.link"
+            active-class="activated"
             >
             <v-list-item-icon left>
-                  <v-icon :size="item.fontSize">{{item.iconText}}</v-icon>
+                  <v-icon :size="item.fontSize" class="menuIcon">{{item.iconText}}</v-icon>
                 </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-uppercase font-weight-medium">
+                <v-list-item-title class="text-uppercase font-weight-medium menuTitle">
                   {{item.title}}
                 </v-list-item-title>
               </v-list-item-content>
@@ -39,7 +41,9 @@
         <v-btn text icon absolute bottom class="mb-10 toggleNav" @click="toggleNav"><v-icon :class="{rotate180:minNav}">chevron_left</v-icon></v-btn>
         </v-container>
       </v-navigation-drawer>
-      
+      <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
+        {{snackbarMessage}}
+      </v-snackbar>
   </v-app>
 </template>
 
@@ -58,7 +62,7 @@ export default {
       userEmail: String,
       uid: 0,
       token: 0,
-      minNav: true,
+      minNav: false,
       listItem: [
         {
           title: 'Step',
@@ -85,6 +89,9 @@ export default {
           fontSize: '24'
         },
       ],
+      snackbarMessage: '',
+      snackbarControl: false,
+      snackbarColor: '',
     }
   },
   computed:{
@@ -146,7 +153,23 @@ export default {
     },
     toggleNav:function(){
       this.minNav = !this.minNav
-    }
+    },
+    showSnackbar(res){
+      let snackbarType = res[0]
+      let message = res[1]
+      switch (snackbarType){
+        case 0: //success
+          this.snackbarColor = 'success'
+          break
+        case 1: //error
+          this.snackbarColor = 'error'
+          break
+        default: //neutral
+          this.snackbarColor = ''
+      }
+      this.snackbarMessage = message
+      this.snackbarControl = true
+    },
   },
   created:function(){
     let v = this
@@ -172,12 +195,21 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 #App {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 .rotate180{
   transform: rotateZ(180deg)
+}
+.activated{
+  .menuIcon{
+    color:#EC407A!important;
+    
+  }
+  .menuTitle{
+    color: #EC407A;
+  }
 }
 </style>

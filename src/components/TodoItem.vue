@@ -20,7 +20,13 @@
             <v-icon size="22" color="grey" class="uncheckedCheckbox" v-show="status == 1">check_circle_outline</v-icon>
             <v-icon size="22" color="#81C784" class="checkedCheckbox" v-if="status == 2">check</v-icon>
             </v-btn>
-            <input class="todoTitle" :value="title" @input="editTodo">
+            <input 
+            class="todoTitle"
+            :value="title" 
+            @input="editTodo"
+            ref="todoTitleInput"
+            @keydown.esc="blurInput"
+            @keydown.enter="blurInput">
             <v-btn
             x-small
             right
@@ -60,11 +66,11 @@
                 >
                     No
                 </v-btn>
-
                 <v-btn
                     color="red darken-1"
                     text
                     @click="deleteTodo"
+                    ref="deleteButton"
                 >
                     Delete
                 </v-btn>
@@ -166,13 +172,19 @@ export default {
         moveToToday:function(){
             this.actionMenu = false
             this.$emit('moveToToday',[this.todoID,this.title])
-        }
+        },
+        blurInput(){
+            this.$refs.todoTitleInput.blur()
+        },
     },
     watch:{
         activeElement: function(newVal){
             if(this.actionMenu && newVal == 'BODY'){
                 this.actionMenu = false
             }
+        },
+        deletePop(){
+            this.$nextTick(() => this.$refs.deleteButton.$el.focus())
         }
     }
 }
@@ -200,10 +212,11 @@ li{
     width:100%;
     display:block;
     padding-left:26px;
-    border-bottom: 1px solid rgba(0,0,0,0);
+    border-bottom: 2px solid rgba(255,255,255,0);
+    font-size: 18px;
     &:focus{
         outline: none;
-        border-bottom: 1px solid rgba(0,0,0,0.2);
+        border-bottom: 2px solid #80CBC4;
     }
 }
 .todo .todoTitle{

@@ -34,14 +34,11 @@
       <v-progress-linear indeterminate color="#888" v-show="!mainTodoListRecieved"></v-progress-linear>
       <AddTodoForm 
         @addTodo="addTodo"
-        @addTodoFail="showErrorSnackbar"
+        @addTodoFail="showAddTodoFailSnackbar"
         @toggleAddTodo="toggleAddTodo"
         ref="AddTodoForm"
         v-if="mainTodoListRecieved"
       ></AddTodoForm>
-      <v-snackbar v-model="showSnackbar" :timeout="2000" :color="snackbarColor">
-        {{snackbarMessage}}
-      </v-snackbar>
     </v-container>
   </v-card>
 </template>
@@ -72,9 +69,6 @@ export default {
     return{
       inputMsg:'',
       rawTodoList: [],
-      snackbarMessage: '',
-      showSnackbar: false,
-      snackbarColor: '',
       rederedTodoItemCount: 0,
     }
   },
@@ -106,21 +100,6 @@ export default {
     toggleAddTodo: function(){
       this.isAddingTodo = !this.isAddingTodo
     },
-    showSuccessSnackbar:function(message){
-      this.snackbarMessage = message
-      this.snackbarColor = 'success'
-      this.showSnackbar = true
-    },
-    showNeutralSnackbar:function(message){
-      this.snackbarMessage = message
-      this.snackbarColor = ''
-      this.showSnackbar = true
-    },
-    showErrorSnackbar: function(message){
-      this.snackbarMessage = message
-      this.snackbarColor = 'error'
-      this.showSnackbar = true
-    },
     countRenderedTodoItem: function(){
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     },
@@ -135,6 +114,9 @@ export default {
     },
     dragTodo:function(){
       this.$emit('dragTodo')
+    },
+    showAddTodoFailSnackbar(res){
+      this.$emit('showSnackbar',res)
     },
   },
   updated:function(){

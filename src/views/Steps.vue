@@ -52,11 +52,6 @@
       <v-btn @click="logout" text right bottom absolute class="ma-4" color="grey">
         Logout <v-icon class="ml-2" small>fa-sign-out-alt</v-icon>
       </v-btn>
-        <!-- <template v-slot:append>
-        <div class="pa-2">
-          <v-btn block>Logout</v-btn>
-        </div>
-      </template> -->
     </v-container>
     
 </template>
@@ -90,6 +85,7 @@ export default {
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
       currentWeekdayIndex:0,
+      displayWeekdayIndex:0,
       activeElement: '',
       backlog:{
         todos:[]
@@ -116,18 +112,16 @@ export default {
       this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
-      
     },
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
-      this.setRoutineList()
     },
-    mainTodoListRecieved(){
-      if(this.mainTodoListRecieved){
-        this.addRoutineToDailyTodoList()
-      }
-    }
+    // mainTodoListRecieved(){
+    //   if(this.mainTodoListRecieved){
+    //     this.setRoutineList()
+    //   }
+    // }
   },
   methods:{
     changeDate:function(val){
@@ -139,6 +133,7 @@ export default {
       this.parsedCurrentDateInHyphen = this.parseDateInHyphen(this.currentDate)
       this.parsedDisplayDateInSlash =  this.parseDateInSlash(this.displayDate)
       this.parsedDisplayDateInHyphen = this.parseDateInHyphen(this.displayDate)
+      this.displayWeekdayIndex = this.displayDate.getDay()
       this.datePickerValue = this.parseDateInHyphen(this.displayDate)
     },
     parseDateInHyphen: function(date){
@@ -222,7 +217,10 @@ export default {
       let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date)
       dbRef.get().then(function(doc){
         if(doc.exists && doc.data().todos){
-          v.dailyTodoList.todos = doc.data().todos
+          for(let i = 0; i<doc.data().todos.length; i++){
+            v.dailyTodoList.todos.push(doc.data().todos[i])
+            // console.log(`${doc.data().todos[i].title} added.`)
+          }
         } else{
           console.log('No Todo list found.')
         }
@@ -267,7 +265,7 @@ export default {
       let v = this
       this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
       this.updateMainTodoList(
-        this.$refs.TodoMain.showSuccessSnackbar(`"${val}" added.`)
+        this.$emit('showSnackbar',[0,`📝 "${val}" added.`])
       )
     },
     editTodo: function(res){
@@ -281,13 +279,17 @@ export default {
       let toStatus = res[1]
       this.dailyTodoList.todos[todoID].status = toStatus
       this.updateMainTodoList()
+      if(toStatus == 2){ //status == 2 means is done state
+        this.$emit('showSnackbar',[0,'✅ Nice job completing this task!'])
+      }
     },
     deleteTodo: function(res){
       let todoID = res[0]
       let title = res[1]
       this.dailyTodoList.todos[todoID].status = 0
       this.updateMainTodoList(
-        this.$refs.TodoMain.showNeutralSnackbar(`"${title}" Deleted.`)
+        this.$emit('showSnackbar',[3,`🗑 "${title}" is deleted.`])
+
       )
     },
     moveToBacklog:function(res){
@@ -301,7 +303,7 @@ export default {
       // update changes to firebase
       this.updateBacklogTodoList()
       this.updateMainTodoList(
-        this.$refs.TodoMain.showSuccessSnackbar(`"${title}" moved to backlog.`)
+        this.$emit('showSnackbar',[0,`"${title}" moved to backlog.`])
       )
     },
     moveToDate: function(res){
@@ -327,7 +329,7 @@ export default {
           v.dailyTodoList.todos[todoID].status = 3
           //update to firebase
           v.updateMainTodoList(
-            v.$refs.TodoMain.showSuccessSnackbar(`${title} moved to ${toDate}.`)
+            v.$emit('showSnackbar',[0,`${title} moved to ${toDate}.`])
           )
       }).catch(function(err){
         console.log(err)
@@ -361,7 +363,7 @@ export default {
           v.dailyTodoList.todos[todoID].status = 3
           //update to firebase
           v.updateMainTodoList(
-            v.$refs.TodoMain.showSuccessSnackbar(`${title} moved to ${v.parsedCurrentDateInHyphen}.`)
+            v.$emit('showSnackbar',[0,`${title} moved to ${v.parsedCurrentDateInHyphen}.`])            
           )
       }).catch(function(err){
         console.log(err)
@@ -414,6 +416,7 @@ export default {
         if(doc.exists && doc.data().list){
           v.routineList = doc.data()
           v.routineDataRecieved = true
+          v.addRoutineToDailyTodoList()
         }else{
           console.log('Steps: No routine doc found.')
         }
@@ -426,23 +429,19 @@ export default {
       if(this.dailyTodoList.meta.addedRoutine){
         console.log('Routines for today are already added.')
       }else{
-        // console.log('run')
         for(let i = 0; i < this.routineList.list.length; i++){
           let isOn = this.routineList.list[i].status
-          let isToday = this.routineList.list[i].weeklyRoutine.indexOf(this.currentWeekdayIndex) >= 0
+          let isToday = this.routineList.list[i].weeklyRoutine.indexOf(this.displayWeekdayIndex) >= 0
           console.log(i,isOn,isToday)
           if( isOn && isToday){
             this.dailyTodoList.todos.push(v.createNewTodoObject(
               this.routineList.list[i].title,
               1,
               'routine'))
-              console.log(i,'added')
           }
-        // console.log('run')
-        // console.log(this.routineList.list[i])
-
         }
-        this.addedRoutine = true
+        this.dailyTodoList.meta.addedRoutine = true
+        // this.updateMainTodoList()
       }
     },
   },
