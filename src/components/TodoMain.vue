@@ -1,15 +1,16 @@
 <template>
-  <v-card elevation="4" min-height="500">
-    <v-container>
-      <h1 class="headline my-2">Todos</h1>
-      <ul v-show="mainTodoListRecieved" ref="mainTodoUl">
+  <v-card min-height="500" class="pb-12">
+    <v-container class="px-0">
+      <!-- <h1 class="headline my-2">Todos</h1> -->
+      <ul v-show="mainTodoListRecieved" class="mt-2" ref="mainTodoUl">
         <draggable 
         :list='dailyTodoList.todos' 
         handle=".dragIndicator"
         ghost-class="ghost"
         drag-class="sortable-drag"
         chosen-Class = "sortable-chosen"
-        @end="dragTodo">
+        @end="dragTodo"
+        >
           <li is="TodoItem" 
               v-for="(todo,index) in dailyTodoList.todos" 
               :title="todo.title"
@@ -32,6 +33,8 @@
       </ul>
       <p v-if="rederedTodoItemCount == 0 && mainTodoListRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
       <v-progress-linear indeterminate color="#888" v-show="!mainTodoListRecieved"></v-progress-linear>
+    </v-container>
+    <v-container>
       <AddTodoForm 
         @addTodo="addTodo"
         @addTodoFail="showAddTodoFailSnackbar"
@@ -40,6 +43,17 @@
         v-if="mainTodoListRecieved"
       ></AddTodoForm>
     </v-container>
+    <div class="bottomHint">
+      <span class="progressHint" v-if="doneItemCount == totalItemCount && totalItemCount != 0">
+        <!-- <v-icon size="12" color="#4CAF50" class="progressHintIcon">favorite</v-icon>  -->
+        🎉 Congratulations! You've finished your todos for today.
+      </span>
+      <span class="progressHint" v-else>
+        {{doneItemCount}}/{{totalItemCount}} Done 
+        <span v-if="totalItemCount != 0">({{Math.floor((doneItemCount/totalItemCount) * 100)}}%)</span>
+      </span>
+      </div>
+    <!-- <v-sheet color="red">s</v-sheet> -->
   </v-card>
 </template>
 
@@ -68,7 +82,6 @@ export default {
   data: function(){
     return{
       inputMsg:'',
-      rawTodoList: [],
       rederedTodoItemCount: 0,
     }
   },
@@ -77,6 +90,26 @@ export default {
     }
   },
   computed:{
+    doneItemCount(){
+      let count = 0
+      let todoList = this.dailyTodoList.todos
+      for(let i=0;i<todoList.length;i++){
+        if(todoList[i].status == 2){ //status == 2 indicate checked
+          count += 1
+        }
+      }
+      return count
+    },
+    totalItemCount(){
+      let count = 0
+      let todoList = this.dailyTodoList.todos
+      for(let i=0;i<todoList.length;i++){
+        if(todoList[i].status == 2 || todoList[i].status == 1){ //status == 1 indicate un-checked, 2 indicates checked
+          count += 1
+        }
+      }
+      return count
+    },
   },
   created: function(){
   },
@@ -126,7 +159,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
 ul{
   margin-left: 0!important;
   padding-left: 0!important;
@@ -139,6 +172,23 @@ ul{
 }
 .sortable-chosen{
     background: rgba(12,120,120,0.2);
-
+}
+.bottomHint{
+  background: #ECEFF1;
+  position: absolute;
+  bottom:0;
+  right:0;
+  width:100%;
+  text-align: right;
+  padding-right:12px;
+  height:1.6rem;
+  line-height: 1.6rem;
+  .progressHint{
+    color:#1B5E20;
+    font-size: 0.8rem;
+  }
+  .progressHintIcon{
+    transform:translateY(-1px);
+  }
 }
 </style>

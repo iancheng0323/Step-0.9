@@ -1,12 +1,10 @@
 <template>
     <v-container relative>
-      <!-- <v-layout offset-md-2> -->
-        <DisplayDate  
+        <StepHeader  
           @changeDate="changeDate" 
           :key="displayDateKey"
           :parsedDisplayDateInSlash="parsedDisplayDateInSlash">
-        </DisplayDate>
-      <!-- </v-layout> -->
+        </StepHeader>
       <v-container grid-list-md>
           <v-layout>
               <v-flex md6>
@@ -49,16 +47,13 @@
               </v-flex>
           </v-layout>
       </v-container>
-      <v-btn @click="logout" text right bottom absolute class="ma-4" color="grey">
-        Logout <v-icon class="ml-2" small>fa-sign-out-alt</v-icon>
-      </v-btn>
     </v-container>
     
 </template>
 
 <script>
 import TodoMain from '../components/TodoMain.vue'
-import DisplayDate from '../components/DisplayDate.vue'
+import StepHeader from '../components/StepHeader.vue'
 import TodoSide from '../components/TodoSide.vue'
 import db from '../firebaseConfig.js'
 
@@ -73,7 +68,7 @@ export default {
   ],
   components:{
     TodoMain,
-    DisplayDate,
+    StepHeader,
     TodoSide,
   },
   data: function(){
@@ -149,6 +144,7 @@ export default {
       return `${yyyy}-${mm}-${dd}`
     },
     parseDateInSlash: function(date){
+      // eslint-disable-next-line
       let yyyy = date.getFullYear()
       let mm = String(date.getMonth() + 1) //January is 0!
       let dd = String(date.getDate())
@@ -158,7 +154,8 @@ export default {
       if(dd<10){
         dd = '0' + dd
       }
-      return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}`
+      // return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return all
+      return `${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return month, date, week day only
     },
     parseWeekDay: function(date){
       switch(date.getDay()){
@@ -181,23 +178,20 @@ export default {
     parseShortWeekDay: function(date){
       switch(date.getDay()){
         case 0:
-            return 'Sun'
+            return 'Sunday'
         case 1:
-            return 'Mon'
+            return 'Monday'
         case 2:
-            return 'Tue'
+            return 'Tuesday'
         case 3:
-            return 'Wed'
+            return 'Wednesday'
         case 4:
-            return 'Thu'
+            return 'Thursday'
         case 5:
-            return 'Fri'
+            return 'Friday'
         default:
-            return 'Sat'
+            return 'Saturday'
       }
-    },
-    logout:function(){
-      this.$emit('logout')
     },
     createNewTodoObject: function(title,status,todoSrc){
       let newTodoItem = {

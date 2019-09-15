@@ -32,6 +32,7 @@
             right
             absolute
             icon
+            tile
             :ripple="false"
             class="moreIcon"
             @click="toggleActionMenu"
@@ -105,9 +106,9 @@ export default {
     computed:{
         todoStatus:function(){
             if( this.status == 1 ){
-                return 'todo todoItem'
+                return 'todo todoItem pl-2'
             }else{
-                return 'done todoItem'
+                return 'done todoItem pl-2'
             }
         },
         todoColor:function(){
@@ -229,7 +230,7 @@ li{
     transition: 0.1s;
 }
 .done .todoTitle:focus{
-    background: rgba(0,0,0,0.02);
+    // background: rgba(0,0,0,0.02);
 }
 .done .todoMarkBox{
     outline-color: transparent!important;
@@ -237,15 +238,18 @@ li{
 .moreIcon{
     opacity: 0;
     transition:0.05s;
-    top:0;
+    top:3px;
     // &:focus{
     //     opacity: 1;
     // }
 }
 .todoItem{
-    border-radius: 6px;
+    // padding-top:6x;
+    // padding-bottom:1px;
+    // border-radius: 6px;
+    // border-bottom:solid 1px rgba(0,0,0,0.02);
     &:hover{
-        background-color: rgba(0,0,0,0.01);
+        background-color: rgba(0,0,0,0.02);
         .moreIcon{
             opacity: 1;
         }
@@ -272,7 +276,7 @@ li{
 }
 .dragIndicator{
     cursor: grab;
-    left:-14px;
+    left:-2px;
     top:6px;
     opacity:0;
     transition:0.1s;

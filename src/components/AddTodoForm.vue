@@ -1,6 +1,6 @@
 <template>
     <v-form action="" @submit.prevent="addTodo()" lazy-validation>
-        <v-container v-if="isAddingTodo">
+        <v-container v-if="isAddingTodo" class="pt-0 mt-0">
             <v-layout row wrap>
                 <v-flex md12>
                     <v-text-field
@@ -21,8 +21,8 @@
                 </v-flex>
             </v-layout>
         </v-container>
-        <div v-if="!isAddingTodo" @click="isAddingTodo = true" class="pointer mt-8">
-            <v-icon>add_box</v-icon> click here to add new todo
+        <div v-if="!isAddingTodo" @click="isAddingTodo = true" class="pointer mt-4">
+            <v-icon>add_box</v-icon> Click here to add new todo
         </div>
     </v-form>
 </template>

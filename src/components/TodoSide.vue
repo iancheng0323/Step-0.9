@@ -1,5 +1,5 @@
 <template>
-    <v-card min-height="500" elevation="4">
+    <v-card min-height="500">
         <Calender
         :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"

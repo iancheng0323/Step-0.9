@@ -16,8 +16,10 @@
       permanent 
       app 
       :width="navWidth"
+      v-if="auth"
+      dark
       >
-        <v-container>
+        <!-- <v-container> -->
           <v-list>
           <v-list-item-group>
             <v-list-item
@@ -26,20 +28,30 @@
             link
             :to="item.link"
             active-class="activated"
+            nav
             >
             <v-list-item-icon left>
                   <v-icon :size="item.fontSize" class="menuIcon">{{item.iconText}}</v-icon>
                 </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title class="text-uppercase font-weight-medium menuTitle">
+                <v-list-item-title class="text-capitalize font-weight-medium menuTitle">
                   {{item.title}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
         </v-list>
-        <v-btn text icon absolute bottom class="mb-10 toggleNav" @click="toggleNav"><v-icon :class="{rotate180:minNav}">chevron_left</v-icon></v-btn>
-        </v-container>
+        <template v-slot:append>
+          <v-divider></v-divider>
+          <v-container>
+                <v-btn text block class="myAccountButton" to="account">
+                  <v-icon class="icon">account_circle</v-icon> My Account
+                </v-btn>
+                <!-- <v-btn text block class="myAccountButton" @click="toggleNav">
+                  <v-icon class="icon">chevron_left</v-icon> Show Less
+                </v-btn> -->
+          </v-container>
+        </template>
       </v-navigation-drawer>
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
@@ -153,6 +165,7 @@ export default {
     },
     toggleNav:function(){
       this.minNav = !this.minNav
+      console.log('s')
     },
     showSnackbar(res){
       let snackbarType = res[0]
@@ -205,11 +218,16 @@ export default {
 }
 .activated{
   .menuIcon{
-    color:#EC407A!important;
+    color:#009688!important;
     
   }
   .menuTitle{
-    color: #EC407A;
+    color: #009688;
+  }
+}
+.myAccountButton{
+  .icon{
+    margin-right:12px;
   }
 }
 </style>

@@ -18,6 +18,8 @@ import Login from './views/Login.vue'
 import Mountains from './views/Mountains.vue'
 import Numbers from './views/Numbers.vue'
 import Routines from './views/Routines.vue'
+import Account from './views/Account.vue'
+
 
 
 
@@ -51,6 +53,12 @@ const routes = [
     path: '/routines',
     name: 'Routines',
     component: Routines,
+    // props:[],
+  },
+  {
+    path: '/account',
+    name: 'Account',
+    component: Account,
     // props:[],
   },
 ]

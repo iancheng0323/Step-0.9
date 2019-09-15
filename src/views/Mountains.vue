@@ -1,12 +1,22 @@
 <template>
   <v-container>
-      <h1>Mountains - Under Development</h1>
+      <v-btn>
+        Add New
+      </v-btn>
+      <MountainCard>
+
+      </MountainCard>
   </v-container>
 </template>
 
 <script>
+import MountainCard from '../components/MountainCard.vue'
 export default {
-    name: 'Mountains'
+    name: 'Mountains',
+    components:{
+      MountainCard
+    },
+    
 
 }
 </script>
