@@ -4,13 +4,11 @@ import vuetify from './plugins/vuetify'
 import {firestorePlugin} from 'vuefire'
 import VueRouter from 'vue-router'
 
-Vue.use(vuetify)
+
 Vue.use(firestorePlugin)
 Vue.use(VueRouter)
 Vue.config.productionTip = false
-
-
-
+Vue.use(require('vue-shortkey'))
 
 //Router Setting
 import Steps from './views/Steps.vue'
@@ -19,9 +17,6 @@ import Mountains from './views/Mountains.vue'
 import Numbers from './views/Numbers.vue'
 import Routines from './views/Routines.vue'
 import Account from './views/Account.vue'
-
-
-
 
 
 const routes = [
