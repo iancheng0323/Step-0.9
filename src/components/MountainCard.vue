@@ -1,40 +1,46 @@
 <template>
-  <v-card max-width="400">
-        <v-card-title>
+  <v-card max-width="350" min-height="480">
+        <v-card-title class="cardTitle white--text" >
           {{title}}
+          <v-btn small text icon right absolute>
+              <v-icon color="white">more_horiz</v-icon>
+          </v-btn>
         </v-card-title>
         <v-divider></v-divider>
-        <ul ref="mountainUl">
-        <draggable 
-        :list='mountainItemList.todos' 
-        handle=".dragIndicator"
-        ghost-class="ghost"
-        drag-class="sortable-drag"
-        chosen-Class = "sortable-chosen"
-        @end="dragTodo">
-          <li is="TodoItem" 
-              v-for="(todo,index) in mountainItemList.todos" 
-              :title="todo.title"
-              :key="index" 
-              :status="todo.status"
-              :todoID="index"
-              :activeElement="activeElement"
-              :color="todo.color"
-              @changeStatus="changeStatus"
-              @editTodo="editTodo"
-              @deleteTodo="deleteTodo"
-              @moveToDate="moveToDate"
-              @paintColor="paintColor"
-              @moveToToday="moveToToday"
-              ></li>
-        </draggable>
-      </ul>
-      <AddTodoForm 
-        @addTodo="addTodo"
-        @addTodoFail="showAddTodoFailSnackbar"
-        @toggleAddTodo="toggleAddTodo"
-        ref="AddTodoForm"
-      ></AddTodoForm>
+        <v-container>
+            <h2 class="title">Header Title 1</h2>
+            <ul ref="mountainUl">
+                <draggable 
+                :list='mountainItemList.todos' 
+                handle=".dragIndicator"
+                ghost-class="ghost"
+                drag-class="sortable-drag"
+                chosen-Class = "sortable-chosen"
+                @end="dragTodo">
+                <li is="TodoItem" 
+                    v-for="(todo,index) in mountainItemList.todos" 
+                    :title="todo.title"
+                    :key="index" 
+                    :status="todo.status"
+                    :todoID="index"
+                    :activeElement="activeElement"
+                    :color="todo.color"
+                    @changeStatus="changeStatus"
+                    @editTodo="editTodo"
+                    @deleteTodo="deleteTodo"
+                    @moveToDate="moveToDate"
+                    @paintColor="paintColor"
+                    @moveToToday="moveToToday"
+                    ></li>
+                </draggable>
+            </ul>
+            <AddTodoForm 
+                @addTodo="addTodo"
+                @addTodoFail="showAddTodoFailSnackbar"
+                @toggleAddTodo="toggleAddTodo"
+                ref="AddTodoForm"
+            ></AddTodoForm>
+        </v-container>
     </v-card>
 </template>
 
@@ -108,6 +114,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.cardTitle{
+    background: purple;
+}
 
 </style>

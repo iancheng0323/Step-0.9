@@ -229,9 +229,6 @@ li{
     text-decoration: line-through;
     transition: 0.1s;
 }
-.done .todoTitle:focus{
-    // background: rgba(0,0,0,0.02);
-}
 .done .todoMarkBox{
     outline-color: transparent!important;
 }

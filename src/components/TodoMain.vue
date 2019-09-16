@@ -49,7 +49,7 @@
         🎉 Congratulations! You've finished your todos for today.
       </span>
       <span class="progressHint" v-else>
-        {{doneItemCount}}/{{totalItemCount}} Done 
+        💪{{doneItemCount}}/{{totalItemCount}} Done 
         <span v-if="totalItemCount != 0">({{Math.floor((doneItemCount/totalItemCount) * 100)}}%)</span>
       </span>
       </div>
@@ -181,7 +181,7 @@ ul{
   width:100%;
   text-align: right;
   padding-right:12px;
-  height:1.6rem;
+  height:1.8rem;
   line-height: 1.6rem;
   .progressHint{
     color:#1B5E20;

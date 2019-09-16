@@ -75,7 +75,7 @@
 
 <script>
 export default {
-    name: 'TodoItemActionMenu',
+    name: 'MountianItemActionMenu',
     props:[
         'status',
         'parsedDisplayDateInHyphen',
