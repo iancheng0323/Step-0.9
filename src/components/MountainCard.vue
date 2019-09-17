@@ -1,6 +1,6 @@
 <template>
   <v-card max-width="350" min-height="480">
-        <v-card-title class="cardTitle white--text" >
+        <v-card-title class="white--text" :style="{background:titleBackground}">
           {{title}}
           <v-btn small text icon right absolute>
               <v-icon color="white">more_horiz</v-icon>
@@ -8,7 +8,7 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-container>
-            <h2 class="title">Header Title 1</h2>
+            <!-- <h2 class="title">Header Title 1</h2> -->
             <ul ref="mountainUl">
                 <draggable 
                 :list='mountainItemList.todos' 
@@ -34,7 +34,9 @@
                     ></li>
                 </draggable>
             </ul>
-            <AddTodoForm 
+            <AddTodoForm
+                v-shortkey="['alt', 'n']"
+                @shortkey="toggleAddTodo()"
                 @addTodo="addTodo"
                 @addTodoFail="showAddTodoFailSnackbar"
                 @toggleAddTodo="toggleAddTodo"
@@ -59,6 +61,7 @@ export default {
     },
     data(){
         return{
+            titleBackground: 'purple',
             title: 'Mountain Title',
             activeElement: '',
             mountainItemList:{
@@ -66,12 +69,12 @@ export default {
                     {
                         title: 'something',
                         status: 1,
-                        color: '#ffffff'
+                        color: ''
                     },
                     {
                         title: 'something else',
                         status: 2,
-                        color: '#ffffff',
+                        color: ''
                     },
                 ],
                 meta:{},
@@ -80,23 +83,50 @@ export default {
         }
     },
     methods:{
-        addTodo(){
-            console.log('Add Todo')
+        createNewTodoObject: function(title,status,todoSrc){
+            let newTodoItem = {
+                title: title,
+                descriptopn:'',
+                status: status,
+                creationTimeStamp: Date.now(),
+                creationTime: `${this.parsedCurrentDateInHyphen}`,
+                dueTime:`${this.parsedDisplayDateInHyphen}`,
+                color: '',
+                src: todoSrc
+            }
+            return newTodoItem
+        },
+        addTodo(res){
+            let v = this
+            this.mountainItemList.todos.push(
+               v.createNewTodoObject(
+                   res, //title
+                   1, //status
+                   'mountain', //todoSrc
+               ) 
+            )
+            this.$emit('addTodo',res)
         },
         changeStatus(res){
-            console.log(res)
+            let todoID = res[0]
+            let toStatus = res[1]
+            this.mountainItemList.todos[todoID].status = toStatus
         },
         editTodo(){
             console.log('editTodo')
         },
-        deleteTodo(){
-            console.log('deleteTodo')
+        deleteTodo(res){
+            let todoID = res[0]
+            // let title = res[1]
+            this.mountainItemList.todos[todoID].status = 0
         },
         moveToDate(){
             console.log('moveToDate')
         },
-        paintColor(){
-            console.log('paintColor')
+        paintColor(res){
+            let todoID = res[0]
+            let color = res[1]
+            this.mountainItemList.todos[todoID].color = color
         },
         moveToToday(){
             console.log('moveToToday')
@@ -115,8 +145,6 @@ export default {
 </script>
 
 <style lang="scss">
-.cardTitle{
-    background: purple;
-}
+
 
 </style>

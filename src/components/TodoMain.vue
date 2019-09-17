@@ -31,7 +31,7 @@
               ></li>
         </draggable>
       </ul>
-      <p v-if="rederedTodoItemCount == 0 && mainTodoListRecieved" class="grey--text">There's nothing to do on this day. <span class="font-weight-bold">Yet.</span></p>
+      <p v-if="totalItemCount == 0 && mainTodoListRecieved" class="ml-4 grey--text">Create Your First Item For Today.</p>
       <v-progress-linear indeterminate color="#888" v-show="!mainTodoListRecieved"></v-progress-linear>
     </v-container>
     <v-container>
@@ -191,4 +191,5 @@ ul{
     transform:translateY(-1px);
   }
 }
+
 </style>

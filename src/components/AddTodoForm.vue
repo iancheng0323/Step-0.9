@@ -3,8 +3,6 @@
     action="" 
     @submit.prevent="addTodo()" 
     lazy-validation
-    v-shortkey="['alt', 'n']"
-    @shortkey="toggleAddTodo()"
     >
         <v-container v-if="isAddingTodo" class="pt-0 mt-0">
             <v-layout row wrap>

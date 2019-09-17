@@ -2,7 +2,8 @@
   <v-container>
     <MountainHeader></MountainHeader>
     <v-container>
-      <MountainCard>
+      <MountainCard
+      @addTodo="addTodo">
       </MountainCard>
     </v-container>
   </v-container>
@@ -17,8 +18,12 @@ export default {
       MountainCard,
       MountainHeader
     },
-    
+    methods:{
+      addTodo(res){
+        console.log(res)
+      },
 
+    },
 }
 </script>
 
