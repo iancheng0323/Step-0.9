@@ -51,6 +51,12 @@
       <span class="progressHint" v-else>
         💪{{doneItemCount}}/{{totalItemCount}} Done 
         <span v-if="totalItemCount != 0">({{Math.floor((doneItemCount/totalItemCount) * 100)}}%)</span>
+        <span v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen"> | </span>
+        <a 
+        class="moveToTodayButton" 
+        href="javascript:void(0)" 
+        v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen">
+          📤 Move undones to next day(in-dev)</a>
       </span>
       </div>
     <!-- <v-sheet color="red">s</v-sheet> -->
@@ -189,6 +195,11 @@ ul{
   }
   .progressHintIcon{
     transform:translateY(-1px);
+  }
+  .moveToTodayButton{
+    font-size: 0.8rem;
+    text-decoration: none;
+    color:inherit;
   }
 }
 

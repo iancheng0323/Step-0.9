@@ -6,7 +6,7 @@
     </h1>
     <v-btn text @click="prevDay" class="grey--text text-capitalize" small>Previous Day</v-btn>
     <v-btn text @click="nextDay" class="grey--text text-capitalize" small>Next Day</v-btn>
-    <v-btn text @click="buckMoveToNextDay" class="grey--text text-capitalize" small>Move Un-done to Next Day (In Dev)</v-btn>
+    
     <v-divider class="mt-1"></v-divider>
 </v-container>
 </template>
@@ -28,10 +28,6 @@ export default {
             this.$emit('changeDate',1)
 
         },
-        buckMoveToNextDay(){
-            console.log('in Dev')
-        }
-
     },
     watch: {
     }
