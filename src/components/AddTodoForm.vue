@@ -26,7 +26,7 @@
             </v-layout>
         </v-container>
         <div v-if="!isAddingTodo" @click="isAddingTodo = true" class="pointer mt-4">
-            <v-icon>add_box</v-icon> Click here to add new todo
+            <v-icon>add_box</v-icon> Click or press ctrl + n to add new todo
         </div>
     </v-form>
 </template>

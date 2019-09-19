@@ -38,9 +38,10 @@
       <AddTodoForm 
         @addTodo="addTodo"
         @addTodoFail="showAddTodoFailSnackbar"
-        @toggleAddTodo="toggleAddTodo"
         ref="AddTodoForm"
         v-if="mainTodoListRecieved"
+        v-shortkey="['ctrl', 'n']" 
+        @shortkey.native="toggleAddTodo"
       ></AddTodoForm>
     </v-container>
     <div class="bottomHint">
@@ -54,12 +55,12 @@
         <span v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen"> | </span>
         <a 
         class="moveToTodayButton" 
-        href="javascript:void(0)" 
+        href="javascript:void(0)"
+        @click="buckMoveToToday"
         v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen">
           📤 Move undones to next day(in-dev)</a>
       </span>
       </div>
-    <!-- <v-sheet color="red">s</v-sheet> -->
   </v-card>
 </template>
 
@@ -137,7 +138,7 @@ export default {
       this.$emit('moveToBacklog',res)
     },
     toggleAddTodo: function(){
-      this.isAddingTodo = !this.isAddingTodo
+      this.$refs.AddTodoForm.isAddingTodo = !this.$refs.AddTodoForm.isAddingTodo
     },
     countRenderedTodoItem: function(){
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
@@ -157,10 +158,13 @@ export default {
     showAddTodoFailSnackbar(res){
       this.$emit('showSnackbar',res)
     },
+    buckMoveToToday(){
+      this.$emit('buckMoveToToday')
+    }
   },
   updated:function(){
     this.countRenderedTodoItem()
-  }
+  },
 }
 </script>
 

@@ -27,6 +27,7 @@
                   @paintColor="paintColor"
                   @moveToToday="moveToToday"
                   @dragTodo="dragTodo"
+                  @buckMoveToToday="buckMoveToToday"
                   >
                   </TodoMain>
               </v-flex>
@@ -99,6 +100,10 @@ export default {
     }
   },
   computed: {
+    unDoneTodo(){
+      let list = [1]
+      return list
+    }
   },
   watch: {
     parsedDisplayDateInHyphen(){
@@ -438,6 +443,9 @@ export default {
         // this.updateMainTodoList()
       }
     },
+    buckMoveToToday(){
+      console.log('in dev')
+    }
   },
   created: function(){
     this.currentDate = new Date()
