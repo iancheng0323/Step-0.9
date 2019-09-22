@@ -56,7 +56,7 @@
         <a 
         class="moveToTodayButton" 
         href="javascript:void(0)"
-        @click="buckMoveToToday"
+        @click="bulkMoveToToday"
         v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen">
           📤 Move undones to next day(in-dev)</a>
       </span>
@@ -158,8 +158,8 @@ export default {
     showAddTodoFailSnackbar(res){
       this.$emit('showSnackbar',res)
     },
-    buckMoveToToday(){
-      this.$emit('buckMoveToToday')
+    bulkMoveToToday(){
+      this.$emit('bulkMoveToToday')
     }
   },
   updated:function(){
