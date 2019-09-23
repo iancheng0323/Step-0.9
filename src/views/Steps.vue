@@ -108,6 +108,15 @@ export default {
         }
       }
       return list
+    },
+    unDoneTodoIndex(){
+      let list = []
+      for(let i = 0;i<this.dailyTodoList.todos.length;i++){
+        if(this.dailyTodoList.todos[i].status == 1){//status == 1 indicates undone todo
+          list.push(i)
+        }
+      }
+      return list
     }
   },
   watch: {
@@ -448,35 +457,37 @@ export default {
       }
     },
     bulkMoveToToday(){
-      let v = this
-      let holder = { todos: [] }
-      //get the todo list of the to-date
-      let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
-      currentDateDBRef.get().then(function(doc){
-        if(doc.exists && doc.data().todos){
-           holder = doc.data()
-           for(let i = 0; i<v.unDoneTodo.length; i++){
-              holder.todos.push(v.unDoneTodo[i])
-              // console.log(v.unDoneTodo[i])
-           }
-        } else{
-           for(let i = 0; i<v.unDoneTodo.length; i++){
-              holder.todos.push(v.unDoneTodo[i])             
-           }         
-        }
-        //update to firebase
-           currentDateDBRef.set({
-             todos: holder.todos
-           })
-          //set the todo to status 3
-          // v.dailyTodoList.todos[todoID].status = 3
-          //update to firebase
-          v.updateMainTodoList(
-            v.$emit('showSnackbar',[0,`Undone todos moved to today(wink)`])            
-          )
-      }).catch(function(err){
-        console.log(err)
-      })
+      console.log(this.unDoneTodoIndex)
+      // let v = this
+      // let holder = { todos: [] }
+      // //get the todo list of the to-date
+      // let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
+      // currentDateDBRef.get().then(function(doc){
+      //   if(doc.exists && doc.data().todos){
+      //      holder = doc.data()
+      //      for(let i = 0; i<v.unDoneTodo.length; i++){
+      //         holder.todos.push(v.unDoneTodo[i])
+      //         // console.log(v.unDoneTodo[i])
+      //      }
+      //   } else{
+      //      for(let i = 0; i<v.unDoneTodo.length; i++){
+      //         holder.todos.push(v.unDoneTodo[i])             
+      //      }         
+      //   }
+      //   //update to firebase
+      //      currentDateDBRef.set({
+      //        todos: holder.todos
+      //      })
+      //     //set the todo to status 3
+      //     console.log(v.unDoneTodoIndex)
+      //     // v.dailyTodoList.todos[todoID].status = 3
+      //     //update to firebase
+      //     v.updateMainTodoList(
+      //       v.$emit('showSnackbar',[0,`Undone todos moved to today 😉`])            
+      //     )
+      // }).catch(function(err){
+      //   console.log(err)
+      // })
     }
   },
   created: function(){
