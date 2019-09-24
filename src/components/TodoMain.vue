@@ -58,7 +58,7 @@
         href="javascript:void(0)"
         @click="bulkMoveToToday"
         v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen">
-          📤 Move undones to next day(in-dev)</a>
+          📤 Move undones to today</a>
       </span>
       </div>
   </v-card>

@@ -74,13 +74,13 @@ export default {
   },
   data: function(){
     return{
-      currentDate: 0,
+      // currentDate: 0,
       displayDate:0,
       displayDateKey: 0,
       parsedDisplayDateInSlash:0,
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
-      currentWeekdayIndex:0,
+      // currentWeekdayIndex:0,
       displayWeekdayIndex:0,
       activeElement: '',
       backlog:{
@@ -117,6 +117,12 @@ export default {
         }
       }
       return list
+    },
+    currentDate(){
+      return this.$store.state.currentDate
+    },
+    currentWeekdayIndex(){
+      return this.$store.state.currentWeekdayIndex
     }
   },
   watch: {
@@ -131,11 +137,6 @@ export default {
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
     },
-    // mainTodoListRecieved(){
-    //   if(this.mainTodoListRecieved){
-    //     this.setRoutineList()
-    //   }
-    // }
   },
   methods:{
     changeDate:function(val){
@@ -457,42 +458,43 @@ export default {
       }
     },
     bulkMoveToToday(){
-      console.log(this.unDoneTodoIndex)
-      // let v = this
-      // let holder = { todos: [] }
-      // //get the todo list of the to-date
-      // let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
-      // currentDateDBRef.get().then(function(doc){
-      //   if(doc.exists && doc.data().todos){
-      //      holder = doc.data()
-      //      for(let i = 0; i<v.unDoneTodo.length; i++){
-      //         holder.todos.push(v.unDoneTodo[i])
-      //         // console.log(v.unDoneTodo[i])
-      //      }
-      //   } else{
-      //      for(let i = 0; i<v.unDoneTodo.length; i++){
-      //         holder.todos.push(v.unDoneTodo[i])             
-      //      }         
-      //   }
-      //   //update to firebase
-      //      currentDateDBRef.set({
-      //        todos: holder.todos
-      //      })
-      //     //set the todo to status 3
-      //     console.log(v.unDoneTodoIndex)
-      //     // v.dailyTodoList.todos[todoID].status = 3
-      //     //update to firebase
-      //     v.updateMainTodoList(
-      //       v.$emit('showSnackbar',[0,`Undone todos moved to today 😉`])            
-      //     )
-      // }).catch(function(err){
-      //   console.log(err)
-      // })
+      let v = this
+      let holder = { todos: [] }
+      //get the todo list of the to-date
+      let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
+      currentDateDBRef.get().then(function(doc){
+        //push the undones to the list
+        if(doc.exists && doc.data().todos){
+           holder = doc.data()
+           for(let i = 0; i<v.unDoneTodo.length; i++){
+              holder.todos.push(v.unDoneTodo[i])
+              // console.log(v.unDoneTodo[i])
+           }
+        } else{
+           for(let i = 0; i<v.unDoneTodo.length; i++){
+              holder.todos.push(v.unDoneTodo[i])             
+           }         
+        }
+        //update to firebase
+           currentDateDBRef.set({
+             todos: holder.todos
+           })
+          //set the todo to status 3
+          for (let i = 0; i<v.unDoneTodoIndex.length; i++){
+            v.dailyTodoList.todos[v.unDoneTodoIndex[i]].status = 3
+          }
+          //update to firebase
+          v.updateMainTodoList(
+            v.$emit('showSnackbar',[0,`Undone todos moved to today 😉`])            
+          )
+      }).catch(function(err){
+        console.log(err)
+      })
     }
   },
   created: function(){
-    this.currentDate = new Date()
-    this.currentWeekdayIndex = this.currentDate.getDay()    
+    // this.currentDate = new Date()
+    // this.currentWeekdayIndex = this.currentDate.getDay()    
     this.displayDate = new Date()
     this.setDates()
     let v = this

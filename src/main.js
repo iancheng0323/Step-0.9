@@ -3,6 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import {firestorePlugin} from 'vuefire'
 import VueRouter from 'vue-router'
+import {store} from './store/store.js'
 
 
 Vue.use(firestorePlugin)
@@ -65,5 +66,6 @@ const router = new VueRouter({
 new Vue({
   vuetify,
   router,
+  store: store,
   render: h => h(App)
 }).$mount('#app')
