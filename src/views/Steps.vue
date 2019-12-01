@@ -74,13 +74,11 @@ export default {
   },
   data: function(){
     return{
-      // currentDate: 0,
       displayDate:0,
       displayDateKey: 0,
       parsedDisplayDateInSlash:0,
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
-      // currentWeekdayIndex:0,
       displayWeekdayIndex:0,
       activeElement: '',
       backlog:{
@@ -123,6 +121,9 @@ export default {
     },
     currentWeekdayIndex(){
       return this.$store.state.currentWeekdayIndex
+    },
+    backlog1(){
+      return this.$store.state.backlog
     }
   },
   watch: {
@@ -492,15 +493,14 @@ export default {
       })
     }
   },
-  created: function(){
-    // this.currentDate = new Date()
-    // this.currentWeekdayIndex = this.currentDate.getDay()    
+  created: function(){ 
     this.displayDate = new Date()
     this.setDates()
     let v = this
     document.body.addEventListener('mouseup',function(){
         v.activeElement = document.activeElement.tagName
     })
+    this.$store.dispatch('getBacklogFromFirebase')
   },
 }
 </script>

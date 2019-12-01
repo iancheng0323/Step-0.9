@@ -40,7 +40,7 @@
         @addTodoFail="showAddTodoFailSnackbar"
         ref="AddTodoForm"
         v-if="mainTodoListRecieved"
-        v-shortkey="['ctrl', 'n']" 
+        v-shortkey="['shift', 'n']" 
         @shortkey.native="toggleAddTodo"
       ></AddTodoForm>
     </v-container>
@@ -56,9 +56,9 @@
         <a 
         class="moveToTodayButton" 
         href="javascript:void(0)"
-        @click="bulkMoveToToday"
+        
         v-if="doneItemCount<totalItemCount && parsedCurrentDateInHyphen !=parsedDisplayDateInHyphen">
-          📤 Move undones to today</a>
+          📤 Move undones to today(in dev)</a>
       </span>
       </div>
   </v-card>

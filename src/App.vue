@@ -68,12 +68,6 @@ export default {
   name: 'app',
   data: function(){
     return{
-      auth: false,
-      user: Object,
-      userName: String,
-      userEmail: String,
-      uid: 0,
-      token: 0,
       minNav: false,
       listItem: [
         {
@@ -113,6 +107,18 @@ export default {
       }else{
         return("220")
       }
+    },
+    userName(){
+      return this.$store.state.userName
+    },
+    userEmail(){
+      return this.$store.state.userEmail
+    },
+    uid(){
+      return this.$store.state.uid
+    },
+    auth(){
+      return this.$store.state.auth
     }
   },
   methods: {
@@ -120,11 +126,8 @@ export default {
       let v = this
       firebase.auth().signInWithPopup(provider).then(function(result) {
           // This gives you a Google Access Token. You can use it to access the Google API.
-          v.token = result.credential.accessToken
+          v.$store.commit('setToken',{token:result.credential.accessToken})
           // The signed-in user info.
-          v.setUserDetail(result.user)
-          console.log(v.userName, v.userEmail)
-          // ...
           }).catch(function(error) {
           // Handle Errors here.
           var errorCode = error.code
@@ -138,7 +141,6 @@ export default {
       })
     },
     logout: function(){
-      // let v = this
       firebase.auth().signOut().then(function() {
         // Sign-out successful.
         console.log('signed out')
@@ -146,13 +148,6 @@ export default {
         // An error happened.
         console.log(error)
       })
-    },
-    setUserDetail: function(user){
-          // The signed-in user info.
-          this.user = user
-          this.userName = user.displayName
-          this.userEmail = user.email
-          this.uid = user.uid
     },
     redirect: function(){
       if(this.auth == false){
@@ -188,12 +183,14 @@ export default {
     let v = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        v.auth = true
-        v.setUserDetail(user)
+        v.$store.commit('setAuth',{auth:true})
+        v.$store.commit('setUser',{
+          user: user
+        })
         console.log('Signed In')
         v.redirect()
       } else {
-        v.auth = false
+        v.$store.commit('setAuth',{auth:false})
         console.log('Enter page as non-user')
         v.redirect()
       }
@@ -201,9 +198,6 @@ export default {
     })
   },
   watch:{
-    // auth: function(){
-    //   this.redirect()
-    // }
   }
 }
 </script>
