@@ -11,7 +11,6 @@
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
         :activeElement="activeElement"
         :backlog="backlog"
-        @addBacklogItem="addBacklogItem"
         @editBacklogItem="editBacklogItem"
         @deleteBacklogItem="deleteBacklogItem"
         @moveBacklogItemToToday="moveBacklogItemToToday">
@@ -37,9 +36,6 @@ export default {
     methods:{
         changeDate(res){
             this.$emit('changeDate',res)
-        },
-        addBacklogItem(val){
-            this.$emit('addBacklogItem',val)
         },
         editBacklogItem(res){
             this.$emit('editBacklogItem',res)

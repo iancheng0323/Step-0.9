@@ -187,6 +187,7 @@ export default {
         v.$store.commit('setUser',{
           user: user
         })
+        v.$store.dispatch('getBacklogFromFirebase')
         console.log('Signed In')
         v.redirect()
       } else {

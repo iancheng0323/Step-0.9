@@ -53,9 +53,14 @@ export default {
     created: function(){
     },
     methods:{
-        addBacklogItem: function(val){
-            this.$emit('addBacklogItem',val)
-            this.$refs.AddTodoForm.isAddingTodo = false
+        addBacklogItem(title){
+            this.$store.dispatch('addBacklogItem',
+                {
+                    title: title,
+                    status: 1, //status 1 indicate not-done
+                    src: 2
+                }
+            )
         },
         editBacklogItem: function(res){
             this.$emit('editBacklogItem',res)

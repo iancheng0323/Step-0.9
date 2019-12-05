@@ -39,7 +39,6 @@
                   :activeElement="activeElement"
                   :backlog="backlog"
                   @changeDate="changeDate"
-                  @addBacklogItem="addBacklogItem"
                   @editBacklogItem="editBacklogItem"
                   @deleteBacklogItem="deleteBacklogItem"
                   @moveBacklogItemToToday="moveBacklogItemToToday"
@@ -132,7 +131,9 @@ export default {
       this.dailyTodoList.meta.addedRoutine = false
       this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
-      this.setTodoListByDate(this.parsedDisplayDateInHyphen)
+      if(this.uid !== ''){
+        this.setTodoListByDate(this.parsedDisplayDateInHyphen)
+      }
     },
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
@@ -245,19 +246,7 @@ export default {
       })
     },
     setBacklogTodoList: function(){
-      let v= this
-      let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')      
-      backlogDbRef.get().then(function(doc){
-        if(doc.exists && doc.data().todos){
-          console.log('found backlog')
-          v.backlog = doc.data()
-        } else{
-          console.log('No backlog doc found.')
-        }
-      }).catch(function(err){
-        console.log(err)
-      })
-      v.backlogRecieved = true
+      this.$store.dispatch('getBacklogFromFirebase')
     },
     updateMainTodoList:function(callbackFunc){
       let v = this
@@ -270,11 +259,7 @@ export default {
       ).then(callbackFunc)
     },
     updateBacklogTodoList:function(callbackFunc){
-      let v = this
-      let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
-      backlogDbRef.set(
-        {todos: v.backlog.todos}
-      ).then(callbackFunc)
+      this.$store.dispatch('updateBacklogToFirebase')
     },
     addTodo: function(val){
       let v = this
@@ -384,42 +369,14 @@ export default {
         console.log(err)
       })
     },
-    addBacklogItem(title){
-      // let v = this
-      // create a new todo item in local backlog
-      let holder = this.createNewTodoObject(title, 3)
-      this.backlog.todos.push(holder)
-      // update changes to firebase
-      this.updateBacklogTodoList()
-    },
     editBacklogItem(res){
-      let todoID = res[0]
-      let editedTitle = res[1]
-      // edit local backlog todo
-      this.backlog.todos[todoID].title = editedTitle
-      // update changes to firebase
-      this.updateBacklogTodoList()
+      this.$store.dispatch('editBacklogItem')
     },
     deleteBacklogItem(res){
-      let todoID = res[0]
-      // delete local backlog object
-      this.backlog.todos.splice(todoID,1)
-      // update changes to firebase
-      this.updateBacklogTodoList()
+      this.$store.dispatch('deleteBacklogItem')
     },
     moveBacklogItemToToday(res){
-      let todoID = res[0]
-      // let title = res[1]
-      // set current local backlog item status to 1, due date to today
-      this.backlog.todos[todoID].status = 1
-      this.backlog.todos[todoID].dueDate = this.parsedDisplayDateInHyphen
-      // copy the todo item in local daily todo
-      this.dailyTodoList.todos.push(this.backlog.todos[todoID])
-      // delete current local backlog item 
-      this.backlog.todos.splice(todoID,1)
-      // update changes to firebase
-      this.updateBacklogTodoList()
-      this.updateMainTodoList()
+      this.$store.dispatch('moveBacklogItemToToday')
     },
     dragTodo(){
       this.updateMainTodoList()
@@ -500,7 +457,6 @@ export default {
     document.body.addEventListener('mouseup',function(){
         v.activeElement = document.activeElement.tagName
     })
-    this.$store.dispatch('getBacklogFromFirebase')
   },
 }
 </script>
