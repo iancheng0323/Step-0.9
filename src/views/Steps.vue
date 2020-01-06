@@ -3,19 +3,16 @@
         <StepHeader  
           @changeDate="changeDate" 
           :key="displayDateKey"
-          :parsedDisplayDateInSlash="parsedDisplayDateInSlash">
+          :displayDate="displayDate">
         </StepHeader>
       <v-container grid-list-md>
           <v-layout>
               <v-flex md6>
                   <TodoMain 
                   ref="TodoMain"
-                  :displayDate="displayDate" 
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                   :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-                  :uid="uid"
                   :activeElement="activeElement"
-                  :backlog="backlog"
                   :dailyTodoList="dailyTodoList"
                   :mainTodoListRecieved="mainTodoListRecieved"
                   @addTodo="addTodo"
@@ -37,7 +34,6 @@
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                   :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                   :activeElement="activeElement"
-                  :backlog="backlog"
                   @changeDate="changeDate"
                   @editBacklogItem="editBacklogItem"
                   @deleteBacklogItem="deleteBacklogItem"
@@ -73,9 +69,7 @@ export default {
   },
   data: function(){
     return{
-      displayDate:0,
       displayDateKey: 0,
-      parsedDisplayDateInSlash:0,
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
       displayWeekdayIndex:0,
@@ -121,9 +115,9 @@ export default {
     currentWeekdayIndex(){
       return this.$store.state.currentWeekdayIndex
     },
-    backlog1(){
-      return this.$store.state.backlog
-    }
+    displayDate(){
+      return this.$store.state.displayDate
+    },
   },
   watch: {
     parsedDisplayDateInHyphen(){
@@ -141,19 +135,17 @@ export default {
     },
   },
   methods:{
-    changeDate:function(val){
-      this.displayDate.setDate(this.displayDate.getDate() + val)
-      this.displayDateKey += 1
+    changeDate(){
+      this.displayDateKey += 1 //to force update the element in vue, this is a workaround
       this.setDates()
     },
-    setDates: function(){
+    setDates(){
       this.parsedCurrentDateInHyphen = this.parseDateInHyphen(this.currentDate)
-      this.parsedDisplayDateInSlash =  this.parseDateInSlash(this.displayDate)
       this.parsedDisplayDateInHyphen = this.parseDateInHyphen(this.displayDate)
       this.displayWeekdayIndex = this.displayDate.getDay()
       this.datePickerValue = this.parseDateInHyphen(this.displayDate)
     },
-    parseDateInHyphen: function(date){
+    parseDateInHyphen(date){
       let yyyy = date.getFullYear()
       let mm = String(date.getMonth() + 1) //January is 0!
       let dd = String(date.getDate())
@@ -164,56 +156,6 @@ export default {
         dd = '0' + dd
       }
       return `${yyyy}-${mm}-${dd}`
-    },
-    parseDateInSlash: function(date){
-      // eslint-disable-next-line
-      let yyyy = date.getFullYear()
-      let mm = String(date.getMonth() + 1) //January is 0!
-      let dd = String(date.getDate())
-      if(mm<10){
-        mm = '0' + mm
-      }
-      if(dd<10){
-        dd = '0' + dd
-      }
-      // return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return all
-      return `${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return month, date, week day only
-    },
-    parseWeekDay: function(date){
-      switch(date.getDay()){
-        case 0:
-            return 'Sunday'
-        case 1:
-            return 'Monday'
-        case 2:
-            return 'Tuesday'
-        case 3:
-            return 'Wednesday'
-        case 4:
-            return 'Thursday'
-        case 5:
-            return 'Friday'
-        default:
-            return 'Saturday'
-      }
-    },
-    parseShortWeekDay: function(date){
-      switch(date.getDay()){
-        case 0:
-            return 'Sunday'
-        case 1:
-            return 'Monday'
-        case 2:
-            return 'Tuesday'
-        case 3:
-            return 'Wednesday'
-        case 4:
-            return 'Thursday'
-        case 5:
-            return 'Friday'
-        default:
-            return 'Saturday'
-      }
     },
     createNewTodoObject: function(title,status,todoSrc){
       let newTodoItem = {
@@ -245,7 +187,7 @@ export default {
         console.log(err)
       })
     },
-    setBacklogTodoList: function(){
+    setBacklogTodoList(){
       this.$store.dispatch('getBacklogFromFirebase')
     },
     updateMainTodoList:function(callbackFunc){
@@ -451,7 +393,6 @@ export default {
     }
   },
   created: function(){ 
-    this.displayDate = new Date()
     this.setDates()
     let v = this
     document.body.addEventListener('mouseup',function(){

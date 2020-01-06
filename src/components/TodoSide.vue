@@ -10,7 +10,6 @@
         :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
         :activeElement="activeElement"
-        :backlog="backlog"
         @editBacklogItem="editBacklogItem"
         @deleteBacklogItem="deleteBacklogItem"
         @moveBacklogItemToToday="moveBacklogItemToToday">
@@ -27,7 +26,7 @@ export default {
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
         'activeElement',
-        'backlog'
+        
     ],    
     components: {
         Backlog,

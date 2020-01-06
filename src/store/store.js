@@ -8,7 +8,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
     state:{ //data
-        currentDate: new Date(),
+        currentDate: 0,
         currentWeekdayIndex: new Date().getDay(),
         auth: false,
         user: {},
@@ -18,7 +18,9 @@ export const store = new Vuex.Store({
         token:'',
         backlog:{
             todos:[]
-        }
+        },
+        displayDate: 0,
+
     },
     mutations:{ // sets or updates the state
         setBacklog(state, payload){
@@ -39,6 +41,18 @@ export const store = new Vuex.Store({
         addBacklogItem(state,payload){
             state.backlog.todos.push(payload.todoItem)
         },
+        setDisplayDate(state,payload){
+            if(payload.displayDate){
+                state.displayDate = payload.displayDate
+                // Vue.set(state, 'displayDate', payload.displayDate)
+            }else{
+                state.displayDate.setDate(state.displayDate.getDate() + payload.val)
+                // Vue.set(state, 'displayDate', state.displayDate.getDate() + payload.val)
+            }
+        },
+        setCurrentDate(state,payload){
+            state.currentDate = payload.currentDate
+        },
         ...vuexfireMutations,
     },
     actions:{ //methods
@@ -46,64 +60,31 @@ export const store = new Vuex.Store({
             // return the promise returned by `bindFirestoreRef`
             return bindFirestoreRef('backlog', db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog'))
         }),
-        updateBacklogToFirebase ({commit,state},payload){
-            let backlogDbRef = db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog')
-            backlogDbRef.set(
-                {todos: state.backlog.todos}
-            ).then(payload.callbackFunc)
-            console.log('updateBacklogToFirebase')
-        },
-        addBacklogItem({commit,state},payload){
-            console.log('addBacklogItem')
-            let newTodoItem = {
-                title: payload.title,
-                descriptopn:'',
-                status: payload.status,
-                creationTimeStamp: Date.now(),
-                creationTime: '',
-                dueTime:'',
-                color: '',
-                src: payload.src
-            }
-            commit('addBacklogItem',{todoItem:newTodoItem})
-        },
-        editBacklogItem({commit,state},payload){
-            // let todoID = res[0]
-            // let editedTitle = res[1]
-            // edit local backlog todo
-            // this.backlog.todos[todoID].title = editedTitle
-            // update changes to firebase
-            // this.updateBacklogTodoList()
-            console.log('editBacklogItem')
-
-        },
-        deleteBacklogItem({commit,state},payload){
-            // let todoID = res[0]
-            // delete local backlog object
-            // this.backlog.todos.splice(todoID,1)
-            // update changes to firebase
-            // this.updateBacklogTodoList()
-            console.log('deleteBacklogItem')
-
-        },
-        moveBacklogItemToToday({commit,state},payload){
-            // let todoID = res[0]
-            // let title = res[1]
-            // set current local backlog item status to 1, due date to today
-            // this.backlog.todos[todoID].status = 1
-            // this.backlog.todos[todoID].dueDate = this.parsedDisplayDateInHyphen
-            // copy the todo item in local daily todo
-            // this.dailyTodoList.todos.push(this.backlog.todos[todoID])
-            // delete current local backlog item 
-            // this.backlog.todos.splice(todoID,1)
-            // update changes to firebase
-            // this.updateBacklogTodoList()
-            // this.updateMainTodoList()
-            console.log('moveBacklogItemToToday')
-
-        },
     },
     getters:{ // computed
-
+        parsedCurrentDateInHyphen: state => {
+            let yyyy = state.currentDate.getFullYear()
+            let mm = String(state.currentDate.getMonth() + 1) //January is 0!
+            let dd = String(state.currentDate.getDate())
+            if(mm<10){
+                mm = '0' + mm
+            }
+            if(dd<10){
+                dd = '0' + dd
+            }
+            return `${yyyy}-${mm}-${dd}`
+        },
+        parsedDisplayDateInHyphen: state => {
+            let yyyy = state.displayDate.getFullYear()
+            let mm = String(state.displayDate.getMonth() + 1) //January is 0!
+            let dd = String(state.displayDate.getDate())
+            if(mm<10){
+                mm = '0' + mm
+            }
+            if(dd<10){
+                dd = '0' + dd
+            }
+            return `${yyyy}-${mm}-${dd}`
+        },
     },
 })

@@ -29,6 +29,8 @@
 <script>
 import BacklogItem from './BacklogItem.vue'
 import AddTodoForm from './AddTodoForm'
+import db from '../firebaseConfig.js'
+
 
 export default {
     name: 'Backlog',
@@ -37,7 +39,6 @@ export default {
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
         'activeElement',
-        'backlog'
     ],
     components:{
         BacklogItem,
@@ -50,17 +51,32 @@ export default {
             snackbarMessage: ''
         }
     },
+    computed:{
+        backlog(){
+            return this.$store.state.backlog
+        },
+    },
     created: function(){
     },
     methods:{
-        addBacklogItem(title){
-            this.$store.dispatch('addBacklogItem',
-                {
-                    title: title,
-                    status: 1, //status 1 indicate not-done
-                    src: 2
-                }
-            )
+        addBacklogItem(payload){
+            let title = payload
+            let newTodoItem = {
+                title: title,
+                descriptopn:'',
+                status: 1, //
+                creationTimeStamp: Date.now(),
+                creationTime: '',
+                dueTime:'',
+                color: '',
+                src: 'backlog'
+            }
+            let update = this.backlog
+            update.todos.push(newTodoItem)
+            console.log(update)
+            // db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog').set(
+            //     {}
+            // )
         },
         editBacklogItem: function(res){
             this.$emit('editBacklogItem',res)
@@ -70,7 +86,14 @@ export default {
         },
         moveBacklogItemToToday: function(res){
             this.$emit('moveBacklogItemToToday',res)
-        }
+        },
+        updateBacklogToFirebase(callbackFunc){
+            let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
+            backlogDbRef.set(
+                {}//updates
+            ).then(callbackFunc)
+            console.log('updateBacklogToFirebase')
+        },
     },
 }
 </script>

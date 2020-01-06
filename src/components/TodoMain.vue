@@ -72,12 +72,9 @@ import draggable from 'vuedraggable'
 export default {
   name: 'TodoMain',
   props:[
-    'displayDate',
     'parsedCurrentDateInHyphen',
     'parsedDisplayDateInHyphen',
-    'uid',
     'activeElement',
-    'backlog',
     'dailyTodoList',
     'mainTodoListRecieved'
   ],
@@ -93,8 +90,6 @@ export default {
     }
   },
   watch:{
-    uid: function(){
-    }
   },
   computed:{
     doneItemCount(){

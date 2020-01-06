@@ -29,9 +29,9 @@ export default {
             let endDate = Date.parse(this.pickedDate)
             const aDay = 86400000
             let diff = Math.floor((endDate - startDate)/aDay)
-            console.log(this.beforeValue,this.pickedDate,diff)
             this.beforeValue = this.pickedDate
-            this.$emit('changeDate',diff)
+            this.$store.commit('setDisplayDate',{val : diff})
+            this.$emit('changeDate') //Trigger coresponding necessary method at mother component
         },
         resetDate:function(){
             this.pickedDate = this.parsedDisplayDateInHyphen

@@ -179,7 +179,7 @@ export default {
       this.snackbarControl = true
     },
   },
-  created:function(){
+  created(){
     let v = this
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -197,6 +197,8 @@ export default {
       }
       v.redirect()
     })
+    this.$store.commit('setCurrentDate', {currentDate: new Date()}) //Pointing the date to current date
+    this.$store.commit('setDisplayDate',{displayDate: new Date()}) //Set the display date on current date
   },
   watch:{
   }
