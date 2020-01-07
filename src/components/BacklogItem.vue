@@ -1,5 +1,5 @@
 <template>
-    <li class="relative todoItem">
+    <li class="relative todoItem" v-if="status != 0 && status != 3">
         <v-container class="relative py-1">
             <input class="todoTitle" :value="title" @input="editTodo">
             <v-btn 
@@ -73,19 +73,19 @@ export default {
         }
     },
     methods:{
-        editTodo: function(event){
-            this.editedValue = event.target.value
+        editTodo(e){
+            this.editedValue = e.target.value
             this.$emit('editTodo',[this.todoID,this.editedValue])
         },
-        toggleActionMenu: function(){
+        toggleActionMenu(){
             this.actionMenu = !this.actionMenu
         },
-        deleteTodo: function(){
+        deleteTodo(){
             this.$emit('deleteTodo',[this.todoID, this.title])
             this.actionMenu = false
             this.deletePop = false
         },
-        moveToToday: function(){
+        moveToToday(){
             this.$emit('moveToToday',[this.todoID,this.title])
         },
         showDatePicker(){

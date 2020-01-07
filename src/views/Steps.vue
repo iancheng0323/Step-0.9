@@ -35,9 +35,6 @@
                   :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                   :activeElement="activeElement"
                   @changeDate="changeDate"
-                  @editBacklogItem="editBacklogItem"
-                  @deleteBacklogItem="deleteBacklogItem"
-                  @moveBacklogItemToToday="moveBacklogItemToToday"
                   >
                   </TodoSide>
               </v-flex>
@@ -74,9 +71,6 @@ export default {
       parsedCurrentDateInHyphen:0,
       displayWeekdayIndex:0,
       activeElement: '',
-      backlog:{
-        todos:[]
-      },
       dailyTodoList:{
         todos:[],
         meta:{
@@ -86,7 +80,6 @@ export default {
       routineList:{},
       mainTodoListRecieved: false,
       routineDataRecieved: false,
-      backlogRecieved:false,
       addedRoutine:false,
     }
   },
@@ -190,7 +183,7 @@ export default {
     setBacklogTodoList(){
       this.$store.dispatch('getBacklogFromFirebase')
     },
-    updateMainTodoList:function(callbackFunc){
+    updateMainTodoList(callbackFunc){
       let v = this
       this.dailyTodoList.meta.addedRoutine = this.addedRoutine
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
@@ -199,9 +192,6 @@ export default {
           meta: v.dailyTodoList.meta
         }
       ).then(callbackFunc)
-    },
-    updateBacklogTodoList:function(callbackFunc){
-      this.$store.dispatch('updateBacklogToFirebase')
     },
     addTodo: function(val){
       let v = this
@@ -234,21 +224,21 @@ export default {
 
       )
     },
-    moveToBacklog:function(res){
-      let todoID = res[0]
+    moveToBacklog(res){
+      // let todoID = res[0]
       let title = res[1]
       // set current todo item status to 3, due date to not set
-      this.dailyTodoList.todos[todoID].status = 3
-      this.dailyTodoList.todos[todoID].dueDate = 'not set'
+      // this.dailyTodoList.todos[todoID].status = 3
+      // this.dailyTodoList.todos[todoID].dueDate = 'not set'
       // copy the todo item in local backlog
-      this.backlog.todos.push(this.dailyTodoList.todos[todoID])
+      // this.backlog.todos.push(this.dailyTodoList.todos[todoID])
       // update changes to firebase
-      this.updateBacklogTodoList()
-      this.updateMainTodoList(
+      // this.updateBacklogTodoList()
+      // this.updateMainTodoList(
         this.$emit('showSnackbar',[0,`"${title}" moved to backlog.`])
-      )
+      // )
     },
-    moveToDate: function(res){
+    moveToDate(res){
       let todoID = res[0]
       let title = res[1]
       let toDate = res[2]
@@ -277,13 +267,13 @@ export default {
         console.log(err)
       })
     },
-    paintColor:function(res){
+    paintColor(res){
       let todoID = res[0]
       let color = res[1]
       this.dailyTodoList.todos[todoID].color = color
       this.updateMainTodoList()
     },
-    moveToToday:function(res){
+    moveToToday(res){
       let todoID = res[0]
       let title = res[1]
       let v = this
@@ -310,15 +300,6 @@ export default {
       }).catch(function(err){
         console.log(err)
       })
-    },
-    editBacklogItem(res){
-      this.$store.dispatch('editBacklogItem')
-    },
-    deleteBacklogItem(res){
-      this.$store.dispatch('deleteBacklogItem')
-    },
-    moveBacklogItemToToday(res){
-      this.$store.dispatch('moveBacklogItemToToday')
     },
     dragTodo(){
       this.updateMainTodoList()

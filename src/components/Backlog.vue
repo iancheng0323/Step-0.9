@@ -59,6 +59,11 @@ export default {
     created: function(){
     },
     methods:{
+        updateBacklog(payload,callbackFunc){
+            db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog').set(
+                {todos: payload}
+            ).then(callbackFunc)
+        },
         addBacklogItem(payload){
             let title = payload
             let newTodoItem = {
@@ -71,28 +76,28 @@ export default {
                 color: '',
                 src: 'backlog'
             }
-            let update = this.backlog
-            update.todos.push(newTodoItem)
-            console.log(update)
-            // db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog').set(
-            //     {}
-            // )
+            let update = this.backlog.todos
+            update.push(newTodoItem)
+            this.updateBacklog(update)
         },
-        editBacklogItem: function(res){
-            this.$emit('editBacklogItem',res)
+        editBacklogItem(res){
+            //res is an array with todoID at 0 and edited content(title) at 1
+            let todoID = res[0]
+            let title = res[1]
+            let update = this.backlog.todos
+            update[todoID].title = title
+            this.updateBacklog(update)
         },
-        deleteBacklogItem: function(res){
-            this.$emit('deleteBacklogItem',res)
+        deleteBacklogItem(res){
+            //res is an array with todoID at 0 and todoTitle at 1
+            let todoID = res[0]
+            // let title = res[1]
+            let update = this.backlog.todos
+            update[todoID].status = 0
+            this.updateBacklog(update)
         },
-        moveBacklogItemToToday: function(res){
+        moveBacklogItemToToday(res){
             this.$emit('moveBacklogItemToToday',res)
-        },
-        updateBacklogToFirebase(callbackFunc){
-            let backlogDbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('backlog')
-            backlogDbRef.set(
-                {}//updates
-            ).then(callbackFunc)
-            console.log('updateBacklogToFirebase')
         },
     },
 }
