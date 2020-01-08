@@ -6,6 +6,7 @@
     </h1>
     <v-btn text @click="prevDay" class="grey--text text-capitalize" small>Previous Day</v-btn>
     <v-btn text @click="nextDay" class="grey--text text-capitalize" small>Next Day</v-btn>
+    <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine</v-btn>
     
     <v-divider class="mt-1"></v-divider>
 </v-container>
@@ -30,20 +31,20 @@ export default {
             this.$emit('changeDate') //Trigger coresponding necessary method at mother component
         },
         parseDateInSlash(date){
-        // eslint-disable-next-line
-        let yyyy = date.getFullYear()
-        let mm = String(date.getMonth() + 1) //January is 0!
-        let dd = String(date.getDate())
-        if(mm<10){
-            mm = '0' + mm
-        }
-        if(dd<10){
-            dd = '0' + dd
-        }
-        // return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return all
-        return `${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return month, date, week day only
+            // eslint-disable-next-line
+            let yyyy = date.getFullYear()
+            let mm = String(date.getMonth() + 1) //January is 0!
+            let dd = String(date.getDate())
+            if(mm<10){
+                mm = '0' + mm
+            }
+            if(dd<10){
+                dd = '0' + dd
+            }
+            // return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return all
+            return `${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return month, date, week day only
         },
-        parseShortWeekDay: function(date){
+        parseShortWeekDay(date){
             switch(date.getDay()){
                 case 0:
                     return 'Sunday'
@@ -61,6 +62,9 @@ export default {
                     return 'Saturday'
             }
         },
+        addRoutineItemToTodoList(){
+            this.$emit('addRoutineItemToTodoList')
+        }
     },
     computed:{
         parsedDisplayDateInSlash(){

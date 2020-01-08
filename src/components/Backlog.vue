@@ -5,7 +5,7 @@
         </h1>
         <ul>
             <li is="BacklogItem" 
-              v-for="(todo,index) in backlog.todos" 
+              v-for="(todo,index) in backlog.todos"
               :title="todo.title"
               :key="index" 
               :status="todo.status"
@@ -31,11 +31,9 @@ import BacklogItem from './BacklogItem.vue'
 import AddTodoForm from './AddTodoForm'
 import db from '../firebaseConfig.js'
 
-
 export default {
     name: 'Backlog',
     props:[
-        'uid',
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
         'activeElement',
@@ -44,7 +42,7 @@ export default {
         BacklogItem,
         AddTodoForm,
     },
-    data:function(){
+    data(){
         return{
             isAddingTodo: false,
             showSnackbar: false,
@@ -55,8 +53,11 @@ export default {
         backlog(){
             return this.$store.state.backlog
         },
+        uid(){
+            return this.$store.state.uid
+        },
     },
-    created: function(){
+    created(){
     },
     methods:{
         updateBacklog(payload,callbackFunc){
@@ -106,5 +107,4 @@ export default {
 ul{
     padding-left: 0!important;
 }
-
 </style>

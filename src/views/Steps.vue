@@ -1,7 +1,8 @@
 <template>
     <v-container relative>
         <StepHeader  
-          @changeDate="changeDate" 
+          @changeDate="changeDate"
+          @addRoutineItemToTodoList="addRoutineItemToTodoList"
           :key="displayDateKey"
           :displayDate="displayDate">
         </StepHeader>
@@ -64,7 +65,7 @@ export default {
     StepHeader,
     TodoSide,
   },
-  data: function(){
+  data(){
     return{
       displayDateKey: 0,
       parsedDisplayDateInHyphen:0,
@@ -77,9 +78,7 @@ export default {
           addedRoutine: false
         }
       },
-      routineList:{},
       mainTodoListRecieved: false,
-      routineDataRecieved: false,
       addedRoutine:false,
     }
   },
@@ -111,6 +110,9 @@ export default {
     displayDate(){
       return this.$store.state.displayDate
     },
+    routine(){
+      return this.$store.state.routine
+    }
   },
   watch: {
     parsedDisplayDateInHyphen(){
@@ -125,6 +127,7 @@ export default {
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
+      this.setRoutineList()
     },
   },
   methods:{
@@ -150,7 +153,7 @@ export default {
       }
       return `${yyyy}-${mm}-${dd}`
     },
-    createNewTodoObject: function(title,status,todoSrc){
+    createNewTodoObject(title,status,todoSrc){
       let newTodoItem = {
         title: title,
         descriptopn:'',
@@ -163,7 +166,7 @@ export default {
       }
       return newTodoItem
     },
-    setTodoListByDate: function(date){
+    setTodoListByDate(date){
       let v = this
       let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date)
       dbRef.get().then(function(doc){
@@ -181,7 +184,12 @@ export default {
       })
     },
     setBacklogTodoList(){
+      // Initiate vuex getBacklogFromFirebase function
       this.$store.dispatch('getBacklogFromFirebase')
+    },
+    setRoutineList(){
+      // Initiate vuex getRoutineFromFirebase function
+      this.$store.dispatch('getRoutineFromFirebase')
     },
     updateMainTodoList(callbackFunc){
       let v = this
@@ -193,20 +201,20 @@ export default {
         }
       ).then(callbackFunc)
     },
-    addTodo: function(val){
+    addTodo(val){
       let v = this
       this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
       this.updateMainTodoList(
         this.$emit('showSnackbar',[0,`📝 "${val}" added.`])
       )
     },
-    editTodo: function(res){
+    editTodo(res){
       let todoID = res[0]
       let editedTitle = res[1]
       this.dailyTodoList.todos[todoID].title = editedTitle
       this.updateMainTodoList()
     },
-    changeStatus: function(res){
+    changeStatus(res){
       let todoID = res[0]
       let toStatus = res[1]
       this.dailyTodoList.todos[todoID].status = toStatus
@@ -215,7 +223,7 @@ export default {
         this.$emit('showSnackbar',[0,'✅ Nice job completing this task!'])
       }
     },
-    deleteTodo: function(res){
+    deleteTodo(res){
       let todoID = res[0]
       let title = res[1]
       this.dailyTodoList.todos[todoID].status = 0
@@ -304,40 +312,6 @@ export default {
     dragTodo(){
       this.updateMainTodoList()
     },
-    setRoutineList(){
-      let v = this
-      let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('routineList')
-      dbRef.get().then(function(doc){
-        if(doc.exists && doc.data().list){
-          v.routineList = doc.data()
-          v.routineDataRecieved = true
-          v.addRoutineToDailyTodoList()
-        }else{
-          console.log('Steps: No routine doc found.')
-        }
-      }).catch(function(err){
-        console.log(err)
-      })
-    },
-    addRoutineToDailyTodoList(){
-      let v = this
-      if(this.dailyTodoList.meta.addedRoutine){
-        console.log('Routines for today are already added.')
-      }else{
-        for(let i = 0; i < this.routineList.list.length; i++){
-          let isOn = this.routineList.list[i].status
-          let isToday = this.routineList.list[i].weeklyRoutine.indexOf(this.displayWeekdayIndex) >= 0
-          console.log(i,isOn,isToday)
-          if( isOn && isToday){
-            this.dailyTodoList.todos.push(v.createNewTodoObject(
-              this.routineList.list[i].title,
-              1,
-              'routine'))
-          }
-        }
-        this.dailyTodoList.meta.addedRoutine = true
-      }
-    },
     bulkMoveToToday(){
       let v = this
       let holder = { todos: [] }
@@ -371,9 +345,20 @@ export default {
       }).catch(function(err){
         console.log(err)
       })
+    },
+    addRoutineItemToTodoList(){
+      for(let i = 0 ; i<this.routine.list.length;i++){
+        if(
+          // 1. If the routine matches weekday
+          this.routine.list[i].weeklyRoutine
+          ){
+          // 2. Add the routine item to today
+          console.log('Added!')
+        }
+      }
     }
   },
-  created: function(){ 
+  created(){ 
     this.setDates()
     let v = this
     document.body.addEventListener('mouseup',function(){

@@ -41,7 +41,7 @@
         ref="AddTodoForm"
         v-if="mainTodoListRecieved"
         v-shortkey="['shift', 'n']" 
-        @shortkey.native="toggleAddTodo"
+        @shortkey.native="$refs.AddTodoForm.isAddingTodo = true"
       ></AddTodoForm>
     </v-container>
     <div class="bottomHint">

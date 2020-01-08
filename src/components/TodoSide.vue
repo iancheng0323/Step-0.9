@@ -6,13 +6,9 @@
         @changeDate="changeDate"
         ></Calender>
         <Backlog
-        :uid="uid"
         :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-        :activeElement="activeElement"
-        @editBacklogItem="editBacklogItem"
-        @deleteBacklogItem="deleteBacklogItem"
-        @moveBacklogItemToToday="moveBacklogItemToToday">
+        :activeElement="activeElement">
         </Backlog>
     </v-card>
 </template>
@@ -36,15 +32,6 @@ export default {
         changeDate(res){
             this.$emit('changeDate',res)
         },
-        editBacklogItem(res){
-            this.$emit('editBacklogItem',res)
-        },
-        deleteBacklogItem: function(res){
-            this.$emit('deleteBacklogItem',res)
-        },
-        moveBacklogItemToToday: function(res){
-            this.$emit('moveBacklogItemToToday',res)
-        }
     }
 }
 </script>
