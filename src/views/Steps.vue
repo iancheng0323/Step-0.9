@@ -112,6 +112,9 @@ export default {
     },
     routine(){
       return this.$store.state.routine
+    },
+    parsedDisplayDateWeekday(){
+      return this.$store.getters.parsedDisplayDateWeekday
     }
   },
   watch: {
@@ -207,6 +210,10 @@ export default {
       this.updateMainTodoList(
         this.$emit('showSnackbar',[0,`📝 "${val}" added.`])
       )
+    },
+    addTodoWithoutUpdateToFirebase(val){
+      let v = this
+      this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
     },
     editTodo(res){
       let todoID = res[0]
@@ -347,15 +354,25 @@ export default {
       })
     },
     addRoutineItemToTodoList(){
+      // Add Routine Items to local list
       for(let i = 0 ; i<this.routine.list.length;i++){
         if(
-          // 1. If the routine matches weekday
-          this.routine.list[i].weeklyRoutine
+          // 1.1 If the routine matches weekday
+          this.routine.list[i].weeklyRoutine.indexOf(this.parsedDisplayDateWeekday) > 0
+          &&
+          // 1.2 AND is turned on
+          this.routine.list[i].status
           ){
           // 2. Add the routine item to today
-          console.log('Added!')
+          console.log(this.routine.list[i].title)
+          this.addTodoWithoutUpdateToFirebase(this.routine.list[i].title)
         }
       }
+      // Update local list to firebase
+      this.updateMainTodoList(
+        // Show snackbar
+        this.$emit('showSnackbar',[0,`🕰 Routine items added to list.`])
+      )
     }
   },
   created(){ 
