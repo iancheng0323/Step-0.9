@@ -10,7 +10,7 @@
         >
             <v-icon small>edit</v-icon>
         </v-btn>
-        <p>{{routineDes}}</p>
+        <p class="subtitle-2">{{routineDes}}</p>
         <v-dialog 
         :value="editPop"
         persistent

@@ -41,17 +41,17 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-        <template v-slot:append>
-          <v-divider></v-divider>
-          <v-container>
-                <v-btn text block class="myAccountButton" to="account">
-                  <v-icon class="icon">account_circle</v-icon> My Account
-                </v-btn>
+        <!-- <template v-slot:append> -->
+          <!-- <v-divider></v-divider> -->
+          <!-- <v-container> -->
+                <!-- <v-btn text block class="myAccountButton" to="account"> -->
+                  <!-- <v-icon class="icon">account_circle</v-icon> My Account -->
+                <!-- </v-btn> -->
                 <!-- <v-btn text block class="myAccountButton" @click="toggleNav">
                   <v-icon class="icon">chevron_left</v-icon> Show Less
                 </v-btn> -->
-          </v-container>
-        </template>
+          <!-- </v-container> -->
+        <!-- </template> -->
       </v-navigation-drawer>
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
@@ -66,7 +66,7 @@ let provider = new firebase.auth.GoogleAuthProvider();
 
 export default {
   name: 'app',
-  data: function(){
+  data(){
     return{
       minNav: false,
       listItem: [
@@ -89,9 +89,9 @@ export default {
           fontSize: '24'
         },
         {
-          title: 'routine',
-          link: '/routines',
-          iconText: 'fa-clock',
+          title: 'account',
+          link: '/account',
+          iconText: 'fa-user-circle',
           fontSize: '24'
         },
       ],
@@ -122,7 +122,7 @@ export default {
     }
   },
   methods: {
-    signInWithGoogle: function(){
+    signInWithGoogle(){
       let v = this
       firebase.auth().signInWithPopup(provider).then(function(result) {
           // This gives you a Google Access Token. You can use it to access the Google API.
@@ -140,7 +140,7 @@ export default {
           console.log(errorMessage, errorCode, email, credential)
       })
     },
-    logout: function(){
+    logout(){
       firebase.auth().signOut().then(function() {
         // Sign-out successful.
         console.log('signed out')
@@ -149,7 +149,7 @@ export default {
         console.log(error)
       })
     },
-    redirect: function(){
+    redirect(){
       if(this.auth == false){
         console.log('auth changed to false')
         this.$router.push({ path: '/login' })
@@ -158,7 +158,7 @@ export default {
         this.$router.push({ path: '/' })
       }
     },
-    toggleNav:function(){
+    toggleNav(){
       this.minNav = !this.minNav
       console.log('s')
     },

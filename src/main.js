@@ -16,7 +16,6 @@ import Steps from './views/Steps.vue'
 import Login from './views/Login.vue'
 import Mountains from './views/Mountains.vue'
 import Numbers from './views/Numbers.vue'
-import Routines from './views/Routines.vue'
 import Account from './views/Account.vue'
 
 
@@ -43,12 +42,6 @@ const routes = [
     path: '/numbers',
     name: 'Numbers',
     component: Numbers,
-    // props:[],
-  },
-  {
-    path: '/routines',
-    name: 'Routines',
-    component: Routines,
     // props:[],
   },
   {

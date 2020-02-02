@@ -3,6 +3,8 @@
         <StepHeader  
           @changeDate="changeDate"
           @addRoutineItemToTodoList="addRoutineItemToTodoList"
+          @showAddRoutinePop="showAddRoutinePop"
+          :routineAddedTime="routineAddedTime"
           :key="displayDateKey"
           :displayDate="displayDate">
         </StepHeader>
@@ -29,7 +31,7 @@
                   >
                   </TodoMain>
               </v-flex>
-              <v-flex md4>
+              <v-flex ml4 md5 ms6>
                   <TodoSide
                   :uid="uid"
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -41,8 +43,33 @@
               </v-flex>
           </v-layout>
       </v-container>
+      <v-dialog
+            v-model="addRoutinePop"
+            max-width="290"
+        >
+            <v-card>
+                <v-card-title class="headline">Add routine to today?</v-card-title>
+                <v-card-text class="body-1">We noticed that you have added Your Routine to this date, do you still want to add routine?</v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                      class="grey--text"
+                      text
+                      @click="addRoutineItemToTodoList"
+                  >
+                      Add Routine
+                  </v-btn>
+                  <v-btn
+                      color="primary--text"
+                      text
+                      @click="addRoutinePop = false"
+                  >
+                      No
+                  </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-container>
-    
 </template>
 
 <script>
@@ -80,6 +107,8 @@ export default {
       },
       mainTodoListRecieved: false,
       addedRoutine:false,
+      addRoutinePop: false,
+      routineAddedTime:1,
     }
   },
   computed: {
@@ -204,6 +233,15 @@ export default {
         }
       ).then(callbackFunc)
     },
+    updateMainTodoListWithDate(date,todos,meta,callbackFunc){
+      this.dailyTodoList.meta.addedRoutine = this.addedRoutine
+      db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date).set(
+        {
+          todos: todos,
+          meta: meta
+        }
+      ).then(callbackFunc)
+    },
     addTodo(val){
       let v = this
       this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
@@ -293,15 +331,13 @@ export default {
       let title = res[1]
       let v = this
       let holder = { todos: [] }
-      //get the todo list of the to-date
+      //1. Get the todo list of the to-date
       let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
       currentDateDBRef.get().then(function(doc){
         if(doc.exists && doc.data().todos){
            holder = doc.data()
-           holder.todos.push(v.dailyTodoList.todos[todoID])
-        } else{
-           holder.todos.push(v.dailyTodoList.todos[todoID])          
         }
+        holder.todos.push(v.dailyTodoList.todos[todoID])
         //update to firebase
            currentDateDBRef.set({
              todos: holder.todos
@@ -310,50 +346,45 @@ export default {
           v.dailyTodoList.todos[todoID].status = 3
           //update to firebase
           v.updateMainTodoList(
-            v.$emit('showSnackbar',[0,`${title} moved to ${v.parsedCurrentDateInHyphen}.`])            
+            v.$emit('showSnackbar',[0,`${title} moved to ${v.parsedCurrentDateInHyphen}.`])
           )
       }).catch(function(err){
         console.log(err)
+      })
+    },
+    bulkMoveToToday(){
+      console.log('bulk move to today')
+      let v = this
+      let holder = []
+      //1. Get all undone todos of the day -> use this.undoneTodo
+      //2. Move the undones to target date list(local)
+      //2.1 Get target date list
+      let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
+      currentDateDBRef.get().then( doc => {
+        if(doc.exists && doc.data().todos){ // If there is existing todos in the target date,
+          // Fill holder with the todos of the day
+          holder = doc.data().todos
+        }
+        // Push undone todos to holder
+        v.unDoneTodo.forEach( todo => { 
+          holder.push( todo )
+          //3. Change undone todo status to deleted(status code: 3) locally
+          todo.status = 3
+          })
+          //4. Update to firebase
+          v.updateMainTodoListWithDate(
+            v.parsedCurrentDateInHyphen,
+            holder,
+            {addedRoutine: false},
+            this.$emit('showSnackbar',[0,`Bulk move to today succeeded.`])
+          )
       })
     },
     dragTodo(){
       this.updateMainTodoList()
     },
-    bulkMoveToToday(){
-      let v = this
-      let holder = { todos: [] }
-      //get the todo list of the to-date
-      let currentDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(this.parsedCurrentDateInHyphen)
-      currentDateDBRef.get().then(function(doc){
-        //push the undones to the list
-        if(doc.exists && doc.data().todos){
-           holder = doc.data()
-           for(let i = 0; i<v.unDoneTodo.length; i++){
-              holder.todos.push(v.unDoneTodo[i])
-              // console.log(v.unDoneTodo[i])
-           }
-        } else{
-           for(let i = 0; i<v.unDoneTodo.length; i++){
-              holder.todos.push(v.unDoneTodo[i])             
-           }         
-        }
-        //update to firebase
-           currentDateDBRef.set({
-             todos: holder.todos
-           })
-          //set the todo to status 3
-          for (let i = 0; i<v.unDoneTodoIndex.length; i++){
-            v.dailyTodoList.todos[v.unDoneTodoIndex[i]].status = 3
-          }
-          //update to firebase
-          v.updateMainTodoList(
-            v.$emit('showSnackbar',[0,`Undone todos moved to today 😉`])            
-          )
-      }).catch(function(err){
-        console.log(err)
-      })
-    },
     addRoutineItemToTodoList(){
+      let counter = 0 //Routine counter, counts how many routines are added to the day
       // Add Routine Items to local list
       for(let i = 0 ; i<this.routine.list.length;i++){
         if(
@@ -366,13 +397,22 @@ export default {
           // 2. Add the routine item to today
           console.log(this.routine.list[i].title)
           this.addTodoWithoutUpdateToFirebase(this.routine.list[i].title)
+          counter ++
+          }
         }
+      if(counter === 0){ //If counter === 0 (no routine added), show hint
+        this.$emit('showSnackbar',[2,`Theres no routine items!`])
+      }else{ //If counter!== 0, do the following
+        // Update local list to firebase
+        this.updateMainTodoList(
+          // Show snackbar
+          this.$emit('showSnackbar',[0,`🕰 Routine items added to list.`])
+        )
       }
-      // Update local list to firebase
-      this.updateMainTodoList(
-        // Show snackbar
-        this.$emit('showSnackbar',[0,`🕰 Routine items added to list.`])
-      )
+      this.addRoutinePop = false
+    },
+    showAddRoutinePop(){
+      this.addRoutinePop = true
     }
   },
   created(){ 

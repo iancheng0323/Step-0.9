@@ -1,23 +1,23 @@
 <template>
 <v-container>
     <h1 class="display-1 mt-2 font-weight-medium myHeader mb-2">
-        ☀️ Steps for today
-        <span class="date grey--text">{{this.parsedDisplayDateInSlash}}</span>
+        ☀️ {{this.parsedDisplayDateInSlash}}
+        <!-- <span class="date grey--text"></span> -->
     </h1>
     <v-btn text @click="prevDay" class="grey--text text-capitalize" small>Previous Day</v-btn>
     <v-btn text @click="nextDay" class="grey--text text-capitalize" small>Next Day</v-btn>
-    <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine</v-btn>
-    
-    <v-divider class="mt-1"></v-divider>
+    <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine (in dev)</v-btn>
+    <!-- <v-divider class="mt-1"></v-divider> -->
 </v-container>
 </template>
 <script>
 export default {
     name:'StepHeader',
     props:[
-        'displayDate'
+        'displayDate',
+        'routineAddedTime'
     ],
-    data:function(){
+    data(){
         return{
         }
     },
@@ -42,7 +42,7 @@ export default {
                 dd = '0' + dd
             }
             // return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return all
-            return `${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return month, date, week day only
+            return `${this.parseShortWeekDay(date)} ${mm}/${dd}` //return month, date, week day only
         },
         parseShortWeekDay(date){
             switch(date.getDay()){
@@ -63,7 +63,11 @@ export default {
             }
         },
         addRoutineItemToTodoList(){
-            this.$emit('addRoutineItemToTodoList')
+            if(this.routineAddedTime>0){ // if routine added 
+                this.$emit('showAddRoutinePop')
+            }else{
+                this.$emit('addRoutineItemToTodoList')
+            }
         }
     },
     computed:{

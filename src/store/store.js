@@ -92,9 +92,9 @@ export const store = new Vuex.Store({
             }
             return `${yyyy}-${mm}-${dd}`
         },
-        parsedDisplayDateWeekday: state=>{
+        parsedDisplayDateWeekday: state => {
             let weekday = state.displayDate.getDay()
             return weekday
-        }
+        },
     },
 })
