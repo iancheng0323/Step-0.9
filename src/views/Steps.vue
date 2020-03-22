@@ -4,7 +4,7 @@
           @changeDate="changeDate"
           @addRoutineItemToTodoList="addRoutineItemToTodoList"
           @showAddRoutinePop="showAddRoutinePop"
-          :routineAddedTime="routineAddedTime"
+          :routineAddedTime="dailyTodoList.meta.routineAddedTime"
           :key="displayDateKey"
           :displayDate="displayDate">
         </StepHeader>
@@ -102,13 +102,12 @@ export default {
       dailyTodoList:{
         todos:[],
         meta:{
-          addedRoutine: false
+          routineAddedTime: 0
         }
       },
       mainTodoListRecieved: false,
       addedRoutine:false,
       addRoutinePop: false,
-      routineAddedTime:1,
     }
   },
   computed: {
@@ -149,7 +148,6 @@ export default {
   watch: {
     parsedDisplayDateInHyphen(){
       this.mainTodoListRecieved = false
-      this.dailyTodoList.meta.addedRoutine = false
       this.dailyTodoList.todos = []
       this.datePickerValue = this.parsedDisplayDateInHyphen
       if(this.uid !== ''){
@@ -368,16 +366,24 @@ export default {
         // Push undone todos to holder
         v.unDoneTodo.forEach( todo => { 
           holder.push( todo )
-          //3. Change undone todo status to deleted(status code: 3) locally
+        })
+        //3. Update the change of the to-date to firebase
+        v.updateMainTodoListWithDate(
+          v.parsedCurrentDateInHyphen,
+          holder,
+          {addedRoutine: false},
+          this.$emit('showSnackbar',[0,`Bulk move to today succeeded.`])
+        )
+        //4. Change undone todo status to deleted(status code: 3) locally
+        v.unDoneTodo.forEach( todo => { 
           todo.status = 3
-          })
-          //4. Update to firebase
-          v.updateMainTodoListWithDate(
-            v.parsedCurrentDateInHyphen,
-            holder,
-            {addedRoutine: false},
-            this.$emit('showSnackbar',[0,`Bulk move to today succeeded.`])
-          )
+        })
+        //5. Update the change of the from-date to firebase
+        v.updateMainTodoListWithDate(
+          v.parsedDisplayDateInHyphen,
+          v.dailyTodoList.todos,
+          {addedRoutine: false},
+        )
       })
     },
     dragTodo(){
