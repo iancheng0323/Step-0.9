@@ -21,7 +21,7 @@ import Account from './views/Account.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/steps',
     name: 'Steps',
     component: Steps,
     // props:[],
@@ -45,7 +45,7 @@ const routes = [
     // props:[],
   },
   {
-    path: '/account',
+    path: '/',
     name: 'Account',
     component: Account,
     // props:[],

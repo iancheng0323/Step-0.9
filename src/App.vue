@@ -76,12 +76,12 @@ export default {
           iconText: 'fa-paw',
           fontSize: '24'
         },
-        {
-          title: 'Mountain',
-          link: '/mountains',
-          iconText: 'fa-mountain',
-          fontSize: '20'
-        },
+        // {
+        //   title: 'Mountain',
+        //   link: '/mountains',
+        //   iconText: 'fa-mountain',
+        //   fontSize: '20'
+        // },
         {
           title: 'number',
           link: '/numbers',

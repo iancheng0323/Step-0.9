@@ -9,7 +9,7 @@
         Routines
       </h2>
       <p class="subtitle-2">Manage your re-occuring tasks here.</p>
-      <v-card width="400px" min-height="450px" color="white" relative>
+      <v-card width="400px" min-height="150px" color="white" relative>
         <v-container>
           <ul>
             <li
@@ -27,12 +27,26 @@
           </ul>
         </v-container>
       </v-card>
+      <v-btn text class="mt-2" @click="addNewRoutinePop = true">Add Routine</v-btn>
+      <h2 class="headline mt-4">
+        Labels
+      </h2>
+      <p class="subtitle-2">Manage your label here.</p>
+      <ul>
+        <li 
+        is = "LabelItem"
+        :color = "label.color"
+        :text = "label.text"
+        v-for="(label,index) in labels" :key="index"
+        ></li>
+      </ul>
+      <v-btn text class="mt-2" @click="addNewLabelPop = true">Add Label</v-btn>
       <h2 class="headline mt-4">
         Logout
       </h2>
       <p class="subtitle-2">Click <a class="link" @click="logout">here</a> to logout.</p>
       <v-dialog 
-      :value="addNewPop"
+      :value="addNewRoutinePop"
       persistent
       max-width="500">
         <v-card min-height="300" relative>
@@ -60,7 +74,35 @@
               </v-form>
           </v-card-text>
             <v-btn @click="addNewRoutine" class="addRoutineFormButton">Add</v-btn>
-            <v-btn @click="addNewPop = false" text class="addRoutineFormButton">Cancel</v-btn>
+            <v-btn @click="addNewRoutinePop = false" text class="addRoutineFormButton">Cancel</v-btn>
+          </v-container>
+        </v-card>
+      </v-dialog>
+      <v-dialog 
+      :value="addNewLabelPop"
+      persistent
+      max-width="500">
+        <v-card min-height="300" relative>
+          <v-card-title>Add New Label</v-card-title>
+          <v-divider></v-divider>
+          <v-container>
+          <v-card-text>
+              <v-form>
+                <v-text-field
+                  autofocus
+                  v-model="newLabelText"
+                  label="Label Name"
+                  placeholder="Label Name, e.g. Urgent, Leisure, Work...">
+                </v-text-field>
+                <v-text-field
+                  v-model="newLabelHex"
+                  label="Color"
+                  placeholder="Put Hex Value Here">
+                </v-text-field>
+              </v-form>
+          </v-card-text>
+            <v-btn @click="addNewLabel" class="addRoutineFormButton">Add</v-btn>
+            <v-btn @click="addNewLabelPop = false" text class="addRoutineFormButton">Cancel</v-btn>
           </v-container>
         </v-card>
       </v-dialog>
@@ -70,11 +112,13 @@
 <script>
 import db from '../firebaseConfig.js'
 import RoutineItem from '../components/RoutineItem.vue'
+import LabelItem from '../components/LabelItem.vue'
 
 export default {
     name: 'Account',
     components:{
       RoutineItem,
+      LabelItem
     },
     props:[
       'userName',
@@ -84,7 +128,8 @@ export default {
     ],
     data(){
       return{
-        addNewPop:false,
+        addNewRoutinePop:false,
+        addNewLabelPop:false,
         routineList:{
           list:[]
         },
@@ -120,7 +165,31 @@ export default {
         ],
         selectedWeeklyRoutine:[],
         newRoutineTitle:'',
-        dataRecieved: false
+        newLabelText: '',
+        newLabelHex:'',
+        dataRecieved: false,
+        labels: [
+          {
+              text: 'Red',
+              color:'#E57373'
+          },
+          {
+              text: 'Yellow',
+              color:'#FDD835'
+          },
+          {
+              text: 'Green',
+              color: '#81C784'
+          },
+          {
+              text: 'Blue',
+              color:'#64B5F6'
+          },
+          {
+              text: 'Grey',
+              color: '#BDBDBD'
+          },    
+        ],
       }
     },
     created(){
@@ -167,7 +236,7 @@ export default {
         }
         this.newRoutineTitle = ''
         this.selectedWeeklyRoutine = []
-        this.addNewPop = false
+        this.addNewRoutinePop = false
         this.updateRoutineList(console.log('added Routine to firebase'))
       },
       editRoutine(res){
@@ -186,8 +255,11 @@ export default {
         this.updateRoutineList(console.log('deleted Routine to firebase'))        
       },
       logout(){
-            this.$emit('logout')
+        this.$emit('logout')
       },
+      addNewLabel(){
+        console.log('label added')
+      }
     }
 
 }
