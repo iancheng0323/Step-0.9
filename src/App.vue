@@ -188,6 +188,7 @@ export default {
           user: user
         })
         v.$store.dispatch('getBacklogFromFirebase')
+        v.$store.dispatch('getOtherInfoFromFirebase')
         console.log('Signed In')
         v.redirect()
       } else {

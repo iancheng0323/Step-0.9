@@ -6,7 +6,7 @@
     </h1>
     <v-btn text @click="prevDay" class="grey--text text-capitalize" small>Previous Day</v-btn>
     <v-btn text @click="nextDay" class="grey--text text-capitalize" small>Next Day</v-btn>
-    <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine (in dev)</v-btn>
+    <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine</v-btn>
     <!-- <v-divider class="mt-1"></v-divider> -->
 </v-container>
 </template>
@@ -15,7 +15,7 @@ export default {
     name:'StepHeader',
     props:[
         'displayDate',
-        'routineAddedTime'
+        'addedRoutine'
     ],
     data(){
         return{
@@ -63,7 +63,7 @@ export default {
             }
         },
         addRoutineItemToTodoList(){
-            if(this.routineAddedTime>0){ // if routine added 
+            if(this.addedRoutine){ // if routine added 
                 this.$emit('showAddRoutinePop')
             }else{
                 this.$emit('addRoutineItemToTodoList')

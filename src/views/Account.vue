@@ -14,7 +14,7 @@
           <ul>
             <li
             is="RoutineItem"
-            v-for="(item,index) in routineList.list"
+            v-for="(item,index) in routineList"
             :routineIndex="index"
             :key="index"
             :title="item.title"
@@ -37,10 +37,15 @@
         is = "LabelItem"
         :color = "label.color"
         :text = "label.text"
+        :defaultColorChoices="defaultColorChoices"
+        :index="index"
         v-for="(label,index) in labels" :key="index"
+        @editLable="editLable"
+        @deleteLabel="deleteLabel"
+        style="margin-right:8px"
         ></li>
       </ul>
-      <v-btn text class="mt-2" @click="addNewLabelPop = true">Add Label</v-btn>
+      <v-btn text class="mt-2" @click="openAddNewLabelPop()">Add Label</v-btn>
       <h2 class="headline mt-4">
         Logout
       </h2>
@@ -94,15 +99,17 @@
                   label="Label Name"
                   placeholder="Label Name, e.g. Urgent, Leisure, Work...">
                 </v-text-field>
-                <v-text-field
-                  v-model="newLabelHex"
-                  label="Color"
-                  placeholder="Put Hex Value Here">
-                </v-text-field>
+                <v-select
+                v-model="selectedColor"
+                :items="defaultColorChoices"
+                label="color"
+                placeholder="Set a color for the label"
+                >
+                </v-select>
               </v-form>
           </v-card-text>
             <v-btn @click="addNewLabel" class="addRoutineFormButton">Add</v-btn>
-            <v-btn @click="addNewLabelPop = false" text class="addRoutineFormButton">Cancel</v-btn>
+            <v-btn @click="closeAddNewLabelPop" text class="addRoutineFormButton">Cancel</v-btn>
           </v-container>
         </v-card>
       </v-dialog>
@@ -166,42 +173,69 @@ export default {
         selectedWeeklyRoutine:[],
         newRoutineTitle:'',
         newLabelText: '',
-        newLabelHex:'',
         dataRecieved: false,
-        labels: [
+        defaultColorChoices:[
           {
-              text: 'Red',
-              color:'#E57373'
+            text: 'Red',
+            value:'#E57373'
           },
           {
-              text: 'Yellow',
-              color:'#FDD835'
+            text: 'Yellow',
+            value:'#FDD835'
           },
           {
-              text: 'Green',
-              color: '#81C784'
+            text: 'Blue',
+            value:'#64B5F6'
           },
           {
-              text: 'Blue',
-              color:'#64B5F6'
+            text: 'Green',
+            value:'#81C784'
           },
           {
-              text: 'Grey',
-              color: '#BDBDBD'
-          },    
+            text: 'Grey',
+            value:'#BDBDBD'
+          },
         ],
+        selectedColor: '',
+        labels:[
+        ],
+      }
+    },
+    computed:{
+      routineList1(){
+        return this.$store.state.otherInfo.routine
       }
     },
     created(){
       this.setRoutineList()
+      this.setLabelsList()
+    },
+    watch:{
+      uid(){
+        this.setRoutineList()
+        this.setLabelsList()
+      }
     },
     methods:{
+      setLabelsList(){
+        let v = this
+        let dbRef = db.collection(`Main`).doc(`${this.uid}`)
+        dbRef.get().then(function(doc){
+          if(doc.exists){
+            v.labels = doc.data().labels
+          } else{
+            console.log('Labels: No doc found.')
+          }
+        }).catch(function(err){
+          console.log(err)
+        })
+      },
       setRoutineList(){
         let v = this
-        let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('routineList')
+        let dbRef = db.collection(`Main`).doc(`${this.uid}`)
         dbRef.get().then(function(doc){
-          if(doc.exists && doc.data().list){
-            v.routineList = doc.data()
+          if(doc.exists){
+            v.routineList = doc.data().routines
           } else{
             console.log('Routine: No doc found.')
           }
@@ -211,9 +245,10 @@ export default {
         })
       },
       updateRoutineList(callbackFunc){
-        let v = this
-        db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc('routineList').set(
-          {list: v.routineList.list}
+        db.collection(`Main`).doc(`${this.uid}`).update(
+          {
+            routines : this.routineList
+          }
         ).then(callbackFunc)
       },
       createNewRoutine(title, weeklyRoutine){
@@ -230,8 +265,8 @@ export default {
         if(this.newRoutineTitle.length == 0){
           console.log('empty input')
         }else{
-          this.routineList.list.push(
-          this.createNewRoutine(this.newRoutineTitle,this.selectedWeeklyRoutine)
+          this.routineList.push(
+            this.createNewRoutine(this.newRoutineTitle,this.selectedWeeklyRoutine)
           )
         }
         this.newRoutineTitle = ''
@@ -249,16 +284,56 @@ export default {
         this.routineList.list[routineID].status = editedStatus
         this.updateRoutineList(console.log('edited Routine to firebase'))        
       },
-      deleteRoutine(res){
-        let routineID = res[0]
-        this.routineList.list.splice(routineID,1)
+      deleteRoutine(props){
+        let routineID = props[0]
+        this.routineList.splice(routineID,1)
         this.updateRoutineList(console.log('deleted Routine to firebase'))        
       },
       logout(){
         this.$emit('logout')
       },
       addNewLabel(){
-        console.log('label added')
+        if( this.newLabelText !== '' && this.selectedColor !== ''){//1. 確定提交有效
+          this.labels.push(
+            {
+              text: this.newLabelText,
+              color: this.selectedColor
+            }
+          )
+          this.addNewLabelPop = false
+          //label added toast pending adding
+        }else{
+          console.log('invalid submit')
+        }
+        //更新到firebase
+        this.updateLabels()
+      },
+      updateLabels(){
+        let ref = db.collection(`Main`).doc(`${this.uid}`)
+        ref.update(
+          {
+            labels: this.labels
+          }
+        )
+      },
+      editLable(props){
+        console.log(props)
+        let index = props.index
+        this.labels[index].text = props.text
+        this.labels[index].color = props.color
+        this.updateLabels()
+      },
+      deleteLabel(props){
+        let index = props.index
+        this.labels.splice(index,1)
+        this.updateLabels()
+      },
+      closeAddNewLabelPop(){
+        this.addNewLabelPop = false
+      },
+      openAddNewLabelPop(){
+        this.addNewLabelPop = true
+        this.selectedColor = ''
       }
     }
 

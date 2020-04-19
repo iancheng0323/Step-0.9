@@ -14,14 +14,14 @@ Vue.use(require('vue-shortkey'))
 //Router Setting
 import Steps from './views/Steps.vue'
 import Login from './views/Login.vue'
-import Mountains from './views/Mountains.vue'
-import Numbers from './views/Numbers.vue'
+// import Mountains from './views/Mountains.vue'
+// import Numbers from './views/Numbers.vue'
 import Account from './views/Account.vue'
 
 
 const routes = [
   {
-    path: '/steps',
+    path: '/',
     name: 'Steps',
     component: Steps,
     // props:[],
@@ -32,20 +32,20 @@ const routes = [
     component: Login,
     // props:[],
   },
-  {
-    path: '/mountains',
-    name: 'Mountains',
-    component: Mountains,
+  // {
+    // path: '/mountains',
+    // name: 'Mountains',
+    // component: Mountains,
     // props:[],
-  },
-  {
-    path: '/numbers',
-    name: 'Numbers',
-    component: Numbers,
+  // },
+  // {
+  //   path: '/numbers',
+  //   name: 'Numbers',
+    // component: Numbers,
     // props:[],
-  },
+  // },
   {
-    path: '/',
+    path: '/account',
     name: 'Account',
     component: Account,
     // props:[],

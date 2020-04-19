@@ -22,7 +22,8 @@ export const store = new Vuex.Store({
         displayDate: 0,
         routine:{
             list:[]
-        }
+        },
+        otherInfo:{},
     },
     mutations:{ // sets or updates the state
         setBacklog(state, payload){
@@ -62,9 +63,9 @@ export const store = new Vuex.Store({
             // return the promise returned by `bindFirestoreRef`
             return bindFirestoreRef('backlog', db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog'))
         }),
-        getRoutineFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
+        getOtherInfoFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
-            return bindFirestoreRef('routine', db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('routineList'))
+            return bindFirestoreRef('otherInfo', db.collection(`Main`).doc(`${state.uid}`))
         }),
     },
     getters:{ // computed

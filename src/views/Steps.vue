@@ -4,7 +4,7 @@
           @changeDate="changeDate"
           @addRoutineItemToTodoList="addRoutineItemToTodoList"
           @showAddRoutinePop="showAddRoutinePop"
-          :routineAddedTime="dailyTodoList.meta.routineAddedTime"
+          :addedRoutine="dailyTodoList.meta.addedRoutine"
           :key="displayDateKey"
           :displayDate="displayDate">
         </StepHeader>
@@ -102,11 +102,10 @@ export default {
       dailyTodoList:{
         todos:[],
         meta:{
-          routineAddedTime: 0
+          addedRoutine: false
         }
       },
       mainTodoListRecieved: false,
-      addedRoutine:false,
       addRoutinePop: false,
     }
   },
@@ -139,7 +138,7 @@ export default {
       return this.$store.state.displayDate
     },
     routine(){
-      return this.$store.state.routine
+      return this.$store.state.otherInfo.routines
     },
     parsedDisplayDateWeekday(){
       return this.$store.getters.parsedDisplayDateWeekday
@@ -157,7 +156,6 @@ export default {
     uid(){
       this.setTodoListByDate(this.parsedDisplayDateInHyphen)
       this.setBacklogTodoList()
-      this.setRoutineList()
     },
   },
   methods:{
@@ -217,27 +215,18 @@ export default {
       // Initiate vuex getBacklogFromFirebase function
       this.$store.dispatch('getBacklogFromFirebase')
     },
-    setRoutineList(){
-      // Initiate vuex getRoutineFromFirebase function
-      this.$store.dispatch('getRoutineFromFirebase')
-    },
     updateMainTodoList(callbackFunc){
       let v = this
-      this.dailyTodoList.meta.addedRoutine = this.addedRoutine
+      this.dailyTodoList.meta.addedRoutine
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-        {
-          todos: v.dailyTodoList.todos,
-          meta: v.dailyTodoList.meta
-        }
+        v.dailyTodoList
       ).then(callbackFunc)
     },
     updateMainTodoListWithDate(date,todos,meta,callbackFunc){
-      this.dailyTodoList.meta.addedRoutine = this.addedRoutine
+      let v = this
+      this.dailyTodoList.meta.addedRoutine
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date).set(
-        {
-          todos: todos,
-          meta: meta
-        }
+        v.dailyTodoList
       ).then(callbackFunc)
     },
     addTodo(val){
@@ -392,17 +381,17 @@ export default {
     addRoutineItemToTodoList(){
       let counter = 0 //Routine counter, counts how many routines are added to the day
       // Add Routine Items to local list
-      for(let i = 0 ; i<this.routine.list.length;i++){
+      for(let i = 0 ; i<this.routine.length;i++){
         if(
           // 1.1 If the routine matches weekday
-          this.routine.list[i].weeklyRoutine.indexOf(this.parsedDisplayDateWeekday) > 0
+          this.routine[i].weeklyRoutine.indexOf(this.parsedDisplayDateWeekday) >= 0
           &&
           // 1.2 AND is turned on
-          this.routine.list[i].status
+          this.routine[i].status
           ){
           // 2. Add the routine item to today
-          console.log(this.routine.list[i].title)
-          this.addTodoWithoutUpdateToFirebase(this.routine.list[i].title)
+          console.log(this.routine[i].title)
+          this.addTodoWithoutUpdateToFirebase(this.routine[i].title)
           counter ++
           }
         }
@@ -414,6 +403,7 @@ export default {
           // Show snackbar
           this.$emit('showSnackbar',[0,`🕰 Routine items added to list.`])
         )
+        this.dailyTodoList.meta.addedRoutine = true
       }
       this.addRoutinePop = false
     },

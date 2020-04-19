@@ -45,12 +45,12 @@
                     class="text-uppercase" 
                     >
                     <template v-slot:activator>
-                    <v-list-item-title>Paint Color</v-list-item-title>
+                    <v-list-item-title>Add Label</v-list-item-title>
                     </template>
                         <v-list-item-group>
-                            <v-list-item v-for="(item,index) in colorList" :key="index" @click="paintColor(index)">
+                            <v-list-item v-for="(item,index) in labels" :key="index" @click="paintColor(index)">
                                 <v-list-item-title>
-                                <div class="colorCircle" :style="{background: item.color}"></div>{{item.colorTitle}}
+                                <div class="colorCircle" :style="{background: item.color}"></div>{{item.text}}
                                 </v-list-item-title>
                             </v-list-item>
                         </v-list-item-group>
@@ -81,46 +81,51 @@ export default {
         'parsedDisplayDateInHyphen',
         'parsedCurrentDateInHyphen'
     ],
-    data: function(){
+    data(){
         return{
-            colorList:[
-                {
-                    colorTitle: 'Red',
-                    color:'#E57373'
-                },
-                {
-                    colorTitle: 'Yellow',
-                    color:'#FDD835'
-                },
-                {
-                    colorTitle: 'Green',
-                    color: '#81C784'
-                },
-                {
-                    colorTitle: 'Blue',
-                    color:'#64B5F6'
-                },
-                {
-                    colorTitle: 'Grey',
-                    color: '#BDBDBD'
-                },
-            ]
+            // colorList:[
+            //     {
+            //         colorTitle: 'Red',
+            //         color:'#E57373'
+            //     },
+            //     {
+            //         colorTitle: 'Yellow',
+            //         color:'#FDD835'
+            //     },
+            //     {
+            //         colorTitle: 'Green',
+            //         color: '#81C784'
+            //     },
+            //     {
+            //         colorTitle: 'Blue',
+            //         color:'#64B5F6'
+            //     },
+            //     {
+            //         colorTitle: 'Grey',
+            //         color: '#BDBDBD'
+            //     },
+            // ]
+        }
+    },
+    computed: {
+        labels(){
+            return this.$store.state.otherInfo.labels
         }
     },
     methods:{
-        moveToToday:function(){
+        moveToToday(){
             this.$emit('moveToToday')
         },
-        showDatePicker: function(){
+        showDatePicker(){
             this.$emit('showDatePicker')
         },
-        moveToBacklog:function(){
+        moveToBacklog(){
             this.$emit('moveToBacklog')
         },
-        paintColor: function(index){
-            this.$emit('paintColor',[this.colorList[index].color])
+        paintColor(index){
+            this.$emit('paintColor',[this.labels[index].color])
         },
-        deletePop: function(){
+        deletePop(){
             this.$emit('deletePop')
         }
     },
