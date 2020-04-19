@@ -192,6 +192,18 @@ export default {
             value:'#81C784'
           },
           {
+            text: 'Amber',
+            value:'#FFB300'
+          },
+          {
+            text: 'Cyan',
+            value:'#00BCD4'
+          },
+          {
+            text: 'Purple',
+            value:'#AB47BC'
+          },
+          {
             text: 'Grey',
             value:'#BDBDBD'
           },

@@ -5,16 +5,20 @@
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
         @changeDate="changeDate"
         ></Calender>
-        <Backlog
+        <!-- <Backlog
         :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
         :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
         :activeElement="activeElement">
-        </Backlog>
+        </Backlog> -->
+        <Tomato
+        :uid="uid"
+        ></Tomato>
     </v-card>
 </template>
 <script>
-import Backlog from './Backlog.vue'
+// import Backlog from './Backlog.vue'
 import Calender from './Calender.vue'
+import Tomato from './Tomato.vue'
 
 export default {
     props:[
@@ -22,11 +26,11 @@ export default {
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
         'activeElement',
-        
     ],    
     components: {
-        Backlog,
-        Calender
+        // Backlog,
+        Calender,
+        Tomato
     },
     methods:{
         changeDate(res){

@@ -4,12 +4,18 @@ import vuetify from './plugins/vuetify'
 import {firestorePlugin} from 'vuefire'
 import VueRouter from 'vue-router'
 import {store} from './store/store.js'
+import VueNativeNotification from 'vue-native-notification'
 
 
 Vue.use(firestorePlugin)
 Vue.use(VueRouter)
 Vue.config.productionTip = false
 Vue.use(require('vue-shortkey'))
+Vue.use(VueNativeNotification, {
+  // Automatic permission request before
+  // showing notification (default: true)
+  requestOnNotify: true
+})
 
 //Router Setting
 import Steps from './views/Steps.vue'
