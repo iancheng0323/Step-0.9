@@ -1,45 +1,54 @@
 <template>
     <li :class="todoStatus" v-if="status != 0 && status != 3">
-        <v-icon
-        class="dragIndicator absolute"
-        size="20"
-        >drag_indicator</v-icon>
-        <v-container class="relative py-1">
-            <v-btn class="todoMarkBox"
-            :height="checkboxSize" 
-            :width="checkboxSize" 
-            min:width="0" 
-            tile x-small 
-            depressed
-            @click="changeStatus()"
-            ref="todoMarkBox"
-            :ripple="{ 'center' :true}"
-            icon
-            >
-            <v-icon size="22" :color="todoColor" class="colorLabel" v-show="status == 1">brightness_1</v-icon>
-            <v-icon size="22" color="grey" class="uncheckedCheckbox" v-show="status == 1">check_circle_outline</v-icon>
-            <v-icon size="22" color="#81C784" class="checkedCheckbox" v-if="status == 2">check</v-icon>
-            </v-btn>
-            <input 
-            class="todoTitle"
-            :value="title" 
-            @input="editTodo"
-            ref="todoTitleInput"
-            @keydown.esc="blurInput"
-            @keydown.enter="blurInput">
-            <v-btn
-            x-small
-            right
-            absolute
-            icon
-            tile
-            :ripple="false"
-            class="moreIcon"
-            @click="toggleActionMenu"
-            :class="{opacity1: actionMenu}"
-            >
-                <v-icon>more_horiz</v-icon>
-            </v-btn>
+        <v-container class="relative pt-2 pb-1">
+            <v-row>
+                <v-col cols="12" class="pa-0 d-flex align-content-center">
+                    <v-icon
+                    class="dragIndicator ml-n1"
+                    size="20"
+                    >drag_indicator</v-icon>
+                    <v-btn 
+                    class="todoMarkBox ma-2 ml-0"
+                    :height="checkboxSize" 
+                    :width="checkboxSize" 
+                    min:width="0" 
+                    tile x-small 
+                    depressed
+                    @click="changeStatus()"
+                    ref="todoMarkBox"
+                    :ripple="{ 'center' :true}"
+                    icon
+                    >
+                        <v-icon size="22" :color="todoColor" class="colorLabel" v-show="status == 1">brightness_1</v-icon>
+                        <v-icon size="22" color="grey" class="uncheckedCheckbox" v-show="status == 1">check_circle_outline</v-icon>
+                        <v-icon size="22" color="#81C784" class="checkedCheckbox" v-if="status == 2">check</v-icon>
+                    </v-btn>
+                    <input 
+                    class="todoTitle flex-grow-1"
+                    :value="title" 
+                    @input="editTodo"
+                    ref="todoTitleInput"
+                    @keydown.esc="blurInput"
+                    @keydown.enter="blurInput">
+                    <v-btn
+                    x-small
+                    right
+                    icon
+                    tile
+                    :ripple="false"
+                    class="moreIcon mr-4 mt-2"
+                    @click="toggleActionMenu"
+                    :class="{opacity1: actionMenu}"
+                    >
+                        <v-icon>more_horiz</v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <v-row class="mt-n1" v-if="label">
+                <v-col col="12" class="pa-0 ml-4">
+                    <span class="caption label">#{{label}}</span>
+                </v-col>
+            </v-row>
             <TodoItemActionMenu
             v-show="actionMenu"
             :status="status"
@@ -83,6 +92,7 @@
                 <v-btn block @click="moveToDate">Move</v-btn>
             </v-date-picker>
         </v-dialog>
+        <v-divider></v-divider>
     </li>
 </template>
 <script>
@@ -101,14 +111,15 @@ export default {
         'activeElement',
         'parsedDisplayDateInHyphen',
         'parsedCurrentDateInHyphen',
-        'color'
+        'color',
+        'label'
     ],
     computed:{
         todoStatus:function(){
             if( this.status == 1 ){
-                return 'todo todoItem pl-2'
+                return 'todo todoItem'
             }else{
-                return 'done todoItem pl-2'
+                return 'done todoItem'
             }
         },
         todoColor:function(){
@@ -121,7 +132,7 @@ export default {
             return r
         }
     },
-    data: function(){
+    data(){
         return{
             checkboxSize: 18,
             editedValue: '',
@@ -129,14 +140,14 @@ export default {
             deletePop: false,
             showDatePicker: false,
             datePickerValue: '',
-            onHov:false
+            onHov:false,
         }
     },
-    created: function(){
+    created(){
         this.datePickerValue = this.parsedDisplayDateInHyphen
     },
     methods:{
-        changeStatus: function(){
+        changeStatus(){
             let toStatus
             if(this.status == 1){
                 toStatus = 2
@@ -146,31 +157,31 @@ export default {
             this.$refs.todoMarkBox.$el.blur()
             this.$emit('changeStatus',[this.todoID,toStatus])
         },
-        editTodo: function(event){
+        editTodo(event){
             this.editedValue = event.target.value
             this.$emit('editTodo',[this.todoID,this.editedValue])
         },
-        toggleActionMenu: function(){
+        toggleActionMenu(){
             this.actionMenu = !this.actionMenu
         },
-        deleteTodo: function(){
+        deleteTodo(){
             this.deletePop = false;
             this.$emit('deleteTodo',[this.todoID, this.title])
         },
-        moveToBacklog: function(){
+        moveToBacklog(){
             this.$emit('moveToBacklog',[this.todoID, this.title])
         },
-        moveToDate: function(){
+        moveToDate(){
             this.showDatePicker= false
             this.actionMenu = false
             this.$emit('moveToDate',[this.todoID,this.title,this.datePickerValue])
         },
-        paintColor:function(res){
+        paintColor(res){
             let color = res[0]
             this.actionMenu = false
             this.$emit('paintColor',[this.todoID,color])
         },
-        moveToToday:function(){
+        moveToToday(){
             this.actionMenu = false
             this.$emit('moveToToday',[this.todoID,this.title])
         },
@@ -179,7 +190,7 @@ export default {
         },
     },
     watch:{
-        activeElement: function(newVal){
+        activeElement(newVal){
             if(this.actionMenu && newVal == 'BODY'){
                 this.actionMenu = false
             }
@@ -203,16 +214,16 @@ li{
     position: relative;
 }
 .todoMarkBox{
-    min-width:0px!important;
-    position:absolute;
-    top:7px;
+    // min-width:0px!important;
+    // position:absolute;
+    // top:7px;
     outline-color: transparent;
     transition:0.01s
 }
 .todoTitle{
-    width:100%;
+    // width:100%;
     display:block;
-    padding-left:26px;
+    // padding-left:26px;
     border-bottom: 2px solid rgba(255,255,255,0);
     font-size: 18px;
     &:focus{
@@ -235,7 +246,7 @@ li{
 .moreIcon{
     opacity: 0;
     transition:0.05s;
-    top:3px;
+    // top:3px;
     // &:focus{
     //     opacity: 1;
     // }
@@ -280,5 +291,8 @@ li{
     &:active{
         cursor:grabbing;
     }
+}
+.label{
+    color: #757575;
 }
 </style>

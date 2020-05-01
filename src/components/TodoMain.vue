@@ -41,7 +41,7 @@
         ref="AddTodoForm"
         v-if="mainTodoListRecieved"
         v-shortkey="['shift', 'n']" 
-        @shortkey.native="$refs.AddTodoForm.isAddingTodo = true"
+        @shortkey.native="addTodoShortKey()"
       ></AddTodoForm>
     </v-container>
     <div class="bottomHint">
@@ -113,41 +113,41 @@ export default {
       return count
     },
   },
-  created: function(){
+  created(){
   },
   methods:{
-    addTodo: function(val){
+    addTodo(val){
       this.$refs.AddTodoForm.isAddingTodo = false
       this.$emit('addTodo',val)
     },
-    editTodo: function(res){
+    editTodo(res){
       this.$emit('editTodo',res)
     },
-    changeStatus: function(res){
+    changeStatus(res){
       this.$emit('changeStatus',res)
     },
-    deleteTodo: function(res){
+    deleteTodo(res){
       this.$emit('deleteTodo',res)
     },
-    moveToBacklog:function(res){
+    moveToBacklog(res){
       this.$emit('moveToBacklog',res)
     },
-    toggleAddTodo: function(){
+    toggleAddTodo(){
       this.$refs.AddTodoForm.isAddingTodo = !this.$refs.AddTodoForm.isAddingTodo
     },
-    countRenderedTodoItem: function(){
+    countRenderedTodoItem(){
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
     },
-    moveToDate: function(res){
+    moveToDate(res){
       this.$emit('moveToDate',res)
     },
-    paintColor:function(res){
+    paintColor(res){
       this.$emit('paintColor',res)
     },
-    moveToToday:function(res){
+    moveToToday(res){
       this.$emit('moveToToday',res)
     },
-    dragTodo:function(){
+    dragTodo(){
       this.$emit('dragTodo')
     },
     showAddTodoFailSnackbar(res){
@@ -155,9 +155,16 @@ export default {
     },
     bulkMoveToToday(){
       this.$emit('bulkMoveToToday')
+    },
+    addTodoShortKey(){
+      if(this.$refs.AddTodoForm.isAddingTodo === false){
+        this.$refs.AddTodoForm.isAddingTodo = true
+      }else{
+        console.log('s')
+      }
     }
   },
-  updated:function(){
+  updated(){
     this.countRenderedTodoItem()
   },
 }

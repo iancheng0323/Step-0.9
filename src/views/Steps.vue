@@ -223,10 +223,12 @@ export default {
       ).then(callbackFunc)
     },
     updateMainTodoListWithDate(date,todos,meta,callbackFunc){
-      let v = this
       this.dailyTodoList.meta.addedRoutine
       db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date).set(
-        v.dailyTodoList
+        {
+          todos: todos,
+          meta: meta
+        }
       ).then(callbackFunc)
     },
     addTodo(val){
@@ -340,7 +342,6 @@ export default {
       })
     },
     bulkMoveToToday(){
-      console.log('bulk move to today')
       let v = this
       let holder = []
       //1. Get all undone todos of the day -> use this.undoneTodo
@@ -356,6 +357,7 @@ export default {
         v.unDoneTodo.forEach( todo => { 
           holder.push( todo )
         })
+        console.log(holder)
         //3. Update the change of the to-date to firebase
         v.updateMainTodoListWithDate(
           v.parsedCurrentDateInHyphen,

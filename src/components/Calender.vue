@@ -16,7 +16,7 @@ export default {
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen'
     ],
-    data: function(){
+    data(){
         return{
             pickedDate:'',
             beforeValue:'',
@@ -24,7 +24,7 @@ export default {
         }
     },
     methods:{
-        changeDate: function(){
+        changeDate(){
             let startDate = Date.parse(this.beforeValue)
             let endDate = Date.parse(this.pickedDate)
             const aDay = 86400000
@@ -33,16 +33,16 @@ export default {
             this.$store.commit('setDisplayDate',{val : diff})
             this.$emit('changeDate') //Trigger coresponding necessary method at mother component
         },
-        resetDate:function(){
+        resetDate(){
             this.pickedDate = this.parsedDisplayDateInHyphen
             this.beforeValue = this.parsedDisplayDateInHyphen
         }
     },
-    created: function(){
+    created(){
         this.resetDate()
     },
     watch:{
-        parsedDisplayDateInHyphen:function(){
+        parsedDisplayDateInHyphen(){
             this.resetDate()
         }
     },

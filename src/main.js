@@ -3,6 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import {firestorePlugin} from 'vuefire'
 import VueRouter from 'vue-router'
+import vueShortkey from 'vue-shortkey'
 import {store} from './store/store.js'
 import VueNativeNotification from 'vue-native-notification'
 
@@ -10,7 +11,8 @@ import VueNativeNotification from 'vue-native-notification'
 Vue.use(firestorePlugin)
 Vue.use(VueRouter)
 Vue.config.productionTip = false
-Vue.use(require('vue-shortkey'))
+// Vue.use(require('vue-shortkey'))
+Vue.use(vueShortkey, { prevent: ['input', 'textarea'] })
 Vue.use(VueNativeNotification, {
   // Automatic permission request before
   // showing notification (default: true)

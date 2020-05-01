@@ -35,7 +35,7 @@ export default {
     name: 'AddTodoForm',
     props:[
     ],
-    data:function(){
+    data(){
         return{
             inputMessage: '',
             isAddingTodo:false
@@ -44,7 +44,7 @@ export default {
     computed:{
     },
     methods:{
-        addTodo: function(){
+        addTodo(){
             if(this.inputMessage.trim().length>0){
                 this.$emit('addTodo',this.inputMessage)
                 this.inputMessage = ''
@@ -52,14 +52,14 @@ export default {
                 this.$emit('addTodoFail',[2,'Invalid Input'])
             }
         },
-        toggleAddTodo: function(){
+        toggleAddTodo(){
             this.isAddingTodo = !this.isAddingTodo
         },
         tester(){
             console.log('wow')
         },
     },
-    mounted: function(){
+    mounted(){
         document.body.addEventListener('focus',function(){
             console.log('wow focus')
         })

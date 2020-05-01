@@ -28,7 +28,7 @@
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                    <v-list-item
+                    <!-- <v-list-item
                     @click="moveToBacklog"
                     class="text-uppercase" 
                     v-if="status != 3"
@@ -39,7 +39,7 @@
                             Move To Backlog
                             </v-list-item-title>
                         </v-list-item-content>
-                    </v-list-item>
+                    </v-list-item> -->
                     <v-divider></v-divider>
                     <v-list-group
                     class="text-uppercase" 
