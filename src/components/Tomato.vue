@@ -1,44 +1,46 @@
 <template>
-  <v-container>
-      <h1 class="my-2 headline">Tomato</h1>
-      
-      <v-row>
-          <v-col col="8">
-              <h2 class="overline">{{status}}</h2>
-              <h3 class="title">{{displayMin}}:{{displaySec}}</h3>
-          </v-col>
-          <v-col col="4">
-              <v-btn
-                class="float-right"
-                v-if="!counting"
-                @click="startCounting"
-                icon
-                ><v-icon>mdi-play</v-icon></v-btn>
-                <v-btn
-                class="float-right"
-                v-if="counting"
-                @click="pauseCounting"
-                icon
-                >
-                <v-icon>mdi-pause</v-icon></v-btn>
-                <v-btn
-                class="float-right"
-                v-if="middle || counting"
-                @click="newTomato"
-                icon
-                >
-                <v-icon>mdi-replay</v-icon></v-btn>
-                <v-btn
-                class="float-right"
-                v-if="middle || counting"
-                @click="stop"
-                icon
-                >
-                <v-icon>mdi-stop</v-icon></v-btn>
-          </v-col>
-      </v-row>
-      <p>Finished tomato: {{finishedTomatoCount}}</p>
-  </v-container>
+    <v-card class="mt-2" outlined tile>
+        <v-container>
+            <h1 class="my-2 headline">Tomato</h1>
+            
+            <v-row>
+                <v-col col="8">
+                    <h2 class="overline">{{status}}</h2>
+                    <h3 class="title">{{displayMin}}:{{displaySec}}</h3>
+                </v-col>
+                <v-col col="4">
+                    <v-btn
+                        class="float-right"
+                        v-if="!counting"
+                        @click="startCounting"
+                        icon
+                        ><v-icon>mdi-play</v-icon></v-btn>
+                        <v-btn
+                        class="float-right"
+                        v-if="counting"
+                        @click="pauseCounting"
+                        icon
+                        >
+                        <v-icon>mdi-pause</v-icon></v-btn>
+                        <v-btn
+                        class="float-right"
+                        v-if="middle || counting"
+                        @click="newTomato"
+                        icon
+                        >
+                        <v-icon>mdi-replay</v-icon></v-btn>
+                        <v-btn
+                        class="float-right"
+                        v-if="middle || counting"
+                        @click="stop"
+                        icon
+                        >
+                        <v-icon>mdi-stop</v-icon></v-btn>
+                </v-col>
+            </v-row>
+            <p>Finished tomato: {{finishedTomatoCount}}</p>
+        </v-container>
+    </v-card>
 </template>
 
 <script>
@@ -97,7 +99,8 @@ export default {
             // }
             // ).then(callbackFunc)
             //TBD
-            console.log(this.uid)
+            console.log(this.uid,callbackFunc)
+
         },
         stop(){
             console.log('s')

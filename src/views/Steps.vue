@@ -1,23 +1,25 @@
 <template>
-    <v-container relative>
-        <StepHeader  
+    <v-container relative class="px-0">
+        <!-- <StepHeader  
           @changeDate="changeDate"
           @addRoutineItemToTodoList="addRoutineItemToTodoList"
           @showAddRoutinePop="showAddRoutinePop"
           :addedRoutine="dailyTodoList.meta.addedRoutine"
           :key="displayDateKey"
           :displayDate="displayDate">
-        </StepHeader>
-      <v-container grid-list-md>
+        </StepHeader> -->
+      <v-container grid-list-md class="pa-0">
           <v-layout>
-              <v-flex md6>
+              <v-flex md8>
                   <TodoMain 
                   ref="TodoMain"
+                  :displayDate="displayDate"
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                   :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                   :activeElement="activeElement"
                   :dailyTodoList="dailyTodoList"
                   :mainTodoListRecieved="mainTodoListRecieved"
+                  :addedRoutine="dailyTodoList.meta.addedRoutine"
                   @addTodo="addTodo"
                   @editTodo="editTodo"
                   @changeStatus="changeStatus"
@@ -28,10 +30,13 @@
                   @moveToToday="moveToToday"
                   @dragTodo="dragTodo"
                   @bulkMoveToToday="bulkMoveToToday"
+                  @addComment="addComment"
+                  @addRoutineItemToTodoList="addRoutineItemToTodoList"
+                  @showAddRoutinePop="addRoutinePop = true"
                   >
                   </TodoMain>
               </v-flex>
-              <v-flex ml4 md5 ms6>
+              <v-flex ml4 md4 ms6>
                   <TodoSide
                   :uid="uid"
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -74,7 +79,7 @@
 
 <script>
 import TodoMain from '../components/TodoMain.vue'
-import StepHeader from '../components/StepHeader.vue'
+// import StepHeader from '../components/StepHeader.vue'
 import TodoSide from '../components/TodoSide.vue'
 import db from '../firebaseConfig.js'
 
@@ -89,7 +94,7 @@ export default {
   ],
   components:{
     TodoMain,
-    StepHeader,
+    // StepHeader,
     TodoSide,
   },
   data(){
@@ -184,7 +189,7 @@ export default {
     createNewTodoObject(title,status,todoSrc){
       let newTodoItem = {
         title: title,
-        descriptopn:'',
+        comments:[],
         status: status,
         creationTimeStamp: Date.now(),
         creationTime: `${this.parsedCurrentDateInHyphen}`,
@@ -265,20 +270,6 @@ export default {
         this.$emit('showSnackbar',[3,`🗑 "${title}" is deleted.`])
 
       )
-    },
-    moveToBacklog(res){
-      // let todoID = res[0]
-      let title = res[1]
-      // set current todo item status to 3, due date to not set
-      // this.dailyTodoList.todos[todoID].status = 3
-      // this.dailyTodoList.todos[todoID].dueDate = 'not set'
-      // copy the todo item in local backlog
-      // this.backlog.todos.push(this.dailyTodoList.todos[todoID])
-      // update changes to firebase
-      // this.updateBacklogTodoList()
-      // this.updateMainTodoList(
-        this.$emit('showSnackbar',[0,`"${title}" moved to backlog.`])
-      // )
     },
     moveToDate(res){
       let todoID = res[0]
@@ -409,9 +400,39 @@ export default {
       }
       this.addRoutinePop = false
     },
-    showAddRoutinePop(){
-      this.addRoutinePop = true
-    }
+    addComment(res){
+      // Res Description
+      // res:{
+      //   id: id // Number
+      //   comment: comment //String
+      //   time: time // Number, unix time stamp
+      // }
+      let id = res.id
+      let comment = res.comment
+      let time = res.time
+      if(!this.dailyTodoList.todos[id].comments){
+        this.dailyTodoList.todos[id].comments = []
+      }
+      this.dailyTodoList.todos[id].comments.push({
+        comment: comment,
+        time: time
+      })
+      this.updateMainTodoList()
+    },
+    moveToBacklog(res){
+      // let todoID = res[0]
+      let title = res[1]
+      // set current todo item status to 3, due date to not set
+      // this.dailyTodoList.todos[todoID].status = 3
+      // this.dailyTodoList.todos[todoID].dueDate = 'not set'
+      // copy the todo item in local backlog
+      // this.backlog.todos.push(this.dailyTodoList.todos[todoID])
+      // update changes to firebase
+      // this.updateBacklogTodoList()
+      // this.updateMainTodoList(
+        this.$emit('showSnackbar',[0,`"${title}" moved to backlog.`])
+      // )
+    },
   },
   created(){ 
     this.setDates()

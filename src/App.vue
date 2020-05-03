@@ -1,26 +1,57 @@
 <template>
   <v-app id="App">
-    <v-content>
-      <router-view 
-      @signInWithGoogle="signInWithGoogle"
-      @logout="logout"
-      @showSnackbar="showSnackbar"
-      :auth="auth"
-      :userName="userName"
-      :userEmail="userEmail"
-      :uid="uid"
-      >
-      </router-view>
-    </v-content>
-    <v-navigation-drawer 
-      permanent 
-      app 
-      :width="navWidth"
-      v-if="auth"
-      dark
-      >
-        <!-- <v-container> -->
-          <v-list>
+    <v-app-bar
+    color="#23395B"
+    fixed
+    dark
+    short
+    app
+    clipped-left
+    flat
+    >
+    <!-- <v-container> -->
+      <v-app-bar-nav-icon
+      @click="drawer = true"
+      ></v-app-bar-nav-icon>
+    <v-toolbar-title>
+      <v-icon small class="mr-2 mb-1" >
+        fa-paw
+      </v-icon>
+      <span class="title">Steps</span>
+    </v-toolbar-title>
+    <v-spacer></v-spacer>    
+    <v-btn
+    text
+    to="/account"
+    >
+      <v-icon left>fa-user-circle</v-icon>
+      <span class="text-uppercase">{{userName}}</span>
+    </v-btn>
+    <!-- </v-container> -->
+    </v-app-bar>
+        <v-content>
+          <v-container>
+            <router-view 
+            @signInWithGoogle="signInWithGoogle"
+            @logout="logout"
+            @showSnackbar="showSnackbar"
+            :auth="auth"
+            :userName="userName"
+            :userEmail="userEmail"
+            :uid="uid"
+            >
+            </router-view>
+          </v-container>
+        </v-content>
+        <v-navigation-drawer
+        app
+        permanent
+        :width="navWidth"
+        light
+        v-model="drawer"
+        clipped
+          >
+          <v-list class="pt-0">
           <v-list-item-group>
             <v-list-item
             v-for="(item,index) in listItem"
@@ -41,17 +72,13 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-        <!-- <template v-slot:append> -->
-          <!-- <v-divider></v-divider> -->
-          <!-- <v-container> -->
-                <!-- <v-btn text block class="myAccountButton" to="account"> -->
-                  <!-- <v-icon class="icon">account_circle</v-icon> My Account -->
-                <!-- </v-btn> -->
-                <!-- <v-btn text block class="myAccountButton" @click="toggleNav">
-                  <v-icon class="icon">chevron_left</v-icon> Show Less
-                </v-btn> -->
-          <!-- </v-container> -->
-        <!-- </template> -->
+
+        <template v-slot:append>
+          <v-divider></v-divider>
+          <div class="py-4">
+            <v-btn small block text :ripple="false" color="#BDBDBD">About Steps</v-btn>
+          </div>
+        </template>
       </v-navigation-drawer>
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
@@ -69,31 +96,26 @@ export default {
   data(){
     return{
       minNav: false,
+      drawer: false,
       listItem: [
         {
-          title: 'Step',
+          title: 'List',
           link: '/',
-          iconText: 'fa-paw',
+          iconText: 'fa-lightbulb',
           fontSize: '24'
         },
-        // {
-        //   title: 'Mountain',
-        //   link: '/mountains',
-        //   iconText: 'fa-mountain',
-        //   fontSize: '20'
-        // },
         {
           title: 'number',
           link: '/numbers',
           iconText: 'fa-cube',
           fontSize: '24'
         },
-        {
-          title: 'account',
-          link: '/account',
-          iconText: 'fa-user-circle',
-          fontSize: '24'
-        },
+        // {
+        //   title: 'account',
+        //   link: '/account',
+        //   iconText: 'fa-user-circle',
+        //   fontSize: '24'
+        // },
       ],
       snackbarMessage: '',
       snackbarControl: false,

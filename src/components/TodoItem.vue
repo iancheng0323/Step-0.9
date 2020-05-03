@@ -27,6 +27,8 @@
                     class="todoTitle flex-grow-1"
                     :value="title" 
                     @input="editTodo"
+                    @focus="isEditing = true"
+                    @blur="isEditing = false"
                     ref="todoTitleInput"
                     @keydown.esc="blurInput"
                     @keydown.enter="blurInput">
@@ -36,7 +38,35 @@
                     icon
                     tile
                     :ripple="false"
-                    class="moreIcon mr-4 mt-2"
+                    class="actionIcons mr-2 mt-2"
+                    @click="editLabelPanel = true"
+                    :class="{opacity1: actionMenu}"
+                    >
+                        <v-icon>label</v-icon>
+                    </v-btn>
+                    <EditLabelPanel
+                        v-if="editLabelPanel"
+                        @save="editLabelPanel = false"
+                    ></EditLabelPanel>
+                    <v-btn
+                    x-small
+                    right
+                    icon
+                    tile
+                    :ripple="false"
+                    class="actionIcons mr-2 mt-2"
+                    @click="addCommentPop = true"
+                    :class="{opacity1: actionMenu}"
+                    >
+                        <v-icon>add_comment</v-icon>
+                    </v-btn>
+                    <v-btn
+                    x-small
+                    right
+                    icon
+                    tile
+                    :ripple="false"
+                    class="actionIcons mr-4 mt-2"
                     @click="toggleActionMenu"
                     :class="{opacity1: actionMenu}"
                     >
@@ -92,37 +122,78 @@
                 <v-btn block @click="moveToDate">Move</v-btn>
             </v-date-picker>
         </v-dialog>
-        <v-divider></v-divider>
+        <v-dialog v-model="addCommentPop" width="600">
+            <v-card min-height="300">
+                <v-card-title>Comment</v-card-title>
+                <v-card-subtitle>{{title}}</v-card-subtitle>
+                <v-divider></v-divider>
+                <v-list-item v-for="(comment,index) in todo.comments" :key="index" ripple two-line>
+                    <v-list-item-content>
+                        <v-list-item-title>{{comment.comment}}</v-list-item-title>
+                        <v-list-item-subtitle>{{comment.time}}</v-list-item-subtitle>
+                    </v-list-item-content>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-card-text class="py-0">
+                        <v-form>
+                            <v-textarea
+                            placeholder="Write some comment about this todo item"
+                            v-model="commentPopInput"
+                            ></v-textarea>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="pa-6">
+                        <v-spacer></v-spacer>
+                        <v-btn @click="addCommentPop = false" text class="addRoutineFormButton">Cancel</v-btn>
+                        <v-btn @click="addComment" class="addRoutineFormButton">Add</v-btn>
+                    </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-divider color="#BDBDBD"></v-divider>
     </li>
 </template>
 <script>
 
 import TodoItemActionMenu from './TodoItemActionMenu.vue'
+import EditLabelPanel from './EditLabelPanel.vue'
 
 export default {
     name:'TodoItem',
     components:{
-        TodoItemActionMenu
+        TodoItemActionMenu,
+        EditLabelPanel
     },
     props:[
-        'title',
-        'status',
+        'todo',
         'todoID',
+        'label',
         'activeElement',
         'parsedDisplayDateInHyphen',
         'parsedCurrentDateInHyphen',
-        'color',
-        'label'
     ],
     computed:{
-        todoStatus:function(){
-            if( this.status == 1 ){
-                return 'todo todoItem'
-            }else{
-                return 'done todoItem'
-            }
+        title(){
+            return this.todo.title
         },
-        todoColor:function(){
+        status(){
+            return this.todo.status
+        },
+        color(){
+            return this.todo.color
+        },
+        todoStatus(){
+            let r = ''
+            if(this.isEditing){
+                r = 'editing'
+            }
+            if( this.status == 1 ){
+                r += ' todo todoItem'
+            }else{
+                r += ' done todoItem'
+            }
+            return r
+        },
+        todoColor(){
             let r
             if(this.color){
                 r = this.color
@@ -141,6 +212,10 @@ export default {
             showDatePicker: false,
             datePickerValue: '',
             onHov:false,
+            addCommentPop: false,
+            editLabelPanel: false,
+            isEditing: false,
+            commentPopInput: '',
         }
     },
     created(){
@@ -188,6 +263,16 @@ export default {
         blurInput(){
             this.$refs.todoTitleInput.blur()
         },
+        addComment(){
+            let res = {
+                id: this.todoID,
+                comment: this.commentPopInput,
+                time: Date.now()
+            }
+            this.$emit('addComment',res)
+            this.commentPopInput = '' //Clear input area
+            // this.addCommentPop = false //Close Popup
+        }
     },
     watch:{
         activeElement(newVal){
@@ -228,7 +313,6 @@ li{
     font-size: 18px;
     &:focus{
         outline: none;
-        border-bottom: 2px solid #80CBC4;
     }
 }
 .todo .todoTitle{
@@ -243,7 +327,7 @@ li{
 .done .todoMarkBox{
     outline-color: transparent!important;
 }
-.moreIcon{
+.actionIcons{
     opacity: 0;
     transition:0.05s;
     // top:3px;
@@ -258,7 +342,7 @@ li{
     // border-bottom:solid 1px rgba(0,0,0,0.02);
     &:hover{
         background-color: rgba(0,0,0,0.02);
-        .moreIcon{
+        .actionIcons{
             opacity: 1;
         }
         .colorLabel{
@@ -270,7 +354,13 @@ li{
         .dragIndicator{
             opacity: 0.2;
         }
-    }
+    };
+    // &:focus-within{
+    //     background-color: rgba(89,201,165,0.08);
+    // }
+}
+.editing{
+    background-color: rgba(89,201,165,0.08)!important;
 }
 .opacity1{
     opacity:1!important;

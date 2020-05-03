@@ -1,12 +1,12 @@
 <template>
 <v-container>
-    <h1 class="display-1 mt-2 font-weight-medium myHeader mb-2">
+    <h1 class="headline mt-2 myHeader mb-2">
         ☀️ {{this.parsedDisplayDateInSlash}}
         <!-- <span class="date grey--text"></span> -->
     </h1>
-    <v-btn text @click="prevDay" class="grey--text text-capitalize" small>Previous Day</v-btn>
-    <v-btn text @click="nextDay" class="grey--text text-capitalize" small>Next Day</v-btn>
-    <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine</v-btn>
+    <!-- <v-btn text @click="prevDay" class="grey--text text-capitalize" small>Previous Day</v-btn> -->
+    <!-- <v-btn text @click="nextDay" class="grey--text text-capitalize" small>Next Day</v-btn> -->
+    <!-- <v-btn text @click="addRoutineItemToTodoList" class="grey--text text-capitalize" small>Add Routine</v-btn> -->
     <!-- <v-divider class="mt-1"></v-divider> -->
 </v-container>
 </template>

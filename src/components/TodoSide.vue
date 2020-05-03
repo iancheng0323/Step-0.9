@@ -1,19 +1,19 @@
 <template>
-    <v-card min-height="500">
-        <Calender
-        :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-        :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-        @changeDate="changeDate"
-        ></Calender>
-        <!-- <Backlog
-        :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-        :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-        :activeElement="activeElement">
-        </Backlog> -->
-        <Tomato
-        :uid="uid"
-        ></Tomato>
-    </v-card>
+    <v-container class="pa-0">
+            <Calender
+                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+                @changeDate="changeDate"
+            ></Calender>
+            <!-- <Backlog
+            :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+            :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+            :activeElement="activeElement">
+            </Backlog> -->
+            <Tomato
+                :uid="uid"
+            ></Tomato>
+    </v-container>
 </template>
 <script>
 // import Backlog from './Backlog.vue'

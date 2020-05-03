@@ -1,14 +1,20 @@
 <template>
-<!-- <v-container fluid> -->
-    <v-card height="300" flat tile>
-        <v-calendar
-          color="teal lighten-4"
-          :now="parsedDisplayDateInHyphen"
-          v-model="pickedDate"
-          @click:date="changeDate"
-    ></v-calendar>
+    <v-card outlined tile>
+        <v-card-title class="caption text-uppercase">
+            Calendar
+        </v-card-title>
+        <v-card-text class="px-0">
+            <v-calendar
+            color="teal lighten-4"
+            :now="parsedDisplayDateInHyphen"
+            v-model="pickedDate"
+            @click:date="changeDate"
+        ></v-calendar>
+        </v-card-text>
+    <!-- <v-btn text @click="prevDay()" class="grey--text text-capitalize" small>Previous Day</v-btn> -->
+    <!-- <v-btn text @click="nextDay()" class="grey--text text-capitalize" small>Next Day</v-btn> -->
+        
     </v-card>
-<!-- </v-container> -->
 </template>
 <script>
 export default {
@@ -36,7 +42,17 @@ export default {
         resetDate(){
             this.pickedDate = this.parsedDisplayDateInHyphen
             this.beforeValue = this.parsedDisplayDateInHyphen
-        }
+        },
+        prevDay(){
+            console.log('s')
+            // this.$store.commit('setDisplayDate',{val : -1})
+            // this.$emit('changeDate')
+        },
+        nextDay(){
+            console.log('s')
+            // this.$store.commit('setDisplayDate',{val : 1})
+            // this.$emit('changeDate') //Trigger coresponding necessary method at mother component
+        },
     },
     created(){
         this.resetDate()
