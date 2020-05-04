@@ -1,6 +1,7 @@
 <template>
   <v-app id="App">
     <v-app-bar
+    v-if="auth"
     color="#23395B"
     fixed
     dark
@@ -9,9 +10,8 @@
     clipped-left
     flat
     >
-    <!-- <v-container> -->
       <v-app-bar-nav-icon
-      @click="drawer = true"
+      @click="drawer = !drawer"
       ></v-app-bar-nav-icon>
     <v-toolbar-title>
       <v-icon small class="mr-2 mb-1" >
@@ -19,33 +19,39 @@
       </v-icon>
       <span class="title">Steps</span>
     </v-toolbar-title>
-    <v-spacer></v-spacer>    
-    <v-btn
-    text
-    to="/account"
-    >
-      <v-icon left>fa-user-circle</v-icon>
-      <span class="text-uppercase">{{userName}}</span>
-    </v-btn>
-    <!-- </v-container> -->
+    <v-spacer></v-spacer>
+    <div>
+      <v-btn
+      text
+      @click="accountCard = !accountCard"
+      >
+        <v-icon left>fa-user-circle</v-icon>
+        <span class="text-uppercase">{{userName}}</span>
+      </v-btn>
+      <AccountCard
+      :userName="userName"
+      v-show="accountCard"
+      @logout="logout()"
+      ></AccountCard>
+    </div>
     </v-app-bar>
         <v-content>
           <v-container>
             <router-view 
             @signInWithGoogle="signInWithGoogle"
-            @logout="logout"
             @showSnackbar="showSnackbar"
             :auth="auth"
             :userName="userName"
             :userEmail="userEmail"
             :uid="uid"
+            :activeElement="activeElement"
             >
             </router-view>
           </v-container>
         </v-content>
         <v-navigation-drawer
+        v-if="auth"
         app
-        permanent
         :width="navWidth"
         light
         v-model="drawer"
@@ -76,7 +82,7 @@
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="py-4">
-            <v-btn small block text :ripple="false" color="#BDBDBD">About Steps</v-btn>
+            <v-btn small block text :ripple="false" color="#BDBDBD" to="/about">About Steps</v-btn>
           </div>
         </template>
       </v-navigation-drawer>
@@ -89,14 +95,19 @@
 <script>
 //Firebase Login
 import firebase from 'firebase'
+import AccountCard from './components/AccountCard.vue'
 let provider = new firebase.auth.GoogleAuthProvider();
 
 export default {
   name: 'app',
+  components:{
+    AccountCard,
+  },
   data(){
     return{
       minNav: false,
-      drawer: false,
+      drawer: true,
+      activeElement: '',
       listItem: [
         {
           title: 'List',
@@ -105,21 +116,22 @@ export default {
           fontSize: '24'
         },
         {
-          title: 'number',
+          title: 'Number',
           link: '/numbers',
           iconText: 'fa-cube',
           fontSize: '24'
         },
-        // {
-        //   title: 'account',
-        //   link: '/account',
-        //   iconText: 'fa-user-circle',
-        //   fontSize: '24'
-        // },
+        {
+          title: 'Settings',
+          link: '/settings',
+          iconText: 'fa-sliders-h',
+          fontSize: '24'
+        },
       ],
       snackbarMessage: '',
       snackbarControl: false,
       snackbarColor: '',
+      accountCard: false,
     }
   },
   computed:{
@@ -222,8 +234,16 @@ export default {
     })
     this.$store.commit('setCurrentDate', {currentDate: new Date()}) //Pointing the date to current date
     this.$store.commit('setDisplayDate',{displayDate: new Date()}) //Set the display date on current date
+    document.body.addEventListener('mouseup',function(){
+        v.activeElement = document.activeElement.tagName
+    })
   },
   watch:{
+    activeElement(newVal){
+      if(this.accountCard && newVal == 'BODY'){
+          this.accountCard = false
+      }
+    },
   }
 }
 </script>
@@ -238,11 +258,11 @@ export default {
 }
 .activated{
   .menuIcon{
-    color:#009688!important;
+    color:#47A184!important;
     
   }
   .menuTitle{
-    color: #009688;
+    color: #47A184;
   }
 }
 .myAccountButton{

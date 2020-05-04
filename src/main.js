@@ -23,8 +23,9 @@ Vue.use(VueNativeNotification, {
 import Steps from './views/Steps.vue'
 import Login from './views/Login.vue'
 // import Mountains from './views/Mountains.vue'
-// import Numbers from './views/Numbers.vue'
-import Account from './views/Account.vue'
+import Numbers from './views/Numbers.vue'
+import Settings from './views/Settings.vue'
+import About from './views/About.vue'
 
 
 const routes = [
@@ -53,9 +54,21 @@ const routes = [
     // props:[],
   // },
   {
-    path: '/account',
-    name: 'Account',
-    component: Account,
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
+    // props:[],
+  },
+  {
+    path: '/numbers',
+    name: 'Numbers',
+    component: Numbers,
+    // props:[],
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: About,
     // props:[],
   },
 ]

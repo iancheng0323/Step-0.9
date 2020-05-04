@@ -1,9 +1,9 @@
 <template>
-    <v-card outlined tile>
+    <v-card outlined tile class="pb-0">
         <v-card-title class="caption text-uppercase">
             Calendar
         </v-card-title>
-        <v-card-text class="px-0">
+        <v-card-text class="px-0 pb-0">
             <v-calendar
             color="teal lighten-4"
             :now="parsedDisplayDateInHyphen"

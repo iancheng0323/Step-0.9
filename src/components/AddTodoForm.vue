@@ -8,6 +8,7 @@
             <v-layout row wrap>
                 <v-flex md12>
                     <v-text-field
+                        color="#59C9A5"
                         name="name"
                         label=" "
                         id="todoInput"

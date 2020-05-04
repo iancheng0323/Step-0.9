@@ -1,74 +1,75 @@
 <template>
-    <v-list-item ripple @click="editPop=true">
-        <v-list-item-content>
-            <v-list-item-title>
-                {{title}}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-                {{routineDes}}
-            </v-list-item-subtitle>
-        </v-list-item-content>
-        <!-- <v-list-item-action>
-            <v-btn
-                icon
-                small
-                class="editIcon"
-                @click="editPop=true"
-                >
-                    <v-icon small>edit</v-icon>
-            </v-btn>
-        </v-list-item-action> -->
-        <v-dialog 
-        :value="editPop"
-        persistent
-        max-width="500">
-            <v-card min-height="300" relative>
-            <v-container>
-            <v-card-text>
-                <v-form>
-                    <v-text-field
-                    autofocus
-                    v-model="editedRoutineTitle"
-                    label="Routine Name"
-                    placeholder="Routine Name. e.g. check email, daily report...">
-                    </v-text-field>
-                    <v-select
-                    v-model="editedWeeklyRoutine"
-                    :items="weeklyRoutineItems"
-                    label="On Every"
-                    chips
-                    clearable
-                    multiple
-                    :menu-props="{offsetY: true }"
+    <v-card width="400px" min-height="150px" relative outlined>
+        <v-container>
+          <ul>
+            <v-list-item class="relative mt-3" ripple="true" two-line 
+            v-for="(item,index) in routineList" :key="index">
+                <v-list-item-content>
+                    <h3 class="title">{{item.title}}</h3>
+                    <v-btn
+                    icon
+                    absolute
+                    small
+                    class="editIcon"
+                    @click="editPop=true"
                     >
-                    </v-select>
-                    <v-switch
-                    v-model="editedStatus"
-                    :label="switchLabel"
-                    ripple
-                    >
-                    </v-switch>
-                <v-btn @click="deleteRoutine" class="editRoutineFormButton">Delete</v-btn>
-
-                </v-form>
-            </v-card-text>
-                <v-btn @click="editRoutine" class="editRoutineFormButton">Edit</v-btn>
-                <v-btn @click="editPop = false" text class="editRoutineFormButton">Discard</v-btn>
-            </v-container>
-            </v-card>
-        </v-dialog>
-    </v-list-item>
+                        <v-icon small>edit</v-icon>
+                    </v-btn>
+                    <p class="subtitle-2">{{routineDes}}</p>
+                </v-list-item-content>
+                <v-dialog 
+                    :value="editPop"
+                    persistent
+                    max-width="500">
+                    <v-card min-height="300" relative>
+                    <v-container>
+                        <v-card-text>
+                            <v-form>
+                                <v-text-field
+                                autofocus
+                                v-model="editedRoutineTitle"
+                                label="Routine Name"
+                                placeholder="Routine Name. e.g. check email, daily report...">
+                                </v-text-field>
+                                <v-select
+                                v-model="editedWeeklyRoutine"
+                                :items="weeklyRoutineItems"
+                                label="On Every"
+                                chips
+                                clearable
+                                multiple
+                                :menu-props="{offsetY: true }"
+                                >
+                                </v-select>
+                                <v-switch
+                                v-model="editedStatus"
+                                :label="switchLabel"
+                                ripple
+                                >
+                                </v-switch>
+                            <v-btn @click="deleteRoutine" class="editRoutineFormButton">Delete</v-btn>
+                            </v-form>
+                        </v-card-text>
+                        <v-btn @click="editRoutine" class="editRoutineFormButton">Edit</v-btn>
+                        <v-btn @click="editPop = false" text class="editRoutineFormButton">Discard</v-btn>
+                    </v-container>
+                    </v-card>
+                </v-dialog>
+            </v-list-item>
+        </ul>
+        </v-container>
+    </v-card>
 </template>
 
 <script>
 export default {
-    name: 'RoutinesItem',
+    name: 'Routine',
     props:[
         'routineIndex',
-        'title',
         'weeklyRoutine',
         'monthlyRoutine',
-        'status'
+        'status',
+        'routineList'
     ],
     components:{
     },
@@ -112,7 +113,7 @@ export default {
     },
     created(){
         this.editedWeeklyRoutine = this.weeklyRoutine
-        this.editedRoutineTitle = this.title
+        this.editedRoutineTitle = this.routineList
         this.editedStatus = this.status
     },
     methods:{
@@ -183,12 +184,11 @@ li{
 .relative{
     position: relative;
 }
-/* .editIcon{
+.editIcon{
     right:0;
     top:2px;
-} */
+}
 .editRoutineFormButton{
     margin-right: 10px;
 }
-
 </style>

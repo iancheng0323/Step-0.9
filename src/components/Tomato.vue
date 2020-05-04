@@ -1,7 +1,7 @@
 <template>
     <v-card class="mt-2" outlined tile>
         <v-container>
-            <h1 class="my-2 headline">Tomato</h1>
+            <h1 class="my-2 title">Pomodoro Time</h1>
             
             <v-row>
                 <v-col col="8">
@@ -38,7 +38,7 @@
                         <v-icon>mdi-stop</v-icon></v-btn>
                 </v-col>
             </v-row>
-            <p>Finished tomato: {{finishedTomatoCount}}</p>
+            <p>Finished Pomodoro: {{finishedTomatoCount}}</p>
         </v-container>
     </v-card>
 </template>
@@ -126,7 +126,7 @@ export default {
         },
         status(){
             if(this.onTomato){
-                return 'Tomato'
+                return 'Work'
             }else{
                 return 'Rest'
             }

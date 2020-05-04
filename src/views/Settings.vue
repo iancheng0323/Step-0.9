@@ -1,55 +1,68 @@
 <template>
   <v-container>
-    <h1 class="display-2 mb-2">
-        My Account
+    <h1 class="title mb-2">
+        Settings
     </h1>
-    <p class="subtitle-1 mb-1">Manage your accounts here.</p>
-    <v-divider class="mb-4"></v-divider>
-      <h2 class="headline mt-4">
-        Routines
-      </h2>
-      <p class="subtitle-2">Manage your re-occuring tasks here.</p>
-      <v-card width="400px" min-height="150px" color="white" relative>
-        <v-container>
-          <ul>
-            <li
-            is="RoutineItem"
-            v-for="(item,index) in routineList"
-            :routineIndex="index"
-            :key="index"
-            :title="item.title"
-            :weeklyRoutine="item.weeklyRoutine"
-            :monthlyRoutine="item.monthlyRoutine"
-            :status="item.status"
-            @deleteRoutine="deleteRoutine"
-            @editRoutine="editRoutine"
-            ></li>
-          </ul>
-        </v-container>
-      </v-card>
-      <v-btn text class="mt-2" @click="addNewRoutinePop = true">Add Routine</v-btn>
-      <h2 class="headline mt-4">
-        Labels
-      </h2>
-      <p class="subtitle-2">Manage your label here.</p>
-      <ul>
-        <li 
-        is = "LabelItem"
-        :color = "label.color"
-        :text = "label.text"
-        :defaultColorChoices="defaultColorChoices"
-        :index="index"
-        v-for="(label,index) in labels" :key="index"
-        @editLable="editLable"
-        @deleteLabel="deleteLabel"
-        style="margin-right:8px"
-        ></li>
-      </ul>
-      <v-btn text class="mt-2" @click="openAddNewLabelPop()">Add Label</v-btn>
-      <h2 class="headline mt-4">
-        Logout
-      </h2>
-      <p class="subtitle-2">Click <a class="link" @click="logout">here</a> to logout.</p>
+    <h2 class="subtitle-2">Partly Under Development</h2>
+    <!-- <p class="subtitle-1 mb-1">Manage your accounts here.</p> -->
+    <p class="body-1">This sections contains two functions for now - Routines and Labels. 
+      <br>For Routines, you can set reocuring tasks and add them to your todo list by clicking the top right "Add Routine" on your Todo Section.
+      <br>For Labels(under development), you can manage your labeling and coloring.
+    </p>
+    <v-divider></v-divider>
+    <v-container>
+      <v-row>
+        <v-col cols="6">
+          <h2 class="title mt-4">
+            Routines
+          </h2>
+          <p class="subtitle-2">Manage your re-occuring tasks here.</p>
+          <v-card width="400px" min-height="150px" relative outlined>
+            <v-container class="px-0">
+              <ul class="pa-0">
+                <li
+                is="RoutineItem"
+                v-for="(item,index) in routineList"
+                :routineIndex="index"
+                :key="index"
+                :title="item.title"
+                :weeklyRoutine="item.weeklyRoutine"
+                :monthlyRoutine="item.monthlyRoutine"
+                :status="item.status"
+                @deleteRoutine="deleteRoutine"
+                @editRoutine="editRoutine"
+                ></li>
+              </ul>
+            </v-container>
+          </v-card>
+          <v-btn text class="mt-2" @click="addNewRoutinePop = true">Add Routine</v-btn>
+        </v-col>
+        <v-col cols="6">
+          <h2 class="title mt-4">
+            Labels
+          </h2>
+          <p class="subtitle-2">Manage your label here.</p>
+          <v-card width="400px" min-height="80px" relative outlined>
+            <v-container>
+              <ul class="pa-0">
+                <li 
+                is = "LabelItem"
+                :color = "label.color"
+                :text = "label.text"
+                :defaultColorChoices="defaultColorChoices"
+                :index="index"
+                v-for="(label,index) in labels" :key="index"
+                @editLable="editLable"
+                @deleteLabel="deleteLabel"
+                class="ma-1"
+                ></li>
+              </ul>
+            </v-container>
+          </v-card>
+          <v-btn text class="mt-2" @click="openAddNewLabelPop()">Add Label</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
       <v-dialog 
       :value="addNewRoutinePop"
       persistent
@@ -122,7 +135,7 @@ import RoutineItem from '../components/RoutineItem.vue'
 import LabelItem from '../components/LabelItem.vue'
 
 export default {
-    name: 'Account',
+    name: 'Settings',
     components:{
       RoutineItem,
       LabelItem
@@ -301,9 +314,6 @@ export default {
         this.routineList.splice(routineID,1)
         this.updateRoutineList(console.log('deleted Routine to firebase'))        
       },
-      logout(){
-        this.$emit('logout')
-      },
       addNewLabel(){
         if( this.newLabelText !== '' && this.selectedColor !== ''){//1. 確定提交有效
           this.labels.push(
@@ -363,5 +373,4 @@ export default {
 .addRoutineFormButton{
   margin-right: 10px;
 }
-
 </style>

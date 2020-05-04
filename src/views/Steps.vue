@@ -91,6 +91,7 @@ export default {
     'userEmail',
     'uid',
     'auth',
+    'activeElement'
   ],
   components:{
     TodoMain,
@@ -103,7 +104,6 @@ export default {
       parsedDisplayDateInHyphen:0,
       parsedCurrentDateInHyphen:0,
       displayWeekdayIndex:0,
-      activeElement: '',
       dailyTodoList:{
         todos:[],
         meta:{
@@ -436,10 +436,6 @@ export default {
   },
   created(){ 
     this.setDates()
-    let v = this
-    document.body.addEventListener('mouseup',function(){
-        v.activeElement = document.activeElement.tagName
-    })
   },
 }
 </script>
