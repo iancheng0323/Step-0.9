@@ -2,9 +2,9 @@
     <v-container fill-height>
         <v-layout align-center align-content-center fill-height justify-center>
             <v-flex md3>
-                <v-card class="loginForm text-center pt-4">
+                <v-card class="loginForm text-center pt-4" outlined>
                     <v-container class="text-center">
-                        <h1 class="text-center headline">Join Steps Now.</h1>
+                        <h1 class="text-center title">👋Hello, Charming.</h1>
                         <v-card-actions>
                             <v-container class="text-center">
                                 <v-btn 

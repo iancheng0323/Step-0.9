@@ -10,9 +10,9 @@
     clipped-left
     flat
     >
-      <v-app-bar-nav-icon
+      <!-- <v-app-bar-nav-icon
       @click="drawer = !drawer"
-      ></v-app-bar-nav-icon>
+      ></v-app-bar-nav-icon> -->
     <v-toolbar-title>
       <v-icon small class="mr-2 mb-1" >
         fa-paw
@@ -29,15 +29,16 @@
         <span class="text-uppercase">{{userName}}</span>
       </v-btn>
       <AccountCard
-      :userName="userName"
-      v-show="accountCard"
-      @logout="logout()"
+        :userName="userName"
+        :userEmail="userEmail"
+        v-show="accountCard"
+        @logout="logout()"
       ></AccountCard>
     </div>
     </v-app-bar>
         <v-content>
           <v-container>
-            <router-view 
+            <router-view
             @signInWithGoogle="signInWithGoogle"
             @showSnackbar="showSnackbar"
             :auth="auth"
@@ -49,7 +50,7 @@
             </router-view>
           </v-container>
         </v-content>
-        <v-navigation-drawer
+        <!-- <v-navigation-drawer
         v-if="auth"
         app
         :width="navWidth"
@@ -85,7 +86,7 @@
             <v-btn small block text :ripple="false" color="#BDBDBD" to="/about">About Steps</v-btn>
           </div>
         </template>
-      </v-navigation-drawer>
+      </v-navigation-drawer> -->
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
       </v-snackbar>
@@ -106,7 +107,7 @@ export default {
   data(){
     return{
       minNav: false,
-      drawer: true,
+      drawer: false,
       activeElement: '',
       listItem: [
         {
@@ -121,12 +122,12 @@ export default {
           iconText: 'fa-cube',
           fontSize: '24'
         },
-        {
-          title: 'Settings',
-          link: '/settings',
-          iconText: 'fa-sliders-h',
-          fontSize: '24'
-        },
+        // {
+        //   title: 'Settings',
+        //   link: '/settings',
+        //   iconText: 'fa-sliders-h',
+        //   fontSize: '24'
+        // },
       ],
       snackbarMessage: '',
       snackbarControl: false,

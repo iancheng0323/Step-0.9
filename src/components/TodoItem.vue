@@ -32,7 +32,7 @@
                     ref="todoTitleInput"
                     @keydown.esc="blurInput"
                     @keydown.enter="blurInput">
-                    <v-btn
+                    <!-- <v-btn
                     x-small
                     right
                     icon
@@ -43,7 +43,7 @@
                     :class="{opacity1: actionMenu}"
                     >
                         <v-icon>label</v-icon>
-                    </v-btn>
+                    </v-btn> -->
                     <EditLabelPanel
                         v-if="editLabelPanel"
                         @save="editLabelPanel = false"
@@ -80,15 +80,15 @@
                 </v-col>
             </v-row>
             <TodoItemActionMenu
-            v-show="actionMenu"
-            :status="status"
-            :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-            :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-            @moveToToday="moveToToday"
-            @showDatePicker="showDatePicker = true"
-            @moveToBacklog="moveToBacklog"
-            @paintColor="paintColor"
-            @deletePop="deletePop = true"
+                v-show="actionMenu"
+                :status="status"
+                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                @moveToToday="moveToToday"
+                @showDatePicker="showDatePicker = true"
+                @moveToBacklog="moveToBacklog"
+                @paintColor="paintColor"
+                @deletePop="deletePop = true"
             ></TodoItemActionMenu>
         </v-container>
         <v-dialog
@@ -124,19 +124,23 @@
         </v-dialog>
         <v-dialog v-model="addCommentPop" width="600">
             <v-card min-height="300">
-                <v-card-title>Comment</v-card-title>
-                <v-card-subtitle>{{title}}</v-card-subtitle>
+                <v-card-title>{{title}}</v-card-title>
+                <v-card-subtitle>Drop comments here</v-card-subtitle>
                 <v-divider></v-divider>
                 <v-list-item v-for="(comment,index) in todo.comments" :key="index" ripple two-line>
                     <v-list-item-content>
                         <v-list-item-title>{{comment.comment}}</v-list-item-title>
-                        <v-list-item-subtitle>{{comment.time}}</v-list-item-subtitle>
+                        <v-list-item-subtitle>added on {{parseTimestamp(comment.time)}}</v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
                 <v-divider></v-divider>
                 <v-card-text class="py-0">
                         <v-form>
                             <v-textarea
+                            auto-grow
+                            validate-on-blur
+                            :rules="[commentTextareaRules]"
+                            ref="commentTextarea"
                             placeholder="Write some comment about this todo item"
                             v-model="commentPopInput"
                             ></v-textarea>
@@ -201,7 +205,7 @@ export default {
                 r = '#BDBDBD'
             }
             return r
-        }
+        },
     },
     data(){
         return{
@@ -264,14 +268,38 @@ export default {
             this.$refs.todoTitleInput.blur()
         },
         addComment(){
-            let res = {
-                id: this.todoID,
-                comment: this.commentPopInput,
-                time: Date.now()
+            if(this.commentPopInput === ''){
+                return false
+            }else{
+                let res = {
+                    id: this.todoID,
+                    comment: this.commentPopInput,
+                    time: Date.now()
+                }
+                this.$emit('addComment',res)
+                this.commentPopInput = '' //Clear input area
             }
-            this.$emit('addComment',res)
-            this.commentPopInput = '' //Clear input area
             // this.addCommentPop = false //Close Popup
+        },
+        commentTextareaRules(input){
+            if(input === '' ){
+                return 'Empty input'
+            }else{
+                return true
+            }
+        },
+        parseTimestamp(timestamp){
+            let dateObj = new Date(timestamp);
+            let month = dateObj.getMonth() +1
+            let date = dateObj.getDate()
+            // Hours part from the timestamp
+            let hours = dateObj.getHours()
+            // Minutes part from the timestamp
+            let minutes = "0" + dateObj.getMinutes()
+            // Seconds part from the timestamp
+            // let seconds = "0" + dateObj.getSeconds()
+            let formattedTime = `${month}/${date} ${hours}:${minutes.substr(-2)} `
+            return formattedTime
         }
     },
     watch:{

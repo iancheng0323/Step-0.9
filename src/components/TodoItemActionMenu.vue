@@ -45,10 +45,10 @@
                     class="text-uppercase" 
                     >
                     <template v-slot:activator>
-                    <v-list-item-title>Add Label</v-list-item-title>
+                    <v-list-item-title>Add Color</v-list-item-title>
                     </template>
                         <v-list-item-group>
-                            <v-list-item v-for="(item,index) in labels" :key="index" @click="paintColor(index)">
+                            <v-list-item v-for="(item,index) in colorList" :key="index" @click="paintColor(index)">
                                 <v-list-item-title>
                                 <div class="colorCircle" :style="{background: item.color}"></div>{{item.text}}
                                 </v-list-item-title>
@@ -83,28 +83,28 @@ export default {
     ],
     data(){
         return{
-            // colorList:[
-            //     {
-            //         colorTitle: 'Red',
-            //         color:'#E57373'
-            //     },
-            //     {
-            //         colorTitle: 'Yellow',
-            //         color:'#FDD835'
-            //     },
-            //     {
-            //         colorTitle: 'Green',
-            //         color: '#81C784'
-            //     },
-            //     {
-            //         colorTitle: 'Blue',
-            //         color:'#64B5F6'
-            //     },
-            //     {
-            //         colorTitle: 'Grey',
-            //         color: '#BDBDBD'
-            //     },
-            // ]
+            colorList:[
+                {
+                    text: 'Red',
+                    color:'#E57373'
+                },
+                {
+                    text: 'Yellow',
+                    color:'#FDD835'
+                },
+                {
+                    text: 'Green',
+                    color: '#81C784'
+                },
+                {
+                    text: 'Blue',
+                    color:'#64B5F6'
+                },
+                {
+                    text: 'Grey',
+                    color: '#BDBDBD'
+                },
+            ]
         }
     },
     computed: {
@@ -123,7 +123,7 @@ export default {
             this.$emit('moveToBacklog')
         },
         paintColor(index){
-            this.$emit('paintColor',[this.labels[index].color])
+            this.$emit('paintColor',[this.colorList[index].color])
         },
         deletePop(){
             this.$emit('deletePop')

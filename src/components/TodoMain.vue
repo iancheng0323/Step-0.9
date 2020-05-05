@@ -6,11 +6,11 @@
           ☀️ {{this.parsedDisplayDateInSlash}}
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn @click="actionMenu = !actionMenu" color="#757575" x-small tile icon class="mr-1">
+        <!-- <v-btn @click="actionMenu = !actionMenu" color="#757575" x-small tile icon class="mr-1">
           <v-icon>
             more_horiz
           </v-icon>
-        </v-btn>
+        </v-btn> -->
       </v-row>
       <TodoMainActionMenu
           class="absolute"
@@ -48,7 +48,7 @@
         </draggable>
       </ul>
       <p v-if="totalItemCount == 0 && mainTodoListRecieved" class="mt-4 ml-4 grey--text" @click="$refs.AddTodoForm.isAddingTodo = true">
-        Create Your First Item For Today.
+        💆‍♂️There's nothing todo, yet.
       </p>
       <v-progress-linear indeterminate color="#59C9A5" v-show="!mainTodoListRecieved"></v-progress-linear>
     </v-container>
@@ -109,7 +109,8 @@ export default {
     return{
       inputMsg:'',
       rederedTodoItemCount: 0,
-      actionMenu: false
+      actionMenu: false,
+      computedPropertyForceUpdateHelper:0,
     }
   },
   watch:{
@@ -118,6 +119,9 @@ export default {
             this.actionMenu = false
         }
     },
+    displayDate(){
+      this.$forceUpdate()
+    }
   },
   computed:{
     doneItemCount(){
@@ -251,6 +255,10 @@ export default {
   updated(){
     this.countRenderedTodoItem()
   },
+  mounted() {
+    this.computedPropertyForceUpdateHelper ++
+  }
+
 }
 </script>
 

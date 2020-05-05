@@ -2,6 +2,7 @@ import firebase from "firebase/app"
 
 // Add the Firebase products that you want to use
 import "firebase/firestore"
+// import "firebase/analytics"
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -11,7 +12,8 @@ var firebaseConfig = {
     projectId: "stepbeta-1",
     storageBucket: "stepbeta-1.appspot.com",
     messagingSenderId: "316885807181",
-    appId: "1:316885807181:web:ed84d9624b48e6af"
+    appId: "1:316885807181:web:ed84d9624b48e6af",
+    measurementId: "G-Z43Y8Z29YX"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);

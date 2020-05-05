@@ -5,7 +5,7 @@
                 {{userName}}
             </v-card-title>
             <v-card-subtitle>
-                iancheng0323@gmail.com
+                {{userEmail}}
             </v-card-subtitle>
             <v-divider></v-divider>
             <v-card-text class="pa-0">
@@ -24,7 +24,8 @@ export default {
     name: "AccountCard",
     props:[
         'userName',
-        'activeElement'
+        'activeElement',
+        'userEmail'
     ],
     methods:{
         logout(){

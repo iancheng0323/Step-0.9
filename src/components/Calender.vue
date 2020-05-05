@@ -5,6 +5,7 @@
         </v-card-title>
         <v-card-text class="px-0 pb-0">
             <v-calendar
+            show-month-on-first
             color="teal lighten-4"
             :now="parsedDisplayDateInHyphen"
             v-model="pickedDate"
@@ -13,7 +14,6 @@
         </v-card-text>
     <!-- <v-btn text @click="prevDay()" class="grey--text text-capitalize" small>Previous Day</v-btn> -->
     <!-- <v-btn text @click="nextDay()" class="grey--text text-capitalize" small>Next Day</v-btn> -->
-        
     </v-card>
 </template>
 <script>
