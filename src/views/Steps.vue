@@ -1,5 +1,5 @@
 <template>
-    <v-container relative class="px-0">
+    <v-container relative class="pa-0 py-sm-2">
         <!-- <StepHeader  
           @changeDate="changeDate"
           @addRoutineItemToTodoList="addRoutineItemToTodoList"
@@ -8,9 +8,12 @@
           :key="displayDateKey"
           :displayDate="displayDate">
         </StepHeader> -->
-      <v-container grid-list-md class="pa-0">
-          <v-layout>
-              <v-flex md8>
+      <v-container class="pa-0">
+          <v-row dense>
+              <v-col cols="12"
+               sm="8" offset-sm="2"  
+               md="8" offset-md="0" 
+               xl="6" offset-xl="2">
                   <TodoMain 
                   ref="TodoMain"
                   :displayDate="displayDate"
@@ -35,8 +38,12 @@
                   @showAddRoutinePop="addRoutinePop = true"
                   >
                   </TodoMain>
-              </v-flex>
-              <v-flex ml4 md4 ms6>
+              </v-col>
+              <v-col 
+              cols="12" 
+              md="4" offset-md="0"
+              sm="8" offset-sm="2" 
+              xl="2">
                   <TodoSide
                   :uid="uid"
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -45,8 +52,8 @@
                   @changeDate="changeDate"
                   >
                   </TodoSide>
-              </v-flex>
-          </v-layout>
+              </v-col>
+          </v-row>
       </v-container>
       <v-dialog
             v-model="addRoutinePop"
