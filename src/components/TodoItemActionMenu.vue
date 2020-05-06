@@ -40,7 +40,7 @@
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item> -->
-                    <v-divider></v-divider>
+                    <!-- <v-divider></v-divider>
                     <v-list-group
                     class="text-uppercase" 
                     >
@@ -54,7 +54,7 @@
                                 </v-list-item-title>
                             </v-list-item>
                         </v-list-item-group>
-                    </v-list-group>
+                    </v-list-group> -->
                     <v-divider></v-divider>
                     <v-list-item
                     @click="deletePop"

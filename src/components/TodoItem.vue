@@ -44,22 +44,51 @@
                     >
                         <v-icon>label</v-icon>
                     </v-btn> -->
+                    <v-tooltip bottom transition="fade">
+                        <template v-slot:activator="{ on }">
+                            <v-btn
+                            x-small
+                            right
+                            icon
+                            tile
+                            :ripple="false"
+                            class="actionIcons mr-2 mt-2"
+                            @click="editPriorityPanel = !editPriorityPanel"
+                            :class="{opacity1: actionMenu}"
+                            v-on="on"
+                            >
+                                <v-icon>flag</v-icon>
+                            </v-btn>
+                        </template>
+                        <span class="caption pa-0">Add Priority</span>
+                    </v-tooltip>
+                    <EditPriorityPanel
+                        v-if="editPriorityPanel"
+                        @editPriority="editPriority"
+                    ></EditPriorityPanel>
                     <EditLabelPanel
                         v-if="editLabelPanel"
                         @save="editLabelPanel = false"
                     ></EditLabelPanel>
-                    <v-btn
-                    x-small
-                    right
-                    icon
-                    tile
-                    :ripple="false"
-                    class="actionIcons mr-2 mt-2"
-                    @click="addCommentPop = true"
-                    :class="{opacity1: actionMenu}"
-                    >
-                        <v-icon>add_comment</v-icon>
-                    </v-btn>
+                    <v-tooltip bottom transition="fade">
+                        <template v-slot:activator="{ on }">
+                            <v-btn
+                            x-small
+                            right
+                            icon
+                            tile
+                            :ripple="false"
+                            class="actionIcons mr-2 mt-2"
+                            @click="addCommentPop = true"
+                            :class="{opacity1: actionMenu}"
+                            v-on="on"
+                            >
+                                <v-icon>add_comment</v-icon>
+                            </v-btn>
+                        </template>
+                        <span class="caption pa-0">Add Comment</span>
+                    </v-tooltip>
+                    
                     <v-btn
                     x-small
                     right
@@ -160,12 +189,15 @@
 
 import TodoItemActionMenu from './TodoItemActionMenu.vue'
 import EditLabelPanel from './EditLabelPanel.vue'
+import EditPriorityPanel from './EditPriorityPanel.vue'
+
 
 export default {
     name:'TodoItem',
     components:{
         TodoItemActionMenu,
-        EditLabelPanel
+        EditLabelPanel,
+        EditPriorityPanel,
     },
     props:[
         'todo',
@@ -220,6 +252,8 @@ export default {
             editLabelPanel: false,
             isEditing: false,
             commentPopInput: '',
+            addColorPanel: false,
+            editPriorityPanel: false,
         }
     },
     created(){
@@ -300,12 +334,21 @@ export default {
             // let seconds = "0" + dateObj.getSeconds()
             let formattedTime = `${month}/${date} ${hours}:${minutes.substr(-2)} `
             return formattedTime
+        },
+        editPriority(res){
+            let color = res[0].color
+            // let value = res[0].value
+            this.editPriorityPanel = false
+            this.$emit('paintColor',[this.todoID,color])
         }
     },
     watch:{
         activeElement(newVal){
             if(this.actionMenu && newVal == 'BODY'){
                 this.actionMenu = false
+            }
+            if(this.editPriorityPanel && newVal == 'BODY'){
+                this.editPriorityPanel = false
             }
         },
         deletePop(){
