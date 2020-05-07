@@ -1,31 +1,31 @@
 <template>
     <v-expand-transition>
         <v-card 
-        class="actionMenu absolute"
-        elevation="1"
+        class="todoItemActionMenu absolute"
+        elevation="4"
         transition="scroll-y-transition">
             <v-list dense>
                     <v-list-item
                     @click="moveToToday"
-                    class="text-uppercase" 
+                    class="" 
                     v-if="parsedDisplayDateInHyphen != parsedCurrentDateInHyphen || status == 3"
                     >
+                        <v-list-item-icon class="mr-2">
+                            <v-icon dense>today</v-icon>
+                        </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title 
-                            >
-                            Move To Today
-                            </v-list-item-title>
+                            <v-list-item-title>Move to today</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     <v-list-item
                     @click.stop="showDatePicker"
-                    class="text-uppercase" 
+                    class=""
                     >
+                        <v-list-item-icon class="mr-2">
+                            <v-icon dense>date_range</v-icon>
+                        </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title 
-                            >
-                            Move To Date
-                            </v-list-item-title>
+                            <v-list-item-title>Move to date ...</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                     <!-- <v-list-item
@@ -58,13 +58,13 @@
                     <v-divider></v-divider>
                     <v-list-item
                     @click="deletePop"
-                    class="text-uppercase" 
+                    class="" 
                     >
+                        <v-list-item-icon class="mr-2">
+                            <v-icon dense>delete</v-icon>
+                        </v-list-item-icon>
                         <v-list-item-content>
-                            <v-list-item-title
-                            >
-                            Delete
-                            </v-list-item-title>
+                            <v-list-item-title>Delete</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
             </v-list>
@@ -141,8 +141,7 @@ export default {
     border-radius:50%;
     align-self: baseline;
 }
-.actionMenu{
-    width:200px;
+.todoItemActionMenu{
     right:15px;
     top:30px;
     z-index: 100;
