@@ -6,17 +6,18 @@
           ☀️ {{this.parsedDisplayDateInSlash}}
         </v-btn>
         <v-spacer></v-spacer>
-        <!-- <v-btn @click="actionMenu = !actionMenu" color="#757575" x-small tile icon class="mr-1">
+        <v-btn @click="actionMenu = !actionMenu" color="#757575" x-small tile icon class="mr-1">
           <v-icon>
             more_horiz
           </v-icon>
-        </v-btn> -->
+        </v-btn>
       </v-row>
       <TodoMainActionMenu
           class="absolute"
           v-show="actionMenu"
           @addRoutine="addRoutine()"
           @addDivider="addDivider()"
+          @toggleHideDone="hideDone = !hideDone"
       ></TodoMainActionMenu>
       <v-divider color="#EEEEEE"></v-divider>
       <ul v-show="mainTodoListRecieved" class="mt-0" ref="mainTodoUl">
@@ -29,7 +30,8 @@
         @end="dragTodo"
         >
           <li is="TodoItem" 
-              v-for="(todo,index) in dailyTodoList.todos" 
+              v-for="(todo,index) in dailyTodoList.todos"
+              :hideDone="hideDone"
               :todo="todo"
               :key="index"
               :todoID="index"
@@ -111,6 +113,7 @@ export default {
       rederedTodoItemCount: 0,
       actionMenu: false,
       computedPropertyForceUpdateHelper:0,
+      hideDone: false
     }
   },
   watch:{

@@ -1,5 +1,5 @@
 <template>
-    <li :class="todoStatus" v-if="status != 0 && status != 3">
+    <li :class="todoStatus" v-if="status != 0 && status != 3 && passHideDone">
         <v-container class="relative pt-2 pb-1">
             <v-row>
                 <v-col cols="12" class="pa-0 d-flex align-content-center">
@@ -153,7 +153,7 @@
         </v-dialog>
         <v-dialog v-model="addCommentPop" width="600">
             <v-card min-height="300">
-                <v-card-title>{{title}}</v-card-title>
+                <v-card-title style="word-break:normal;">{{title}}</v-card-title>
                 <v-card-subtitle>Drop comments here</v-card-subtitle>
                 <v-divider></v-divider>
                 <v-list-item v-for="(comment,index) in todo.comments" :key="index" ripple two-line>
@@ -206,6 +206,7 @@ export default {
         'activeElement',
         'parsedDisplayDateInHyphen',
         'parsedCurrentDateInHyphen',
+        'hideDone'
     ],
     computed:{
         title(){
@@ -238,6 +239,13 @@ export default {
             }
             return r
         },
+        passHideDone(){
+            if(this.hideDone && this.status == 2){
+                return false
+            }else{
+                return true
+            }
+        }
     },
     data(){
         return{

@@ -2,7 +2,7 @@
     <v-expand-transition>
         <v-card 
         class="actionMenu"
-        elevation="1"
+        elevation="4"
         transition="scroll-y-transition">
             <v-list dense>
                     <v-list-item
@@ -25,6 +25,18 @@
                             <v-list-item-title 
                             >
                             Add Divider
+                            </v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-divider></v-divider>
+                    <v-list-item
+                    @click="toggleHideDone()"
+                    class="text-uppercase" 
+                    >
+                        <v-list-item-content>
+                            <v-list-item-title
+                            >
+                            Hide Done
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
@@ -52,6 +64,9 @@ export default {
         addRoutine(){
             this.$emit('addRoutine')
         },
+        toggleHideDone(){
+            this.$emit('toggleHideDone')
+        }
     },
 }
 </script>
