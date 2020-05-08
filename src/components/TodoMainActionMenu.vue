@@ -36,7 +36,7 @@
                         <v-list-item-content>
                             <v-list-item-title
                             >
-                            Hide Done
+                            <span>{{hideDoneText}}</span>
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
@@ -50,12 +50,20 @@
 export default {
     name: 'TodoMainActionMenu',
     props:[
+        'hideDone'
     ],
     data(){
         return{
         }
     },
     computed: {
+        hideDoneText(){
+            if(this.hideDone){
+                return 'Show Done'
+            }else{
+                return 'Hide Done'
+            }
+        }
     },
     methods:{
         addDivider(){

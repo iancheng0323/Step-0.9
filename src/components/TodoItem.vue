@@ -1,5 +1,5 @@
 <template>
-    <li :class="todoStatus" v-if="status != 0 && status != 3 && passHideDone">
+    <li :class="todoStatus" v-if="status != 0 && status != 3" v-show="passHideDone">
         <v-container class="relative pt-2 pb-1">
             <v-row>
                 <v-col cols="12" class="pa-0 d-flex align-content-center">

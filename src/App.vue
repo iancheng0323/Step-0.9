@@ -1,6 +1,6 @@
 <template>
   <v-app id="App">
-    <v-app-bar
+    <!-- <v-app-bar
     v-if="auth"
     color="#23395B"
     fixed
@@ -10,24 +10,11 @@
     clipped-left
     flat
     >
-      <!-- <v-app-bar-nav-icon
+      <v-app-bar-nav-icon
       @click="drawer = !drawer"
-      ></v-app-bar-nav-icon> -->
+      ></v-app-bar-nav-icon>
     <v-toolbar-title>
-      <v-icon small class="mr-2 mb-1" >
-        fa-paw
-      </v-icon>
-      <span class="title">Steps</span>
-    </v-toolbar-title>
-    <v-spacer></v-spacer>
-    <div>
-      <v-btn
-      text
-      @click="accountCard = !accountCard"
-      >
-        <v-icon left>fa-user-circle</v-icon>
-        <span class="text-uppercase">{{userName}}</span>
-      </v-btn>
+      <div>
       <AccountCard
         :userName="userName"
         :userEmail="userEmail"
@@ -35,7 +22,13 @@
         @logout="logout()"
       ></AccountCard>
     </div>
-    </v-app-bar>
+      <v-icon small class="mr-2 mb-1" >
+        fa-paw
+      </v-icon>
+      <span class="title">Steps</span>
+    </v-toolbar-title>
+    <v-spacer></v-spacer>
+    </v-app-bar> -->
         <v-content>
           <v-container>
             <router-view
@@ -50,43 +43,77 @@
             </router-view>
           </v-container>
         </v-content>
-        <!-- <v-navigation-drawer
+        <v-navigation-drawer
         v-if="auth"
         app
         :width="navWidth"
         light
-        v-model="drawer"
-        clipped
           >
-          <v-list class="pt-0">
+          <!-- <AccountCard
+                  :userName="userName"
+                  :userEmail="userEmail"
+                  v-show="accountCard"
+                  @logout="logout()"
+                ></AccountCard> -->
+          <v-list class="pt-0" flat>
           <v-list-item-group>
+            <v-list-item two-line @click="accountCard = true">
+              <v-list-item-avatar color="teal">
+                  <!-- <v-icon :size="item.fontSize" class="menuIcon">{{item.iconText}}</v-icon> -->
+                  <!-- <v-icon>fa-user-circle</v-icon> -->
+                  <span class="white--text headline">IC</span>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    <span class="text-uppercase">{{userName}}</span>
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    iancheng0323@gmail.com
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
             <v-list-item
+            class="py-0"
             v-for="(item,index) in listItem"
             :key="index"
             link
             :to="item.link"
             active-class="activated"
             nav
+            dense
             >
-            <v-list-item-icon left>
-                  <v-icon :size="item.fontSize" class="menuIcon">{{item.iconText}}</v-icon>
+            <v-list-item-icon left class=" mr-1 ml-2">
+                  <v-icon small class="menuIcon">{{item.iconText}}</v-icon>
                 </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class="text-capitalize font-weight-medium menuTitle">
+              <v-list-item-content class="py-0">
+                <v-list-item-title class="text-uppercase menuTitle py-0">
                   {{item.title}}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-divider></v-divider>
+            <!-- <v-list-item
+            class="mt-2"
+            link
+            to="/"
+            active-class="activated"
+            nav
+            >
+              <v-list-item-content>
+                <v-list-item-title class="text-capitalize font-weight-medium menuTitle">
+                  list
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item> -->
           </v-list-item-group>
         </v-list>
-
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="py-4">
             <v-btn small block text :ripple="false" color="#BDBDBD" to="/about">About Steps</v-btn>
           </div>
         </template>
-      </v-navigation-drawer> -->
+      </v-navigation-drawer>
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
       </v-snackbar>
@@ -96,18 +123,18 @@
 <script>
 //Firebase Login
 import firebase from 'firebase'
-import AccountCard from './components/AccountCard.vue'
+// import AccountCard from './components/AccountCard.vue'
 let provider = new firebase.auth.GoogleAuthProvider();
 
 export default {
   name: 'app',
   components:{
-    AccountCard,
+    // AccountCard,
   },
   data(){
     return{
       minNav: false,
-      drawer: false,
+      drawer: true,
       activeElement: '',
       listItem: [
         {
@@ -116,6 +143,12 @@ export default {
           iconText: 'fa-lightbulb',
           fontSize: '24'
         },
+        // {
+        //   title: 'Calendar',
+        //   link: '#',
+        //   iconText: 'fa-cube',
+        //   fontSize: '24'
+        // },
         {
           title: 'Number',
           link: '/numbers',

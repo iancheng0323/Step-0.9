@@ -2,9 +2,14 @@
   <v-card min-height="640" class="pb-12 pt-0" outlined tile>
     <v-container class="px-0 pt-0">
       <v-row class="px-4 py-1">
-        <v-btn color="#757575" x-small text left rounded light>
-          ☀️ {{this.parsedDisplayDateInSlash}}
+        <v-btn color="#757575" x-small text left rounded light @click="dateOption = !dateOption">
+          ☀️ Today ({{this.parsedDisplayDateInSlash}})
         </v-btn>
+        <DateOption
+        class="absolute"
+        v-show="dateOption"
+        @setDateOption="setDateOption">
+        </DateOption>
         <v-spacer></v-spacer>
         <v-btn @click="actionMenu = !actionMenu" color="#757575" x-small tile icon class="mr-1">
           <v-icon>
@@ -15,9 +20,10 @@
       <TodoMainActionMenu
           class="absolute"
           v-show="actionMenu"
+          :hideDone="hideDone"
           @addRoutine="addRoutine()"
           @addDivider="addDivider()"
-          @toggleHideDone="hideDone = !hideDone"
+          @toggleHideDone="toggleHideDone()"
       ></TodoMainActionMenu>
       <v-divider color="#EEEEEE"></v-divider>
       <ul v-show="mainTodoListRecieved" class="mt-0" ref="mainTodoUl">
@@ -89,6 +95,7 @@ import TodoItem from './TodoItem.vue'
 import AddTodoForm from './AddTodoForm'
 import draggable from 'vuedraggable'
 import TodoMainActionMenu from './TodoMainActionMenu.vue'
+import DateOption from './DateOption.vue'
 
 export default {
   name: 'TodoMain',
@@ -105,7 +112,8 @@ export default {
     TodoItem,
     AddTodoForm,
     draggable,
-    TodoMainActionMenu
+    TodoMainActionMenu,
+    DateOption
   },
   data(){
     return{
@@ -113,7 +121,8 @@ export default {
       rederedTodoItemCount: 0,
       actionMenu: false,
       computedPropertyForceUpdateHelper:0,
-      hideDone: false
+      hideDone: false,
+      dateOption: false
     }
   },
   watch:{
@@ -254,6 +263,14 @@ export default {
       // }
       this.$emit('addComment',res)
     },
+    toggleHideDone(){
+      this.hideDone = !this.hideDone
+      this.actionMenu = false
+    },
+    setDateOption(option){
+      console.log(option)
+      this.dateOption = false
+    }
   },
   updated(){
     this.countRenderedTodoItem()
