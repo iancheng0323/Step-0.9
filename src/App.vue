@@ -59,16 +59,17 @@
           <v-list-item-group>
             <v-list-item two-line @click="accountCard = true">
               <v-list-item-avatar color="teal">
-                  <!-- <v-icon :size="item.fontSize" class="menuIcon">{{item.iconText}}</v-icon> -->
-                  <!-- <v-icon>fa-user-circle</v-icon> -->
-                  <span class="white--text headline">IC</span>
+                  <img
+                    :src="photoURL"
+                    :alt="userName"
+                  >
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title>
                     <span class="text-uppercase">{{userName}}</span>
                   </v-list-item-title>
                   <v-list-item-subtitle>
-                    iancheng0323@gmail.com
+                    {{userEmail}}
                   </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
@@ -181,6 +182,9 @@ export default {
     },
     userEmail(){
       return this.$store.state.userEmail
+    },
+    photoURL(){
+      return this.$store.state.photoURL
     },
     uid(){
       return this.$store.state.uid

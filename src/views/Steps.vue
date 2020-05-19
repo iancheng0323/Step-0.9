@@ -282,30 +282,34 @@ export default {
       let todoID = res[0]
       let title = res[1]
       let toDate = res[2]
-      let v = this
-      let holder = { todos: [] }
-      //get the todo list of the to-date
-      let toDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(toDate)
-      toDateDBRef.get().then(function(doc){
-        if(doc.exists && doc.data().todos){
-           holder = doc.data()
-           holder.todos.push(v.dailyTodoList.todos[todoID])
-        } else{
-           holder.todos.push(v.dailyTodoList.todos[todoID])          
-        }
-        //update to firebase
-           toDateDBRef.set({
-             todos: holder.todos
-           })
-          //set the todo to status 3
-          v.dailyTodoList.todos[todoID].status = 3
+      if(toDate === this.parsedDisplayDateInHyphen){//handle situation where user may move the todo to the same day it was already on
+        this.$emit('showSnackbar',[2,"⚠️ Can't move to the same date."])
+      }else{
+        let v = this
+        let holder = { todos: [] }
+        //get the todo list of the to-date
+        let toDateDBRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(toDate)
+        toDateDBRef.get().then(function(doc){
+          if(doc.exists && doc.data().todos){
+            holder = doc.data()
+            holder.todos.push(v.dailyTodoList.todos[todoID])
+          } else{
+            holder.todos.push(v.dailyTodoList.todos[todoID])          
+          }
           //update to firebase
-          v.updateMainTodoList(
-            v.$emit('showSnackbar',[0,`${title} moved to ${toDate}.`])
-          )
-      }).catch(function(err){
-        console.log(err)
-      })
+            toDateDBRef.set({
+              todos: holder.todos
+            })
+            //set the todo to status 3
+            v.dailyTodoList.todos[todoID].status = 3
+            //update to firebase
+            v.updateMainTodoList(
+              v.$emit('showSnackbar',[0,`${title} moved to ${toDate}.`])
+            )
+        }).catch(function(err){
+          console.log(err)
+        })
+      }
     },
     paintColor(res){
       let todoID = res[0]

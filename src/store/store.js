@@ -14,6 +14,7 @@ export const store = new Vuex.Store({
         user: {},
         userName: '',
         userEmail: '',
+        photoURL:'',
         uid: '',
         token:'',
         backlog:{
@@ -34,6 +35,7 @@ export const store = new Vuex.Store({
             state.uid = state.user.uid
             state.userName = state.user.displayName
             state.userEmail = state.user.email
+            state.photoURL = state.user.photoURL
         },
         setAuth(state,payload){
             state.auth = payload.auth
