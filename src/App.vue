@@ -93,6 +93,16 @@
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
+            <v-list-item dense @click="addProjectDialog = !addProjectDialog">
+              <v-list-item-icon left class=" mr-1 ml-2">
+                <v-icon dense>add</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="py-0">
+                <v-list-item-title class="text-uppercase menuTitle py-0">
+                  Add Project
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <!-- <v-list-item
             class="mt-2"
             link
@@ -111,6 +121,7 @@
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="py-4">
+            <v-btn small block text :ripple="false" color="#BDBDBD" to="/settings">Settings</v-btn>
             <v-btn small block text :ripple="false" color="#BDBDBD" to="/about">About Steps</v-btn>
           </div>
         </template>
@@ -118,6 +129,21 @@
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
       </v-snackbar>
+      <v-dialog v-model="addProjectDialog" width="400">
+        <v-card>
+                <v-card-title style="word-break:normal;">Add Project</v-card-title>
+                <v-card-text class="py-0">
+                        <v-form>
+                            <v-text-field placeholder="Enter Project Name"></v-text-field>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="pa-2">
+                        <v-spacer></v-spacer>
+                        <v-btn @click="addProjectDialog = false" text>Cancel</v-btn>
+                        <v-btn>Add</v-btn>
+                    </v-card-actions>
+            </v-card>
+      </v-dialog>
   </v-app>
 </template>
 
@@ -167,6 +193,7 @@ export default {
       snackbarControl: false,
       snackbarColor: '',
       accountCard: false,
+      addProjectDialog: false
     }
   },
   computed:{
