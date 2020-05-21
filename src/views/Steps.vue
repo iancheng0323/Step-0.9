@@ -29,7 +29,7 @@
                   @deleteTodo="newDeleteTodo"
                   @moveToBacklog="moveToBacklog"
                   @moveToDate="moveToDate"
-                  @paintColor="paintColor"
+                  @paintColor="newPaintColor"
                   @moveToToday="moveToToday"
                   @dragTodo="dragTodo"
                   @bulkMoveToToday="bulkMoveToToday"
@@ -281,7 +281,8 @@ export default {
     newEditTodo(res){
       let todoID = res[0]
       let editedTitle = res[1]
-      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(this.dailyTodoList.todos[todoID].id)
+      let id = res[2]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(id)
       this.dailyTodoList.todos[todoID].title = editedTitle // update local
       targetTodoFirebaseDocRef.update({ // update to firebase
         title: editedTitle
@@ -299,7 +300,8 @@ export default {
     newChangeStatus(res){
       let todoID = res[0]
       let toStatus = res[1]
-      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(this.dailyTodoList.todos[todoID].id)
+      let id = res[2]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(id)
       this.dailyTodoList.todos[todoID].status = toStatus // update local
       targetTodoFirebaseDocRef.update({ // update to firebase
         status: toStatus
@@ -318,7 +320,9 @@ export default {
     },
     newDeleteTodo(res){
       let todoID = res[0]
-      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(this.dailyTodoList.todos[todoID].id)
+      let title = res[1]
+      let id = res[2]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(id)
       this.dailyTodoList.todos[todoID].status = 0 // update local
       this.$emit('showSnackbar',[3,`🗑 "${title}" is deleted.`])
       targetTodoFirebaseDocRef.update({ // update to firebase
@@ -363,6 +367,16 @@ export default {
       let color = res[1]
       this.dailyTodoList.todos[todoID].color = color
       this.updateMainTodoList()
+    },
+    newPaintColor(res){
+      let todoID = res[0]
+      let color = res[1]
+      let id = res[2]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(id)
+      this.dailyTodoList.todos[todoID].color = color // update to local
+      targetTodoFirebaseDocRef.update({ // update to firebase
+        color: color
+      })
     },
     moveToToday(res){
       let todoID = res[0]

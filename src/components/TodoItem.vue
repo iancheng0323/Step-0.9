@@ -116,7 +116,6 @@
                 @moveToToday="moveToToday"
                 @showDatePicker="showDatePicker = true"
                 @moveToBacklog="moveToBacklog"
-                @paintColor="paintColor"
                 @deletePop="deletePop = true"
             ></TodoItemActionMenu>
         </v-container>
@@ -245,6 +244,9 @@ export default {
             }else{
                 return true
             }
+        },
+        id(){
+            return this.todo.id
         }
     },
     data(){
@@ -276,18 +278,18 @@ export default {
                 toStatus = 1
             }
             this.$refs.todoMarkBox.$el.blur()
-            this.$emit('changeStatus',[this.todoID,toStatus])
+            this.$emit('changeStatus',[this.todoID,toStatus,this.id])
         },
         editTodo(event){
             this.editedValue = event.target.value
-            this.$emit('editTodo',[this.todoID,this.editedValue])
+            this.$emit('editTodo',[this.todoID,this.editedValue,this.id])
         },
         toggleActionMenu(){
             this.actionMenu = !this.actionMenu
         },
         deleteTodo(){
             this.deletePop = false;
-            this.$emit('deleteTodo',[this.todoID, this.title])
+            this.$emit('deleteTodo',[this.todoID, this.title,this.id])
         },
         moveToBacklog(){
             this.$emit('moveToBacklog',[this.todoID, this.title])
@@ -296,11 +298,6 @@ export default {
             this.showDatePicker= false
             this.actionMenu = false
             this.$emit('moveToDate',[this.todoID,this.title,this.datePickerValue])
-        },
-        paintColor(res){
-            let color = res[0]
-            this.actionMenu = false
-            this.$emit('paintColor',[this.todoID,color])
         },
         moveToToday(){
             this.actionMenu = false
@@ -347,7 +344,7 @@ export default {
             let color = res[0].color
             // let value = res[0].value
             this.editPriorityPanel = false
-            this.$emit('paintColor',[this.todoID,color])
+            this.$emit('paintColor',[this.todoID,color, this.id])
         }
     },
     watch:{
