@@ -140,7 +140,7 @@
                     <v-card-actions class="pa-2">
                         <v-spacer></v-spacer>
                         <v-btn @click="addProjectDialog = false" text>Cancel</v-btn>
-                        <v-btn>Add</v-btn>
+                        <v-btn @click="addProject">Add</v-btn>
                     </v-card-actions>
             </v-card>
       </v-dialog>
@@ -276,6 +276,9 @@ export default {
       }
       this.snackbarMessage = message
       this.snackbarControl = true
+    },
+    addProject(){
+      console.log('s')
     },
   },
   created(){

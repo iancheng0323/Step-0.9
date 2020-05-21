@@ -23,10 +23,10 @@
                   :dailyTodoList="dailyTodoList"
                   :mainTodoListRecieved="mainTodoListRecieved"
                   :addedRoutine="dailyTodoList.meta.addedRoutine"
-                  @addTodo="addTodo"
-                  @editTodo="editTodo"
-                  @changeStatus="changeStatus"
-                  @deleteTodo="deleteTodo"
+                  @addTodo="newAddTodo"
+                  @editTodo="newEditTodo"
+                  @changeStatus="newChangeStatus"
+                  @deleteTodo="newDeleteTodo"
                   @moveToBacklog="moveToBacklog"
                   @moveToDate="moveToDate"
                   @paintColor="paintColor"
@@ -154,6 +154,9 @@ export default {
     },
     parsedDisplayDateWeekday(){
       return this.$store.getters.parsedDisplayDateWeekday
+    },
+    todoItemListRef(){
+      return db.collection(`Main`).doc(`${this.uid}`).collection('todoItem')
     }
   },
   watch: {
@@ -202,22 +205,27 @@ export default {
         creationTime: `${this.parsedCurrentDateInHyphen}`,
         dueTime:`${this.parsedDisplayDateInHyphen}`,
         color: '',
-        src: todoSrc
+        src: todoSrc,
       }
       return newTodoItem
     },
     setTodoListByDate(date){
       let v = this
-      let dbRef = db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date)
-      dbRef.get().then(function(doc){
-        if(doc.exists && doc.data().todos){
-          for(let i = 0; i<doc.data().todos.length; i++){
-            v.dailyTodoList.todos.push(doc.data().todos[i])
-            // console.log(`${doc.data().todos[i].title} added.`)
+      // let dbRef = this.todoItemListRef.doc(date)
+      this.todoItemListRef
+      .where('dueTime', '==', '2020-05-21')
+      .get()
+      .then(function(querySnapshot){
+        querySnapshot.forEach(function(doc){
+          if(doc.exists){
+            // console.log(doc.data())
+            let holder = doc.data()
+            holder.id = doc.id
+            v.dailyTodoList.todos.push(holder)
+          } else{
+            console.log('No Todo list found.')
           }
-        } else{
-          console.log('No Todo list found.')
-        }
+        })
         v.mainTodoListRecieved = true
       }).catch(function(err){
         console.log(err)
@@ -230,9 +238,10 @@ export default {
     updateMainTodoList(callbackFunc){
       let v = this
       this.dailyTodoList.meta.addedRoutine
-      db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-        v.dailyTodoList
-      ).then(callbackFunc)
+      return true // in case something went wrong
+      // db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
+      //   v.dailyTodoList
+      // ).then(callbackFunc)
     },
     updateMainTodoListWithDate(date,todos,meta,callbackFunc){
       this.dailyTodoList.meta.addedRoutine
@@ -250,6 +259,15 @@ export default {
         this.$emit('showSnackbar',[0,`📝 "${val}" added.`])
       )
     },
+    newAddTodo(val){
+      let v = this
+      v.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))// Add Data To Local
+      this.todoItemListRef.add(v.createNewTodoObject(val,1,'daily')) //Add Data to Firebase
+      .then( function(){
+          v.$emit('showSnackbar',[0,`📝 "${val}" added.`])   
+        }
+      )
+    },
     addTodoWithoutUpdateToFirebase(val){
       let v = this
       this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
@@ -260,11 +278,32 @@ export default {
       this.dailyTodoList.todos[todoID].title = editedTitle
       this.updateMainTodoList()
     },
+    newEditTodo(res){
+      let todoID = res[0]
+      let editedTitle = res[1]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(this.dailyTodoList.todos[todoID].id)
+      this.dailyTodoList.todos[todoID].title = editedTitle // update local
+      targetTodoFirebaseDocRef.update({ // update to firebase
+        title: editedTitle
+      })
+    },
     changeStatus(res){
       let todoID = res[0]
       let toStatus = res[1]
       this.dailyTodoList.todos[todoID].status = toStatus
       this.updateMainTodoList()
+      if(toStatus == 2){ //status == 2 means is done state
+        this.$emit('showSnackbar',[0,'✅ Nice job completing this task!'])
+      }
+    },
+    newChangeStatus(res){
+      let todoID = res[0]
+      let toStatus = res[1]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(this.dailyTodoList.todos[todoID].id)
+      this.dailyTodoList.todos[todoID].status = toStatus // update local
+      targetTodoFirebaseDocRef.update({ // update to firebase
+        status: toStatus
+      })
       if(toStatus == 2){ //status == 2 means is done state
         this.$emit('showSnackbar',[0,'✅ Nice job completing this task!'])
       }
@@ -275,8 +314,16 @@ export default {
       this.dailyTodoList.todos[todoID].status = 0
       this.updateMainTodoList(
         this.$emit('showSnackbar',[3,`🗑 "${title}" is deleted.`])
-
       )
+    },
+    newDeleteTodo(res){
+      let todoID = res[0]
+      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(this.dailyTodoList.todos[todoID].id)
+      this.dailyTodoList.todos[todoID].status = 0 // update local
+      this.$emit('showSnackbar',[3,`🗑 "${title}" is deleted.`])
+      targetTodoFirebaseDocRef.update({ // update to firebase
+        status: 0
+      }) 
     },
     moveToDate(res){
       let todoID = res[0]
