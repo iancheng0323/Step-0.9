@@ -48,6 +48,7 @@
         app
         :width="navWidth"
         light
+        permanent
           >
           <!-- <AccountCard
                   :userName="userName"
@@ -254,7 +255,7 @@ export default {
         this.$router.push({ path: '/login' })
       } else{
         console.log('auth changed to true')
-        this.$router.push({ path: '/' })
+        // this.$router.push({ path: '/' })
       }
     },
     toggleNav(){
@@ -298,7 +299,7 @@ export default {
         console.log('Enter page as non-user')
         v.redirect()
       }
-      v.redirect()
+      // v.redirect()
     })
     this.$store.commit('setCurrentDate', {currentDate: new Date()}) //Pointing the date to current date
     this.$store.commit('setDisplayDate',{displayDate: new Date()}) //Set the display date on current date

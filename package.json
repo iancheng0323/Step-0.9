@@ -17,7 +17,7 @@
     "vue-router": "^3.1.5",
     "vue-shortkey": "^3.1.7",
     "vuedraggable": "^2.23.2",
-    "vuefire": "^2.2.1",
+    "vuefire": "^2.2.2",
     "vuetify": "^2.2.4",
     "vuex": "^3.1.2",
     "vuexfire": "^3.2.1"

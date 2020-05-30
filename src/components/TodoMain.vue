@@ -28,7 +28,7 @@
       <v-divider color="#EEEEEE"></v-divider>
       <ul v-show="mainTodoListRecieved" class="mt-0" ref="mainTodoUl">
         <draggable 
-        :list='dailyTodoList.todos' 
+        :list='dailyTodoList' 
         handle=".dragIndicator"
         ghost-class="ghost"
         drag-class="sortable-drag"
@@ -36,7 +36,7 @@
         @end="dragTodo"
         >
           <li is="TodoItem" 
-              v-for="(todo,index) in dailyTodoList.todos"
+              v-for="(todo,index) in dailyTodoList"
               :hideDone="hideDone"
               :todo="todo"
               :key="index"
@@ -138,7 +138,7 @@ export default {
   computed:{
     doneItemCount(){
       let count = 0
-      let todoList = this.dailyTodoList.todos
+      let todoList = this.dailyTodoList
       for(let i=0;i<todoList.length;i++){
         if(todoList[i].status == 2){ //status == 2 indicate checked
           count += 1
@@ -148,7 +148,7 @@ export default {
     },
     totalItemCount(){
       let count = 0
-      let todoList = this.dailyTodoList.todos
+      let todoList = this.dailyTodoList
       for(let i=0;i<todoList.length;i++){
         if(todoList[i].status == 2 || todoList[i].status == 1){ //status == 1 indicate un-checked, 2 indicates checked
           count += 1

@@ -292,16 +292,17 @@ export default {
             this.$emit('deleteTodo',[this.todoID, this.title,this.id])
         },
         moveToBacklog(){
-            this.$emit('moveToBacklog',[this.todoID, this.title])
+            this.$emit('moveToBacklog',[this.todoID, this.title,this.id])
+            this.actionMenu = false
         },
         moveToDate(){
             this.showDatePicker= false
             this.actionMenu = false
-            this.$emit('moveToDate',[this.todoID,this.title,this.datePickerValue])
+            this.$emit('moveToDate',[this.todoID,this.title,this.datePickerValue,this.id])
         },
         moveToToday(){
             this.actionMenu = false
-            this.$emit('moveToToday',[this.todoID,this.title])
+            this.$emit('moveToToday',[this.todoID,this.title, this.id])
         },
         blurInput(){
             this.$refs.todoTitleInput.blur()

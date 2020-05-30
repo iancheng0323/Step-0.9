@@ -10,7 +10,6 @@
             :now="parsedDisplayDateInHyphen"
             v-model="pickedDate"
             @click:date="changeDate"
-            
         ></v-calendar>
         </v-card-text>
     <!-- <v-btn text @click="prevDay()" class="grey--text text-capitalize" small>Previous Day</v-btn> -->
