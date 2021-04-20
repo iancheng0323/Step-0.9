@@ -13,12 +13,18 @@
             <Tomato
                 :uid="uid"
             ></Tomato>
+            <NoDates
+                :uid="uid"
+                :noDatesList="noDatesList"
+                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+            ></NoDates>
     </v-container>
 </template>
 <script>
 // import Backlog from './Backlog.vue'
 import Calender from './Calender.vue'
 import Tomato from './Tomato.vue'
+import NoDates from './NoDates.vue'
 
 export default {
     props:[
@@ -26,11 +32,13 @@ export default {
         'parsedCurrentDateInHyphen',
         'parsedDisplayDateInHyphen',
         'activeElement',
+        'noDatesList'
     ],    
     components: {
         // Backlog,
         Calender,
-        Tomato
+        Tomato,
+        NoDates
     },
     methods:{
         changeDate(res){

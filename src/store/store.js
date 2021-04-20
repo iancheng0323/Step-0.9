@@ -7,8 +7,9 @@ import db from '../firebaseConfig.js'
 Vue.use(Vuex)
 
 export const store = new Vuex.Store({
-    state:{ //data
+    state:{ //globle data
         currentDate: 0,
+        displayDate: 0,
         currentWeekdayIndex: new Date().getDay(),
         auth: false,
         user: {},
@@ -20,11 +21,11 @@ export const store = new Vuex.Store({
         backlog:{
             todos:[]
         },
-        displayDate: 0,
         routine:{
             list:[]
         },
         otherInfo:{},
+        userInfo:{},
     },
     mutations:{ // sets or updates the state
         setBacklog(state, payload){
@@ -51,7 +52,7 @@ export const store = new Vuex.Store({
                 state.displayDate = payload.displayDate
                 // Vue.set(state, 'displayDate', payload.displayDate)
             }else{
-                state.displayDate.setDate(state.displayDate.getDate() + payload.val)
+                state.displayDate.setDate(state.displayDate.getDate() + payload.val) // Here might be the ause of getter not responding
                 // Vue.set(state, 'displayDate', state.displayDate.getDate() + payload.val)
             }
         },
@@ -61,13 +62,17 @@ export const store = new Vuex.Store({
         ...vuexfireMutations,
     },
     actions:{ //methods
+        getUserInfo: firestoreAction(({ state,bindFirestoreRef }) => {
+            // return the promise returned by `bindFirestoreRef`
+            return bindFirestoreRef('userInfo', db.accounts.doc(`${state.uid}`))
+        }),
         getBacklogFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
-            return bindFirestoreRef('backlog', db.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog'))
+            return bindFirestoreRef('backlog', db.root.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog'))
         }),
         getOtherInfoFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
-            return bindFirestoreRef('otherInfo', db.collection(`Main`).doc(`${state.uid}`))
+            return bindFirestoreRef('otherInfo', db.root.collection(`Main`).doc(`${state.uid}`))
         }),
     },
     getters:{ // computed

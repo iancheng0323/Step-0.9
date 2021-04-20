@@ -29,9 +29,10 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     </v-app-bar> -->
+        <!-- Main Content  -->
         <v-content>
-          <v-container>
             <router-view
+            v-if="userInfo"
             @signInWithGoogle="signInWithGoogle"
             @showSnackbar="showSnackbar"
             :auth="auth"
@@ -41,39 +42,39 @@
             :activeElement="activeElement"
             >
             </router-view>
-          </v-container>
         </v-content>
+        <!-- Nav  -->
         <v-navigation-drawer
-        v-if="auth"
-        app
-        :width="navWidth"
-        light
-        permanent
-          >
+          v-if="auth"
+          app
+          :width="navWidth"
+          light
+          permanent
+            >
           <!-- <AccountCard
                   :userName="userName"
                   :userEmail="userEmail"
                   v-show="accountCard"
                   @logout="logout()"
-                ></AccountCard> -->
+          ></AccountCard> -->
           <v-list class="pt-0" flat>
-          <v-list-item-group>
-            <v-list-item two-line @click="accountCard = true">
-              <v-list-item-avatar color="teal">
-                  <img
-                    :src="photoURL"
-                    :alt="userName"
-                  >
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    <span class="text-uppercase">{{userName}}</span>
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{userEmail}}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
+            <v-list-item-group>
+              <v-list-item two-line @click="accountCard = true">
+                <v-list-item-avatar color="teal">
+                    <img
+                      :src="photoURL"
+                      :alt="userName"
+                    >
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      <span class="text-uppercase">{{userName}}</span>
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{userEmail}}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+              </v-list-item>
             <v-list-item
             class="py-0"
             v-for="(item,index) in listItem"
@@ -94,7 +95,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
-            <v-list-item dense @click="addProjectDialog = !addProjectDialog">
+            <!-- <v-list-item dense @click="addProjectDialog = !addProjectDialog">
               <v-list-item-icon left class=" mr-1 ml-2">
                 <v-icon dense>add</v-icon>
               </v-list-item-icon>
@@ -103,7 +104,7 @@
                   Add Project
                 </v-list-item-title>
               </v-list-item-content>
-            </v-list-item>
+            </v-list-item> -->
             <!-- <v-list-item
             class="mt-2"
             link
@@ -127,9 +128,11 @@
           </div>
         </template>
       </v-navigation-drawer>
+        <!-- Global Snackbars  -->
       <v-snackbar v-model="snackbarControl" :timeout="2000" :color="snackbarColor" class="text-center">
         {{snackbarMessage}}
       </v-snackbar>
+      <!-- Global Popups  -->
       <v-dialog v-model="addProjectDialog" width="400">
         <v-card>
                 <v-card-title style="word-break:normal;">Add Project</v-card-title>
@@ -151,6 +154,7 @@
 <script>
 //Firebase Login
 import firebase from 'firebase'
+import db from './firebaseConfig.js'
 // import AccountCard from './components/AccountCard.vue'
 let provider = new firebase.auth.GoogleAuthProvider();
 
@@ -173,8 +177,8 @@ export default {
         },
         // {
         //   title: 'Calendar',
-        //   link: '#',
-        //   iconText: 'fa-cube',
+        //   link: '/calendar',
+        //   iconText: 'fa-calendar-day',
         //   fontSize: '24'
         // },
         {
@@ -219,7 +223,10 @@ export default {
     },
     auth(){
       return this.$store.state.auth
-    }
+    },
+    userInfo(){
+      return this.$store.state.userInfo
+    },
   },
   methods: {
     signInWithGoogle(){
@@ -227,8 +234,8 @@ export default {
       firebase.auth().signInWithPopup(provider).then(function(result) {
           // This gives you a Google Access Token. You can use it to access the Google API.
           v.$store.commit('setToken',{token:result.credential.accessToken})
-          // The signed-in user info.
-          }).catch(function(error) {
+
+      }).catch(function(error) {
           // Handle Errors here.
           var errorCode = error.code
           var errorMessage = error.message
@@ -243,7 +250,7 @@ export default {
     logout(){
       firebase.auth().signOut().then(function() {
         // Sign-out successful.
-        console.log('signed out')
+        console.log('User signed out')
       }).catch(function(error) {
         // An error happened.
         console.log(error)
@@ -251,16 +258,11 @@ export default {
     },
     redirect(){
       if(this.auth == false){
-        console.log('auth changed to false')
         this.$router.push({ path: '/login' })
-      } else{
-        console.log('auth changed to true')
-        // this.$router.push({ path: '/' })
       }
     },
     toggleNav(){
       this.minNav = !this.minNav
-      console.log('s')
     },
     showSnackbar(res){
       let snackbarType = res[0]
@@ -279,27 +281,42 @@ export default {
       this.snackbarControl = true
     },
     addProject(){
-      console.log('s')
+      console.log('add Project called')
     },
   },
   created(){
     let v = this
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged( function(user) {
       if (user) {
+        // Set user info & settings for application
         v.$store.commit('setAuth',{auth:true})
         v.$store.commit('setUser',{
           user: user
         })
+        const userProfileRef = db.accounts.doc(`${user.uid}`)
+        // Check if user already exist
+        userProfileRef.get().then( function(doc){
+          if(doc.exists){
+            console.log('Existing user')
+          } else{
+            console.log('New user')
+            userProfileRef.set(
+              {
+                opt:{
+                  hideDone: false,
+                },
+              }).then( ()=> console.log('Initial user settings set'))
+            }
+        }) 
+        v.$store.dispatch('getUserInfo')
         v.$store.dispatch('getBacklogFromFirebase')
         v.$store.dispatch('getOtherInfoFromFirebase')
-        console.log('Signed In')
         v.redirect()
       } else {
         v.$store.commit('setAuth',{auth:false})
         console.log('Enter page as non-user')
         v.redirect()
       }
-      // v.redirect()
     })
     this.$store.commit('setCurrentDate', {currentDate: new Date()}) //Pointing the date to current date
     this.$store.commit('setDisplayDate',{displayDate: new Date()}) //Set the display date on current date
@@ -308,6 +325,7 @@ export default {
     })
   },
   watch:{
+    // Helper for closing popup when clicking outside dropdown
     activeElement(newVal){
       if(this.accountCard && newVal == 'BODY'){
           this.accountCard = false

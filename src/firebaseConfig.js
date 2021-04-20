@@ -18,5 +18,9 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-const db = firebase.firestore()
+const db = {
+    root: firebase.firestore(),
+    todoItems: firebase.firestore().collection(`todoItem`),
+    accounts: firebase.firestore().collection(`Accounts`)
+}
 export default db

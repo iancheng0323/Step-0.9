@@ -1,17 +1,21 @@
+// Main Packages
 import Vue from 'vue'
 import App from './App.vue'
+import VueRouter from 'vue-router'
+import {store} from './store/store.js'
+
+
+// Plugins
+import vueShortkey from 'vue-shortkey'
 import vuetify from './plugins/vuetify'
 import {firestorePlugin} from 'vuefire'
-import VueRouter from 'vue-router'
-import vueShortkey from 'vue-shortkey'
-import {store} from './store/store.js'
 import VueNativeNotification from 'vue-native-notification'
 
 
+// Initialize plugins & settings
 Vue.use(firestorePlugin)
 Vue.use(VueRouter)
-Vue.config.productionTip = false
-// Vue.use(require('vue-shortkey'))
+// Vue.config.productionTip = false
 Vue.use(vueShortkey, { prevent: ['input', 'textarea'] })
 Vue.use(VueNativeNotification, {
   // Automatic permission request before
@@ -19,13 +23,14 @@ Vue.use(VueNativeNotification, {
   requestOnNotify: true
 })
 
-//Router Setting
+// Router Settings
+// ======================================
 import Steps from './views/Steps.vue'
 import Login from './views/Login.vue'
-// import Mountains from './views/Mountains.vue'
 import Numbers from './views/Numbers.vue'
 import Settings from './views/Settings.vue'
 import About from './views/About.vue'
+import Calendar from './views/Calendar.vue'
 
 
 const routes = [
@@ -69,6 +74,12 @@ const routes = [
     path: '/about',
     name: 'About',
     component: About,
+    // props:[],
+  },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    component: Calendar,
     // props:[],
   },
 ]

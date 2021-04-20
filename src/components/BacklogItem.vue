@@ -20,7 +20,7 @@
                 :status="status"
                 @deletePop="deletePop = true"
                 @moveToToday="moveToToday"
-                @showDatePicker="showDatePicker"
+                @showDatePicker="showDatePicker = true"
                 @paintColor="paintColor"
                 v-show="actionMenu"
             ></TodoItemActionMenu>
@@ -50,26 +50,43 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <ChangeDatePopup
+            :show="showDatePicker"
+            :defaultValue="parsedDisplayDateInHyphen"
+            @close="showDatePicker = false"
+            @returnDate="moveToDate"
+        ></ChangeDatePopup>
     </li>
 </template>
 <script>
+import db from '../firebaseConfig.js'
 import TodoItemActionMenu from './TodoItemActionMenu.vue'
+import ChangeDatePopup from './Popups/ChangeDatePopup.vue'
 export default {
     name: 'BacklogItem',
     components:{
         TodoItemActionMenu,
+        ChangeDatePopup,
     },
     props: [
+        'todo',
         'title',
         'todoID',
         'activeElement',
-        'status'
+        'status',
+        'parsedDisplayDateInHyphen'
     ],
-    data: function(){
+    data(){
         return{
             editedValue: '',
             actionMenu: false,
-            deletePop: false
+            deletePop: false,
+            showDatePicker:false,
+        }
+    },
+    computed:{
+        id(){
+            return this.todo.id
         }
     },
     methods:{
@@ -88,8 +105,20 @@ export default {
         moveToToday(){
             this.$emit('moveToToday',[this.todoID,this.title])
         },
-        showDatePicker(){
-            console.log('DEV')
+        moveToDate(res
+        // , giveFeedback = true
+        ){
+            this.showDatePicker= false //close popup
+            this.actionMenu = false // close menu
+            let toDate = res.date
+            let targetTodoFirebaseDocRef = db.todoItems.doc(this.id)
+            targetTodoFirebaseDocRef.update({ // update to firebase
+                dueTime: toDate
+            }).then( function(){
+                console.log('success')
+            }
+            )
+            
         },
         paintColor(){
             console.log('DEV')

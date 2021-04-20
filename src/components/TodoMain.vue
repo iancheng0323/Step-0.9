@@ -27,20 +27,20 @@
       ></TodoMainActionMenu>
       <v-divider color="#EEEEEE"></v-divider>
       <ul v-show="mainTodoListRecieved" class="mt-0" ref="mainTodoUl">
-        <draggable 
+        <!-- <draggable 
         :list='dailyTodoList' 
         handle=".dragIndicator"
         ghost-class="ghost"
         drag-class="sortable-drag"
         chosen-Class = "sortable-chosen"
+        @start="dragStart"
         @end="dragTodo"
-        >
+        > -->
           <li is="TodoItem" 
-              v-for="(todo,index) in dailyTodoList"
+              v-for="todo in dailyTodoList"
               :hideDone="hideDone"
               :todo="todo"
-              :key="index"
-              :todoID="index"
+              :key="todo.orderID"
               :activeElement="activeElement"
               :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
               :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
@@ -53,7 +53,7 @@
               @moveToToday="moveToToday"
               @addComment="addComment"
               ></li>
-        </draggable>
+        <!-- </draggable> -->
       </ul>
       <p v-if="totalItemCount == 0 && mainTodoListRecieved" class="mt-4 ml-4 grey--text" @click="$refs.AddTodoForm.isAddingTodo = true">
         💆‍♂️There's nothing todo, yet.
@@ -93,9 +93,11 @@
 <script>
 import TodoItem from './TodoItem.vue'
 import AddTodoForm from './AddTodoForm'
-import draggable from 'vuedraggable'
+// import draggable from 'vuedraggable'
 import TodoMainActionMenu from './TodoMainActionMenu.vue'
 import DateOption from './DateOption.vue'
+import {mapState} from 'vuex'
+import db from '../firebaseConfig.js'
 
 export default {
   name: 'TodoMain',
@@ -107,11 +109,12 @@ export default {
     'mainTodoListRecieved',
     'displayDate',
     'addedRoutine',
+    'hideDone'
   ],
   components:{
     TodoItem,
     AddTodoForm,
-    draggable,
+    // draggable,
     TodoMainActionMenu,
     DateOption
   },
@@ -121,8 +124,7 @@ export default {
       rederedTodoItemCount: 0,
       actionMenu: false,
       computedPropertyForceUpdateHelper:0,
-      hideDone: false,
-      dateOption: false
+      dateOption: false,
     }
   },
   watch:{
@@ -158,7 +160,10 @@ export default {
     },
     parsedDisplayDateInSlash(){
       return(this.parseDateInSlash(this.displayDate))
-    }
+    },
+    ...mapState([
+      'uid'
+    ]),
   },
   created(){
   },
@@ -194,8 +199,14 @@ export default {
     moveToToday(res){
       this.$emit('moveToToday',res)
     },
-    dragTodo(){
-      this.$emit('dragTodo')
+    dragStart(){
+      return true
+    },
+    dragTodo(e){
+      this.$emit('dragTodo',{
+        e: e,
+        id: 'id'
+      })
     },
     showAddTodoFailSnackbar(res){
       this.$emit('showSnackbar',res)
@@ -264,8 +275,14 @@ export default {
       this.$emit('addComment',res)
     },
     toggleHideDone(){
-      this.hideDone = !this.hideDone
-      this.actionMenu = false
+      let current = this.hideDone
+      db.accounts.doc(this.uid).update(
+        {
+          opt: {
+            hideDone: !current
+          }
+        }
+      )
     },
     setDateOption(option){
       console.log(option)
@@ -277,8 +294,7 @@ export default {
   },
   mounted() {
     this.computedPropertyForceUpdateHelper ++
-  }
-
+  },
 }
 </script>
 

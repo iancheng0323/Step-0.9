@@ -1,5 +1,6 @@
 <template>
-    <li :class="todoStatus" v-if="status != 0 && status != 3" v-show="passHideDone">
+    <transition name="fade">
+        <li :class="todoStatus" v-if="status != 0 && status != 3" v-show="passHideDone">
         <v-container class="relative pt-2 pb-1">
             <v-row>
                 <v-col cols="12" class="pa-0 d-flex align-content-center">
@@ -115,7 +116,6 @@
                 :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                 @moveToToday="moveToToday"
                 @showDatePicker="showDatePicker = true"
-                @moveToBacklog="moveToBacklog"
                 @deletePop="deletePop = true"
             ></TodoItemActionMenu>
         </v-container>
@@ -145,11 +145,18 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
+        <!-- <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
             <v-date-picker v-model="datePickerValue">
-                <v-btn block @click="moveToDate">Move</v-btn>
+                <v-btn color="primary" large @click="moveToDate">Move</v-btn>
+                <v-btn large @click="noDate">No Date</v-btn>
             </v-date-picker>
-        </v-dialog>
+        </v-dialog> -->
+        <ChangeDatePopup
+            :show="showDatePicker"
+            :defaultValue="this.parsedDisplayDateInHyphen"
+            @close="showDatePicker=false"
+            @returnDate="moveToDate"
+        ></ChangeDatePopup>
         <v-dialog v-model="addCommentPop" width="600">
             <v-card min-height="300">
                 <v-card-title style="word-break:normal;">{{title}}</v-card-title>
@@ -183,13 +190,14 @@
         </v-dialog>
         <v-divider color="#BDBDBD"></v-divider>
     </li>
+    </transition>
 </template>
 <script>
 
 import TodoItemActionMenu from './TodoItemActionMenu.vue'
 import EditLabelPanel from './EditLabelPanel.vue'
 import EditPriorityPanel from './EditPriorityPanel.vue'
-
+import ChangeDatePopup from './Popups/ChangeDatePopup.vue'
 
 export default {
     name:'TodoItem',
@@ -197,6 +205,7 @@ export default {
         TodoItemActionMenu,
         EditLabelPanel,
         EditPriorityPanel,
+        ChangeDatePopup,
     },
     props:[
         'todo',
@@ -290,15 +299,13 @@ export default {
         deleteTodo(){
             this.deletePop = false;
             this.$emit('deleteTodo',[this.todoID, this.title,this.id])
-        },
-        moveToBacklog(){
-            this.$emit('moveToBacklog',[this.todoID, this.title,this.id])
             this.actionMenu = false
         },
-        moveToDate(){
+        moveToDate(res){
+            let date = res.date
             this.showDatePicker= false
             this.actionMenu = false
-            this.$emit('moveToDate',[this.todoID,this.title,this.datePickerValue,this.id])
+            this.$emit('moveToDate',[this.todoID,this.title, date,this.id])
         },
         moveToToday(){
             this.actionMenu = false
@@ -343,9 +350,15 @@ export default {
         },
         editPriority(res){
             let color = res[0].color
+            let prority = res[0].value
             // let value = res[0].value
             this.editPriorityPanel = false
-            this.$emit('paintColor',[this.todoID,color, this.id])
+            this.$emit('paintColor',[this.todoID, color, this.id, prority])
+        },
+        noDate(){
+            this.showDatePicker= false
+            this.actionMenu = false
+            this.$emit('moveToDate',[this.todoID,this.title,'',this.id])
         }
     },
     watch:{
@@ -461,5 +474,11 @@ li{
 }
 .label{
     color: #757575;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .4s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>
