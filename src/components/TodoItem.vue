@@ -119,7 +119,7 @@
                 @deletePop="deletePop = true"
             ></TodoItemActionMenu>
         </v-container>
-        <v-dialog
+        <!-- <v-dialog
             v-model="deletePop"
             max-width="290"
         >
@@ -144,13 +144,13 @@
                 </v-btn>
                 </v-card-actions>
             </v-card>
-        </v-dialog>
-        <!-- <v-dialog :value="showDatePicker" @click:outside="showDatePicker=false" width="300">
-            <v-date-picker v-model="datePickerValue">
-                <v-btn color="primary" large @click="moveToDate">Move</v-btn>
-                <v-btn large @click="noDate">No Date</v-btn>
-            </v-date-picker>
         </v-dialog> -->
+        <ConfirmDeletePopup
+            :show="deletePop"
+            :title="this.title"
+            @confirm="deleteTodo"
+            @dismiss="deletePop = actionMenu = false"
+        ></ConfirmDeletePopup>
         <ChangeDatePopup
             :show="showDatePicker"
             :defaultValue="this.parsedDisplayDateInHyphen"
@@ -198,6 +198,8 @@ import TodoItemActionMenu from './TodoItemActionMenu.vue'
 import EditLabelPanel from './EditLabelPanel.vue'
 import EditPriorityPanel from './EditPriorityPanel.vue'
 import ChangeDatePopup from './Popups/ChangeDatePopup.vue'
+import ConfirmDeletePopup from './Popups/ConfirmDeletePopup.vue'
+import db from '../firebaseConfig.js'
 
 export default {
     name:'TodoItem',
@@ -206,6 +208,7 @@ export default {
         EditLabelPanel,
         EditPriorityPanel,
         ChangeDatePopup,
+        ConfirmDeletePopup,
     },
     props:[
         'todo',
@@ -256,6 +259,9 @@ export default {
         },
         id(){
             return this.todo.id
+        },
+        targetTodoFirebaseDocRef(){
+            return db.todoItems.doc(this.todo.id)
         }
     },
     data(){
@@ -350,10 +356,12 @@ export default {
         },
         editPriority(res){
             let color = res[0].color
-            let prority = res[0].value
-            // let value = res[0].value
+            let priority = res[0].value
             this.editPriorityPanel = false
-            this.$emit('paintColor',[this.todoID, color, this.id, prority])
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                color: color,
+                priority: priority
+            })
         },
         noDate(){
             this.showDatePicker= false
@@ -370,9 +378,9 @@ export default {
                 this.editPriorityPanel = false
             }
         },
-        deletePop(){
-            this.$nextTick(() => this.$refs.deleteButton.$el.focus())
-        }
+        // deletePop(){
+        //     this.$nextTick(() => this.$refs.deleteButton.$el.focus())
+        // }
     }
 }
 </script>

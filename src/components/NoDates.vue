@@ -9,6 +9,7 @@
             :title="todo.title"
             :status="todo.status"
             :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
+            :activeElement="activeElement"
             >
             </li>
             <BacklogItem
@@ -29,7 +30,8 @@ export default {
     props:[
         'uid',
         'noDatesList',
-        'parsedDisplayDateInHyphen'
+        'parsedDisplayDateInHyphen',
+        'activeElement'
         ],
     data(){
         return{

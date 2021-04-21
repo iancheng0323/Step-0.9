@@ -85,22 +85,28 @@ export default {
         }
     },
     computed:{
-        id(){
-            return this.todo.id
+        targetTodoFirebaseDocRef(){
+            return db.todoItems.doc(this.todo.id)
         }
     },
     methods:{
         editTodo(e){
             this.editedValue = e.target.value
-            this.$emit('editTodo',[this.todoID,this.editedValue])
+            let v = this
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                title: v.editedValue
+            })
         },
         toggleActionMenu(){
             this.actionMenu = !this.actionMenu
         },
         deleteTodo(){
-            this.$emit('deleteTodo',[this.todoID, this.title])
             this.actionMenu = false
             this.deletePop = false
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                status: 0,
+                deleted: true,
+            })
         },
         moveToToday(){
             this.$emit('moveToToday',[this.todoID,this.title])
@@ -111,8 +117,7 @@ export default {
             this.showDatePicker= false //close popup
             this.actionMenu = false // close menu
             let toDate = res.date
-            let targetTodoFirebaseDocRef = db.todoItems.doc(this.id)
-            targetTodoFirebaseDocRef.update({ // update to firebase
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
                 dueTime: toDate
             }).then( function(){
                 console.log('success')
@@ -126,7 +131,7 @@ export default {
 
     },
     watch:{
-        activeElement: function(newVal){
+        activeElement(newVal){
             if(this.actionMenu && newVal == 'BODY'){
                 this.actionMenu = false
             }

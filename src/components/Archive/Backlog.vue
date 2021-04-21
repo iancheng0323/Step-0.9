@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import BacklogItem from './BacklogItem.vue'
+import BacklogItem from '../BacklogItem.vue'
 import AddTodoForm from './AddTodoForm'
-import db from '../firebaseConfig.js'
+import db from '../../firebaseConfig.js'
 
 export default {
     name: 'Backlog',

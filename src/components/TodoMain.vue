@@ -37,19 +37,17 @@
         @end="dragTodo"
         > -->
           <li is="TodoItem" 
-              v-for="todo in dailyTodoList"
+              v-for="(todo,index) in dailyTodoList"
               :hideDone="hideDone"
               :todo="todo"
-              :key="todo.orderID"
+              :key="index"
               :activeElement="activeElement"
               :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
               :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
               @changeStatus="changeStatus"
               @editTodo="editTodo"
               @deleteTodo="deleteTodo"
-              @moveToBacklog="moveToBacklog"
               @moveToDate="moveToDate"
-              @paintColor="paintColor"
               @moveToToday="moveToToday"
               @addComment="addComment"
               ></li>
@@ -181,9 +179,6 @@ export default {
     deleteTodo(res){
       this.$emit('deleteTodo',res)
     },
-    moveToBacklog(res){
-      this.$emit('moveToBacklog',res)
-    },
     toggleAddTodo(){
       this.$refs.AddTodoForm.isAddingTodo = !this.$refs.AddTodoForm.isAddingTodo
     },
@@ -192,9 +187,6 @@ export default {
     },
     moveToDate(res){
       this.$emit('moveToDate',res)
-    },
-    paintColor(res){
-      this.$emit('paintColor',res)
     },
     moveToToday(res){
       this.$emit('moveToToday',res)

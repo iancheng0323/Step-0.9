@@ -28,33 +28,6 @@
                             <v-list-item-title>Move to date ...</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                    <!-- <v-list-item
-                    @click="moveToBacklog"
-                    class="text-uppercase" 
-                    v-if="status != 3"
-                    >
-                        <v-list-item-content>
-                            <v-list-item-title 
-                            >
-                            Move To Backlog
-                            </v-list-item-title>
-                        </v-list-item-content>
-                    </v-list-item> -->
-                    <!-- <v-divider></v-divider>
-                    <v-list-group
-                    class="text-uppercase" 
-                    >
-                    <template v-slot:activator>
-                    <v-list-item-title>Add Color</v-list-item-title>
-                    </template>
-                        <v-list-item-group>
-                            <v-list-item v-for="(item,index) in colorList" :key="index" @click="paintColor(index)">
-                                <v-list-item-title>
-                                <div class="colorCircle" :style="{background: item.color}"></div>{{item.text}}
-                                </v-list-item-title>
-                            </v-list-item>
-                        </v-list-item-group>
-                    </v-list-group> -->
                     <v-divider></v-divider>
                     <v-list-item
                     @click="deletePop"

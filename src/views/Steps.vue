@@ -21,7 +21,7 @@
                   :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
                   :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                   :activeElement="activeElement"
-                  :dailyTodoList="dailyTodoList"
+                  :dailyTodoList="sortedDailyTodoList"
                   :mainTodoListRecieved="mainTodoListRecieved"
                   :addedRoutine="addedRoutine"
                   :hideDone="userInfo.opt.hideDone"
@@ -29,9 +29,7 @@
                   @editTodo="editTodo"
                   @changeStatus="changeStatus"
                   @deleteTodo="deleteTodo"
-                  @moveToBacklog="moveToBacklog"
                   @moveToDate="moveToDate"
-                  @paintColor="paintColor"
                   @moveToToday="moveToToday"
                   @dragTodo="dragTodo"
                   @bulkMoveToToday="bulkMoveToToday"
@@ -89,7 +87,6 @@
 
 <script>
 import TodoMain from '../components/TodoMain.vue'
-// import StepHeader from '../components/StepHeader.vue'
 import TodoSide from '../components/TodoSide.vue'
 import db from '../firebaseConfig.js'
 import {mapState} from 'vuex'
@@ -129,6 +126,13 @@ export default {
           list.push(this.dailyTodoList[i])
         }
       }
+      return list
+    },
+    sortedDailyTodoList(){
+      let holder = this.dailyTodoList
+      let list = holder.sort(
+        (a,b) => a.priority - b.priority
+      )
       return list
     },
     todoItemListRef(){
@@ -207,13 +211,6 @@ export default {
     },
     //Update List
     //=======================================================
-    // eslint-disable-next-line
-    updateMainTodoList(callbackFunc){
-      return true // in case something went wrong
-      // db.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(v.parsedDisplayDateInHyphen).set(
-      //   v.dailyTodoList
-      // ).then(callbackFunc)
-    },
     updateMainTodoListWithDate(date,todos,meta,callbackFunc){
       db.root.collection(`Main`).doc(`${this.uid}`).collection('todoItem').doc(date).set(
         {
@@ -221,10 +218,6 @@ export default {
           meta: meta
         }
       ).then(callbackFunc)
-    },
-    addTodoWithoutUpdateToFirebase(val){
-      let v = this
-      this.dailyTodoList.todos.push(v.createNewTodoObject(val,1,'daily'))
     },
     //Todo Related Functions
     //=======================================================
@@ -305,17 +298,6 @@ export default {
         )
       }
     },
-    paintColor(res){ //Updated 20210419
-      // let todoID = res[0]
-      let color = res[1]
-      let id = res[2]
-      let priority = res[3]
-      let targetTodoFirebaseDocRef = db.todoItems.doc(id)
-      targetTodoFirebaseDocRef.update({ // update to firebase
-        color: color,
-        priority: priority
-      })
-    },
     moveToToday(res, giveFeedback = true){ //Refactored 20210403
       // let todoID = res[0]
       let title = res[1]
@@ -355,64 +337,44 @@ export default {
     },
     //Routine
     addRoutineItemToTodoList(){
-      let counter = 0 //Routine counter, counts how many routines are added to the day
-      // Add Routine Items to local list
-      for(let i = 0 ; i<this.routine.length;i++){
-        if(
-          // 1.1 If the routine matches weekday
-          this.routine[i].weeklyRoutine.indexOf(this.parsedDisplayDateWeekday) >= 0
-          &&
-          // 1.2 AND is turned on
-          this.routine[i].status
-          ){
-          // 2. Add the routine item to today
-          console.log(this.routine[i].title)
-          this.addTodoWithoutUpdateToFirebase(this.routine[i].title)
-          counter ++
-          }
-        }
-      if(counter === 0){ //If counter === 0 (no routine added), show hint
-        this.$emit('showSnackbar',[2,`Theres no routine items!`])
-      }else{ //If counter!== 0, do the following
-        // Update local list to firebase
-        this.updateMainTodoList(
-          // Show snackbar
-          this.$emit('showSnackbar',[0,`🕰 Routine items added to list.`])
-        )
-        this.dailyTodoList.meta.addedRoutine = true
-      }
-      this.addRoutinePop = false
+      return true
+      // let counter = 0 //Routine counter, counts how many routines are added to the day
+      // // Add Routine Items to local list
+      // for(let i = 0 ; i<this.routine.length;i++){
+      //   if(
+      //     // 1.1 If the routine matches weekday
+      //     this.routine[i].weeklyRoutine.indexOf(this.parsedDisplayDateWeekday) >= 0
+      //     &&
+      //     // 1.2 AND is turned on
+      //     this.routine[i].status
+      //     ){
+      //     // 2. Add the routine item to today
+      //     console.log(this.routine[i].title)
+      //     this.addTodoWithoutUpdateToFirebase(this.routine[i].title)
+      //     counter ++
+      //     }
+      //   }
+      // if(counter === 0){ //If counter === 0 (no routine added), show hint
+      //   this.$emit('showSnackbar',[2,`Theres no routine items!`])
+      // }else{ //If counter!== 0, do the following
+      //   // Update local list to firebase
+      //   this.updateMainTodoList(
+      //     // Show snackbar
+      //     this.$emit('showSnackbar',[0,`🕰 Routine items added to list.`])
+      //   )
+      //   this.dailyTodoList.meta.addedRoutine = true
+      // }
+      // this.addRoutinePop = false
     },
     //Comment
     addComment(res){
-      // Res Description
-      // res:{
-      //   id: id // Number
-      //   comment: comment //String
-      //   time: time // Number, unix time stamp
-      // }
       let id = res.id
-      let comment = res.comment
-      let time = res.time
+      // let comment = res.comment
+      // let time = res.time
       if(!this.dailyTodoList.todos[id].comments){
         this.dailyTodoList.todos[id].comments = []
       }
-      this.dailyTodoList.todos[id].comments.push({
-        comment: comment,
-        time: time
-      })
-      this.updateMainTodoList()
-    },
-    //Backlog
-    moveToBacklog(res){
-      let title = res[1]
-      let id = res[2]
-      let targetTodoFirebaseDocRef = this.todoItemListRef.doc(id)
-      targetTodoFirebaseDocRef.update({ // update to firebase
-        dueTime: ''
-      }).then(
-        this.$emit('showSnackbar',[0,`"${title}" moved to backlog.`])
-      )
+      return true
     },
   },
 }

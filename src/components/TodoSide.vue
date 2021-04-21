@@ -5,15 +5,8 @@
                 :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                 @changeDate="changeDate"
             ></Calender>
-            <!-- <Backlog
-            :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-            :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-            :activeElement="activeElement">
-            </Backlog> -->
-            <Tomato
-                :uid="uid"
-            ></Tomato>
             <NoDates
+                :activeElement="activeElement"
                 :uid="uid"
                 :noDatesList="noDatesList"
                 :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
@@ -23,7 +16,6 @@
 <script>
 // import Backlog from './Backlog.vue'
 import Calender from './Calender.vue'
-import Tomato from './Tomato.vue'
 import NoDates from './NoDates.vue'
 
 export default {
@@ -35,9 +27,7 @@ export default {
         'noDatesList'
     ],    
     components: {
-        // Backlog,
         Calender,
-        Tomato,
         NoDates
     },
     methods:{
