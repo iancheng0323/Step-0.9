@@ -10,7 +10,6 @@ export const store = new Vuex.Store({
     state:{ //globle data
         currentDate: 0,
         displayDate: 0,
-        currentWeekdayIndex: new Date().getDay(),
         auth: false,
         user: {},
         userName: '',
@@ -18,9 +17,6 @@ export const store = new Vuex.Store({
         photoURL:'',
         uid: '',
         token:'',
-        backlog:{
-            todos:[]
-        },
         routine:{
             list:[]
         },
@@ -28,9 +24,6 @@ export const store = new Vuex.Store({
         userInfo:{},
     },
     mutations:{ // sets or updates the state
-        setBacklog(state, payload){
-            state.backlog = payload.backlog
-        },
         setUser(state, payload){
             state.user = payload.user
             state.uid = state.user.uid
@@ -43,9 +36,6 @@ export const store = new Vuex.Store({
         },
         setToken(state,payload){
             state.token = payload.token
-        },
-        addBacklogItem(state,payload){
-            state.backlog.todos.push(payload.todoItem)
         },
         setDisplayDate(state,payload){
             if(payload.displayDate){
@@ -65,10 +55,6 @@ export const store = new Vuex.Store({
         getUserInfo: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
             return bindFirestoreRef('userInfo', db.accounts.doc(`${state.uid}`))
-        }),
-        getBacklogFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
-            // return the promise returned by `bindFirestoreRef`
-            return bindFirestoreRef('backlog', db.root.collection(`Main`).doc(`${state.uid}`).collection('todoItem').doc('backlog'))
         }),
         getOtherInfoFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
@@ -103,6 +89,33 @@ export const store = new Vuex.Store({
         parsedDisplayDateWeekday: state => {
             let weekday = state.displayDate.getDay()
             return weekday
+        },
+        parsedDisplayDateWeekdayEng: state => {
+            let weekday = state.displayDate.getDay()
+            let dayName
+            switch(weekday){
+                case 0:
+                    dayName = 'Sunday'
+                    break
+                case 1:
+                    dayName = 'Monday'
+                    break
+                case 2:
+                    dayName = 'Tuesday'
+                    break
+                case 3:
+                    dayName = 'Wednesday'
+                    break
+                case 4:
+                    dayName = 'Thursday'
+                    break
+                case 5:
+                    dayName = 'Friday'
+                    break
+                default:
+                    dayName = 'Saturday'
+            }
+            return dayName
         },
     },
 })

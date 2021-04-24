@@ -1,6 +1,5 @@
 <template>
-    <transition name="fade">
-        <li :class="todoStatus" v-if="status != 0 && status != 3" v-show="passHideDone">
+    <li :class="todoStatus" v-if="status != 0 && status != 3" v-show="passHideDone">
         <v-container class="relative pt-2 pb-1">
             <v-row>
                 <v-col cols="12" class="pa-0 d-flex align-content-center">
@@ -119,32 +118,6 @@
                 @deletePop="deletePop = true"
             ></TodoItemActionMenu>
         </v-container>
-        <!-- <v-dialog
-            v-model="deletePop"
-            max-width="290"
-        >
-            <v-card>
-                <v-card-title class="headline">Delete "{{title}}" ?</v-card-title>
-                <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                    color="grey darken-1"
-                    text
-                    @click="deletePop = actionMenu = false"
-                >
-                    No
-                </v-btn>
-                <v-btn
-                    color="red darken-1"
-                    text
-                    @click="deleteTodo"
-                    ref="deleteButton"
-                >
-                    Delete
-                </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog> -->
         <ConfirmDeletePopup
             :show="deletePop"
             :title="this.title"
@@ -162,10 +135,10 @@
                 <v-card-title style="word-break:normal;">{{title}}</v-card-title>
                 <v-card-subtitle>Drop comments here</v-card-subtitle>
                 <v-divider></v-divider>
-                <v-list-item v-for="(comment,index) in todo.comments" :key="index" ripple two-line>
+                <v-list-item v-for="(comment,index) in todo.comment" :key="index" ripple two-line>
                     <v-list-item-content>
-                        <v-list-item-title>{{comment.comment}}</v-list-item-title>
-                        <v-list-item-subtitle>added on {{parseTimestamp(comment.time)}}</v-list-item-subtitle>
+                        <v-list-item-title>{{comment}}</v-list-item-title>
+                        <!-- <v-list-item-subtitle>added on {{parseTimestamp(comment.time)}}</v-list-item-subtitle> -->
                     </v-list-item-content>
                 </v-list-item>
                 <v-divider></v-divider>
@@ -190,7 +163,6 @@
         </v-dialog>
         <v-divider color="#BDBDBD"></v-divider>
     </li>
-    </transition>
 </template>
 <script>
 
@@ -200,6 +172,7 @@ import EditPriorityPanel from './EditPriorityPanel.vue'
 import ChangeDatePopup from './Popups/ChangeDatePopup.vue'
 import ConfirmDeletePopup from './Popups/ConfirmDeletePopup.vue'
 import db from '../firebaseConfig.js'
+import { mapGetters } from 'vuex'
 
 export default {
     name:'TodoItem',
@@ -215,8 +188,6 @@ export default {
         'todoID',
         'label',
         'activeElement',
-        'parsedDisplayDateInHyphen',
-        'parsedCurrentDateInHyphen',
         'hideDone'
     ],
     computed:{
@@ -250,6 +221,9 @@ export default {
             }
             return r
         },
+        id(){
+            return this.todo.id
+        },
         passHideDone(){
             if(this.hideDone && this.status == 2){
                 return false
@@ -257,12 +231,13 @@ export default {
                 return true
             }
         },
-        id(){
-            return this.todo.id
-        },
         targetTodoFirebaseDocRef(){
             return db.todoItems.doc(this.todo.id)
-        }
+        },
+        ...mapGetters([
+        'parsedDisplayDateInHyphen',
+        'parsedCurrentDateInHyphen'
+        ]),
     },
     data(){
         return{
@@ -287,50 +262,74 @@ export default {
     methods:{
         changeStatus(){
             let toStatus
-            if(this.status == 1){
-                toStatus = 2
-            }else{
-                toStatus = 1
-            }
+            this.status == 1 ? toStatus = 2 : toStatus = 1
             this.$refs.todoMarkBox.$el.blur()
-            this.$emit('changeStatus',[this.todoID,toStatus,this.id])
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                status: toStatus
+            })
+            if(toStatus === 2){
+                this.$emit('showSnackbar',[0,`✅ ${this.todo.title} is done.`])
+            }
         },
         editTodo(event){
-            this.editedValue = event.target.value
-            this.$emit('editTodo',[this.todoID,this.editedValue,this.id])
+            this.editedValue = event.target.value            
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                title: this.editedValue
+            })
         },
         toggleActionMenu(){
             this.actionMenu = !this.actionMenu
         },
         deleteTodo(){
-            this.deletePop = false;
-            this.$emit('deleteTodo',[this.todoID, this.title,this.id])
+            this.deletePop = false
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                status: 0,
+                deleted: true,
+            })
             this.actionMenu = false
+            this.$emit('showSnackbar',[3,`"${this.todo.title}" is deleted.`])
         },
         moveToDate(res){
+            let v = this
             let date = res.date
             this.showDatePicker= false
             this.actionMenu = false
+            
+            //handle situation where user may move the todo to the same day it was already on
+            if(date === this.parsedDisplayDateInHyphen){ 
+                this.$emit('showSnackbar',[1,`Can't move to same date.`])
+            }else{
+                this.targetTodoFirebaseDocRef.update({ // update to firebase
+                    dueTime: date
+                }).then( function(){
+                    v.$emit('showSnackbar',[0,`"${this.todo.title}" moved.`])
+                })
+            }
             this.$emit('moveToDate',[this.todoID,this.title, date,this.id])
         },
         moveToToday(){
+            let date = this.parsedCurrentDateInHyphen
             this.actionMenu = false
-            this.$emit('moveToToday',[this.todoID,this.title, this.id])
+            this.targetTodoFirebaseDocRef.update({ // update to firebase
+                dueTime: date
+            })
         },
         blurInput(){
             this.$refs.todoTitleInput.blur()
         },
         addComment(){
-            if(this.commentPopInput === ''){
-                return false
-            }else{
-                let res = {
-                    id: this.todoID,
+            if(this.commentPopInput !== ''){
+                // let res = {
+                //     id: this.todoID,
+                //     comment: this.commentPopInput,
+                //     time: Date.now()
+                // }
+                // this.$emit('addComment',res)
+                this.targetTodoFirebaseDocRef.update({ // update to firebase
                     comment: this.commentPopInput,
-                    time: Date.now()
-                }
-                this.$emit('addComment',res)
+                })
                 this.commentPopInput = '' //Clear input area
+                console.log('?')
             }
             // this.addCommentPop = false //Close Popup
         },
@@ -363,11 +362,6 @@ export default {
                 priority: priority
             })
         },
-        noDate(){
-            this.showDatePicker= false
-            this.actionMenu = false
-            this.$emit('moveToDate',[this.todoID,this.title,'',this.id])
-        }
     },
     watch:{
         activeElement(newVal){

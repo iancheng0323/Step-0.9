@@ -92,9 +92,6 @@ export default {
         showDatePicker(){
             this.$emit('showDatePicker')
         },
-        moveToBacklog(){
-            this.$emit('moveToBacklog')
-        },
         paintColor(index){
             this.$emit('paintColor',[this.colorList[index].color])
         },

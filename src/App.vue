@@ -175,24 +175,12 @@ export default {
           iconText: 'fa-lightbulb',
           fontSize: '24'
         },
-        // {
-        //   title: 'Calendar',
-        //   link: '/calendar',
-        //   iconText: 'fa-calendar-day',
-        //   fontSize: '24'
-        // },
         {
           title: 'Number',
           link: '/numbers',
           iconText: 'fa-cube',
           fontSize: '24'
         },
-        // {
-        //   title: 'Settings',
-        //   link: '/settings',
-        //   iconText: 'fa-sliders-h',
-        //   fontSize: '24'
-        // },
       ],
       snackbarMessage: '',
       snackbarControl: false,
@@ -309,7 +297,6 @@ export default {
             }
         }) 
         v.$store.dispatch('getUserInfo')
-        v.$store.dispatch('getBacklogFromFirebase')
         v.$store.dispatch('getOtherInfoFromFirebase')
         v.redirect()
       } else {

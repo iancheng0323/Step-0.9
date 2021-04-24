@@ -12,10 +12,6 @@
             :activeElement="activeElement"
             >
             </li>
-            <BacklogItem
-            :title="'Test'"
-            >
-            </BacklogItem>
         </v-container>
     </v-card>
 </template>

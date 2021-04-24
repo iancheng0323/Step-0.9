@@ -42,14 +42,8 @@
               :todo="todo"
               :key="index"
               :activeElement="activeElement"
-              :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-              :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-              @changeStatus="changeStatus"
-              @editTodo="editTodo"
-              @deleteTodo="deleteTodo"
-              @moveToDate="moveToDate"
-              @moveToToday="moveToToday"
               @addComment="addComment"
+              @showSnackbar="showSnackbar"
               ></li>
         <!-- </draggable> -->
       </ul>
@@ -61,7 +55,7 @@
     <v-container>
       <AddTodoForm 
         @addTodo="addTodo"
-        @addTodoFail="showAddTodoFailSnackbar"
+        @addTodoFail="showSnackbar"
         ref="AddTodoForm"
         v-if="mainTodoListRecieved"
         v-shortkey="['shift', 'n']" 
@@ -94,14 +88,12 @@ import AddTodoForm from './AddTodoForm'
 // import draggable from 'vuedraggable'
 import TodoMainActionMenu from './TodoMainActionMenu.vue'
 import DateOption from './DateOption.vue'
-import {mapState} from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import db from '../firebaseConfig.js'
 
 export default {
   name: 'TodoMain',
   props:[
-    'parsedCurrentDateInHyphen',
-    'parsedDisplayDateInHyphen',
     'activeElement',
     'dailyTodoList',
     'mainTodoListRecieved',
@@ -162,6 +154,11 @@ export default {
     ...mapState([
       'uid'
     ]),
+    ...mapGetters([
+      'parsedDisplayDateInHyphen',
+      'parsedCurrentDateInHyphen',
+      'parsedDisplayDateWeekdayEng'
+    ]),
   },
   created(){
   },
@@ -170,26 +167,11 @@ export default {
       this.$refs.AddTodoForm.isAddingTodo = false
       this.$emit('addTodo',val)
     },
-    editTodo(res){
-      this.$emit('editTodo',res)
-    },
-    changeStatus(res){
-      this.$emit('changeStatus',res)
-    },
-    deleteTodo(res){
-      this.$emit('deleteTodo',res)
-    },
     toggleAddTodo(){
       this.$refs.AddTodoForm.isAddingTodo = !this.$refs.AddTodoForm.isAddingTodo
     },
     countRenderedTodoItem(){
       this.rederedTodoItemCount = this.$refs.mainTodoUl.childElementCount
-    },
-    moveToDate(res){
-      this.$emit('moveToDate',res)
-    },
-    moveToToday(res){
-      this.$emit('moveToToday',res)
     },
     dragStart(){
       return true
@@ -200,7 +182,7 @@ export default {
         id: 'id'
       })
     },
-    showAddTodoFailSnackbar(res){
+    showSnackbar(res){
       this.$emit('showSnackbar',res)
     },
     bulkMoveToToday(){
@@ -227,7 +209,7 @@ export default {
     },
     parseDateInSlash(date){
         // eslint-disable-next-line
-        let yyyy = date.getFullYear()
+        // let yyyy = date.getFullYear()
         let mm = String(date.getMonth() + 1) //January is 0!
         let dd = String(date.getDate())
         if(mm<10){
@@ -237,25 +219,7 @@ export default {
             dd = '0' + dd
         }
         // return `${yyyy}/${mm}/${dd}, ${this.parseShortWeekDay(date)}` //return all
-        return `${this.parseShortWeekDay(date)} ${mm}/${dd}` //return month, date, week day only
-    },
-    parseShortWeekDay(date){
-        switch(date.getDay()){
-            case 0:
-                return 'Sunday'
-            case 1:
-                return 'Monday'
-            case 2:
-                return 'Tuesday'
-            case 3:
-                return 'Wednesday'
-            case 4:
-                return 'Thursday'
-            case 5:
-                return 'Friday'
-            default:
-                return 'Saturday'
-      }
+        return `${this.parsedDisplayDateWeekdayEng} ${mm}/${dd}` //return month, date, week day only
     },
     addComment(res){
       // Res Description

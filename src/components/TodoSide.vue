@@ -5,6 +5,12 @@
                 :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                 @changeDate="changeDate"
             ></Calender>
+            <OverDue
+                :uid="uid"
+                :activeElement='activeElement'
+                :parsedDisplayDateInHyphen='parsedDisplayDateInHyphen'
+            >
+            </OverDue>
             <NoDates
                 :activeElement="activeElement"
                 :uid="uid"
@@ -14,7 +20,7 @@
     </v-container>
 </template>
 <script>
-// import Backlog from './Backlog.vue'
+import OverDue from './OverDue.vue'
 import Calender from './Calender.vue'
 import NoDates from './NoDates.vue'
 
@@ -28,13 +34,14 @@ export default {
     ],    
     components: {
         Calender,
-        NoDates
+        NoDates,
+        OverDue
     },
     methods:{
-        changeDate(res){
-            this.$emit('changeDate',res)
+        changeDate(){
+            this.$emit('changeDate')
         },
-    }
+    },
 }
 </script>
 <style scope>

@@ -12,8 +12,6 @@
             @click:date="changeDate"
         ></v-calendar>
         </v-card-text>
-    <!-- <v-btn text @click="prevDay()" class="grey--text text-capitalize" small>Previous Day</v-btn> -->
-    <!-- <v-btn text @click="nextDay()" class="grey--text text-capitalize" small>Next Day</v-btn> -->
     </v-card>
 </template>
 <script>
@@ -37,6 +35,7 @@ export default {
             let diff = Math.floor((endDate - startDate)/aDay)
             this.beforeValue = this.pickedDate
             this.$store.commit('setDisplayDate',{val : diff})
+            console.log('calendar: yo')
             this.$emit('changeDate') //Trigger coresponding necessary method at mother component
         },
         resetDate(){

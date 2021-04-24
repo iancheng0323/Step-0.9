@@ -1,13 +1,5 @@
 <template>
     <v-container relative class="pa-0 py-sm-2">
-        <!-- <StepHeader  
-          @changeDate="changeDate"
-          @addRoutineItemToTodoList="addRoutineItemToTodoList"
-          @showAddRoutinePop="showAddRoutinePop"
-          :addedRoutine="dailyTodoList.meta.addedRoutine"
-          :key="displayDateKey"
-          :displayDate="displayDate">
-        </StepHeader> -->
       <v-container class="pa-0">
           <v-row dense>
               <v-col cols="12"
@@ -18,24 +10,18 @@
                   v-if="userInfo"
                   ref="TodoMain"
                   :displayDate="displayDate"
-                  :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-                  :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                   :activeElement="activeElement"
-                  :dailyTodoList="sortedDailyTodoList"
+                  :dailyTodoList="dailyTodoList"
                   :mainTodoListRecieved="mainTodoListRecieved"
                   :addedRoutine="addedRoutine"
                   :hideDone="userInfo.opt.hideDone"
                   @addTodo="addTodo"
-                  @editTodo="editTodo"
-                  @changeStatus="changeStatus"
-                  @deleteTodo="deleteTodo"
-                  @moveToDate="moveToDate"
-                  @moveToToday="moveToToday"
                   @dragTodo="dragTodo"
                   @bulkMoveToToday="bulkMoveToToday"
                   @addComment="addComment"
                   @addRoutineItemToTodoList="addRoutineItemToTodoList"
                   @showAddRoutinePop="addRoutinePop = true"
+                  @showSnackbar="showSnackbar"
                   >
                   </TodoMain>
               </v-col>
@@ -89,7 +75,7 @@
 import TodoMain from '../components/TodoMain.vue'
 import TodoSide from '../components/TodoSide.vue'
 import db from '../firebaseConfig.js'
-import {mapState} from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'Steps',
@@ -109,8 +95,6 @@ export default {
     return{
       addedRoutine:false,
       displayDateKey: 0,
-      parsedDisplayDateInHyphen:0,
-      parsedCurrentDateInHyphen:0,
       displayWeekdayIndex:0,
       mainTodoListRecieved: false,
       addRoutinePop: false,
@@ -140,23 +124,27 @@ export default {
     }
     ,
     ...mapState([
-      'currentWeekdayIndex',
       'currentDate',
       'displayDate',
-      'parsedDisplayDateWeekday',
       'routine',
       'userInfo'
-    ])
+    ]),
+    ...mapGetters([
+      'parsedDisplayDateWeekday',
+      'parsedDisplayDateInHyphen',
+      'parsedCurrentDateInHyphen'
+    ]),
   },
   created(){ 
     this.setDates()
+    this.getNoDateList()
   },
   watch: {
     parsedDisplayDateInHyphen(){ //When user change date, Do the following
       this.mainTodoListRecieved = false // To hide current todos and trigger the loading effect
       if (this.uid !== ''){
         this.getTodoListByDate(this.parsedDisplayDateInHyphen)
-        this.getNoDateList()
+        // this.getNoDateList()
       }
     },
     uid(){ // When user logs in, do the following
@@ -167,14 +155,12 @@ export default {
   methods:{
     //Init Related
     //=======================================================
-    setDates(){
-      this.parsedCurrentDateInHyphen = this.parseDateInHyphen(this.currentDate)
-      this.parsedDisplayDateInHyphen = this.parseDateInHyphen(this.displayDate)
-      this.displayWeekdayIndex = this.displayDate.getDay()
-    },
+    // setDates(){
+    //   this.displayWeekdayIndex = this.displayDate.getDay()
+    // },
     changeDate(){
       this.displayDateKey += 1 //to force update the element in vue, this is a workaround
-      this.setDates()
+      // this.setDates()
     },
     parseDateInHyphen(date){
       let yyyy = date.getFullYear()
@@ -224,7 +210,7 @@ export default {
     createNewTodoObject(title,status,todoSrc,uid = this.uid){
       let newTodoItem = {
         title: title,
-        comments:[],
+        description: '',
         status: status,
         creationTimeStamp: Date.now(),
         creationTime: `${this.parsedCurrentDateInHyphen}`,
@@ -238,65 +224,15 @@ export default {
       }
       return newTodoItem
     },
+    showSnackbar(res){
+      this.$emit('showSnackbar',res)
+    },
     addTodo(val){ //Refactored 20210403
       let v = this
       db.root.collection(`todoItem`).add(v.createNewTodoObject(val,1,'daily'))
       .then( () =>
           v.$emit('showSnackbar',[0,`📝 "${val}" added.`])
       )
-    },
-    editTodo(res){ //Refactored 20210403
-    // let todoID = res[0] //For reference, don't delecte
-      let editedTitle = res[1]
-      let id = res[2]
-      let targetTodoFirebaseDocRef = db.todoItems.doc(id)
-      targetTodoFirebaseDocRef.update({ // update to firebase
-        title: editedTitle
-      })
-    },
-    changeStatus(res){ //Refactored 20210403
-      // let todoID = res[0] //For reference, don't delecte
-      let toStatus = res[1]
-      let id = res[2]
-      // NEW code
-      let targetTodoFirebaseDocRef = db.todoItems.doc(id)
-      targetTodoFirebaseDocRef.update({ // update to firebase
-        status: toStatus
-      })
-      if(toStatus == 2){ //status == 2 means is done state
-        this.$emit('showSnackbar',[0,'✅ Nice job completing this task!'])
-      }
-    },
-    deleteTodo(res){ //Refactored 20210403
-      // let todoID = res[0] //For reference, don't delecte
-      let title = res[1]
-      let id = res[2]
-      let targetTodoFirebaseDocRef = db.todoItems.doc(id)
-      targetTodoFirebaseDocRef.update({ // update to firebase
-        status: 0,
-        deleted: true,
-      })
-      this.$emit('showSnackbar',[3,`"${title}" is deleted.`])
-    },
-    moveToDate(res, giveFeedback = true){ //Refactored 20210403
-      // let todoID = res[0]
-      let v = this
-      let title = res[1]
-      let toDate = res[2]
-      let id = res[3]
-      if(toDate === this.parsedDisplayDateInHyphen){//handle situation where user may move the todo to the same day it was already on
-        this.$emit('showSnackbar',[2,"⚠️ Can't move to the same date."])
-      }else{
-        let targetTodoFirebaseDocRef = db.todoItems.doc(id)
-        targetTodoFirebaseDocRef.update({ // update to firebase
-          dueTime: toDate
-        }).then( function(){
-            if(giveFeedback){
-                v.$emit('showSnackbar',[0,`"${title}" moved.`])
-            }
-          }
-        )
-      }
     },
     moveToToday(res, giveFeedback = true){ //Refactored 20210403
       // let todoID = res[0]
@@ -312,7 +248,6 @@ export default {
         }}
       )
     },
-
     // Bulk Move to today
     bulkMoveToToday(){ //Refactored 20210403
       // 1. Get all undone todos of the day -> use this.undoneTodo
@@ -329,7 +264,6 @@ export default {
       )
       // 3. Give user feedback
       this.$emit('showSnackbar',[0,`Bulk move to today succeeded.`])
-      
     },
     // Dragging and Sorting
     dragTodo(){
