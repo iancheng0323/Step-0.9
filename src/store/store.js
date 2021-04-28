@@ -8,6 +8,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
     state:{ //globle data
+        userInfoRetrieved: false,
         currentDate: 0,
         displayDate: 0,
         auth: false,
@@ -22,6 +23,8 @@ export const store = new Vuex.Store({
         },
         otherInfo:{},
         userInfo:{},
+        parsedDisplayDateInHyphen: '',
+        parsedCurrentDateInHyphen: '',
     },
     mutations:{ // sets or updates the state
         setUser(state, payload){
@@ -49,12 +52,21 @@ export const store = new Vuex.Store({
         setCurrentDate(state,payload){
             state.currentDate = payload.currentDate
         },
+        setParsedDisplayDateInHyphen (state,payload){
+            state.parsedDisplayDateInHyphen = payload.date
+        },
+        setParsedCurrentDateInHyphen (state,payload){
+            state.parsedCurrentDateInHyphen = payload.date
+        },
+        setUserInfoRetrived (state,payload){
+            state.userInfoRetrieved = payload
+        },
         ...vuexfireMutations,
     },
     actions:{ //methods
         getUserInfo: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
-            return bindFirestoreRef('userInfo', db.accounts.doc(`${state.uid}`))
+            return bindFirestoreRef('userInfo', db.accounts.doc(`${state.uid}`)).then()
         }),
         getOtherInfoFromFirebase: firestoreAction(({ state,bindFirestoreRef }) => {
             // return the promise returned by `bindFirestoreRef`
@@ -62,30 +74,30 @@ export const store = new Vuex.Store({
         }),
     },
     getters:{ // computed
-        parsedCurrentDateInHyphen: state => {
-            let yyyy = state.currentDate.getFullYear()
-            let mm = String(state.currentDate.getMonth() + 1) //January is 0!
-            let dd = String(state.currentDate.getDate())
-            if(mm<10){
-                mm = '0' + mm
-            }
-            if(dd<10){
-                dd = '0' + dd
-            }
-            return `${yyyy}-${mm}-${dd}`
-        },
-        parsedDisplayDateInHyphen: state => {
-            let yyyy = state.displayDate.getFullYear()
-            let mm = String(state.displayDate.getMonth() + 1) //January is 0!
-            let dd = String(state.displayDate.getDate())
-            if(mm<10){
-                mm = '0' + mm
-            }
-            if(dd<10){
-                dd = '0' + dd
-            }
-            return `${yyyy}-${mm}-${dd}`
-        },
+        // parsedCurrentDateInHyphen: state => {
+        //     let yyyy = state.currentDate.getFullYear()
+        //     let mm = String(state.currentDate.getMonth() + 1) //January is 0!
+        //     let dd = String(state.currentDate.getDate())
+        //     if(mm<10){
+        //         mm = '0' + mm
+        //     }
+        //     if(dd<10){
+        //         dd = '0' + dd
+        //     }
+        //     return `${yyyy}-${mm}-${dd}`
+        // },
+        // parsedDisplayDateInHyphen: state => {
+        //     let yyyy = state.displayDate.getFullYear()
+        //     let mm = String(state.displayDate.getMonth() + 1) //January is 0!
+        //     let dd = String(state.displayDate.getDate())
+        //     if(mm<10){
+        //         mm = '0' + mm
+        //     }
+        //     if(dd<10){
+        //         dd = '0' + dd
+        //     }
+        //     return `${yyyy}-${mm}-${dd}`
+        // },
         parsedDisplayDateWeekday: state => {
             let weekday = state.displayDate.getDay()
             return weekday

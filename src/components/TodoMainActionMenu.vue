@@ -31,13 +31,14 @@
                     <v-divider></v-divider>
                     <v-list-item
                     @click="toggleHideDone()"
-                    class="text-uppercase" 
+                    class="text-uppercase"
                     >
                         <v-list-item-content>
                             <v-list-item-title
                             >
                             <span>{{hideDoneText}}</span>
                             </v-list-item-title>
+                            
                         </v-list-item-content>
                     </v-list-item>
             </v-list>
@@ -47,23 +48,30 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
     name: 'TodoMainActionMenu',
     props:[
-        'hideDone'
     ],
     data(){
         return{
+            hideDoneText: 'Show Done'
         }
     },
     computed: {
-        hideDoneText(){
-            if(this.hideDone){
-                return 'Show Done'
-            }else{
-                return 'Hide Done'
-            }
-        }
+        // hideDoneText(){
+            // if(this.userInfo.opt.hideDone){
+            //     return 'Show Done'
+            // }else{
+            //     return 'Hide Done'
+            // }
+        // },
+        hideDone(){
+            return this.userInfo.opt.hideDone
+        },
+        ...mapState([
+            'userInfo'
+        ]),
     },
     methods:{
         addDivider(){
@@ -76,6 +84,11 @@ export default {
             this.$emit('toggleHideDone')
         }
     },
+    watch:{
+        userInfo(){
+            this.hideDoneText = this.userInfo.opt.hideDone? 'Show Done' : 'Hide Done'
+        }
+    }
 }
 </script>
 

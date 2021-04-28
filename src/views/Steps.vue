@@ -9,12 +9,10 @@
                   <TodoMain
                   v-if="userInfo"
                   ref="TodoMain"
-                  :displayDate="displayDate"
                   :activeElement="activeElement"
                   :dailyTodoList="dailyTodoList"
                   :mainTodoListRecieved="mainTodoListRecieved"
                   :addedRoutine="addedRoutine"
-                  :hideDone="userInfo.opt.hideDone"
                   @addTodo="addTodo"
                   @dragTodo="dragTodo"
                   @bulkMoveToToday="bulkMoveToToday"
@@ -37,6 +35,7 @@
                   :activeElement="activeElement"
                   :noDatesList="noDatesList"
                   @changeDate="changeDate"
+                  @showSnackbar="showSnackbar"
                   >
                   </TodoSide>
               </v-col>
@@ -124,19 +123,16 @@ export default {
     }
     ,
     ...mapState([
-      'currentDate',
-      'displayDate',
       'routine',
-      'userInfo'
+      'userInfo',
+      'parsedDisplayDateInHyphen',
+      'parsedCurrentDateInHyphen',
     ]),
     ...mapGetters([
       'parsedDisplayDateWeekday',
-      'parsedDisplayDateInHyphen',
-      'parsedCurrentDateInHyphen'
     ]),
   },
   created(){ 
-    this.setDates()
     this.getNoDateList()
   },
   watch: {

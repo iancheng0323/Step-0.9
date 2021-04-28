@@ -15,10 +15,9 @@
     </v-card>
 </template>
 <script>
+import { mapState, mapGetters } from 'vuex'
 export default {
     props:[
-        'parsedCurrentDateInHyphen',
-        'parsedDisplayDateInHyphen'
     ],
     data(){
         return{
@@ -26,6 +25,14 @@ export default {
             beforeValue:'',
             afterValue:'',
         }
+    },
+    computed:{
+        ...mapState([
+            'parsedDisplayDateInHyphen',
+            'parsedCurrentDateInHyphen',
+        ]),
+        ...mapGetters([
+        ]),
     },
     methods:{
         changeDate(){
@@ -35,7 +42,7 @@ export default {
             let diff = Math.floor((endDate - startDate)/aDay)
             this.beforeValue = this.pickedDate
             this.$store.commit('setDisplayDate',{val : diff})
-            console.log('calendar: yo')
+            this.$store.commit('setParsedDisplayDateInHyphen',{date : this.pickedDate})
             this.$emit('changeDate') //Trigger coresponding necessary method at mother component
         },
         resetDate(){

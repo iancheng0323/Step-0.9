@@ -3,13 +3,11 @@
         <v-container>
             <h1 class="my-2 title">Over Due</h1>
             <li is="TodoItem"
-            v-for="(todo,index) in overdueList"
-            :todo="todo"
-            :key="index"
-            :title="todo.title"
-            :status="todo.status"
-            :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
-            :activeElement="activeElement"
+                v-for="(todo,index) in overdueList"
+                :todo="todo"
+                :key="index"
+                :activeElement="activeElement"
+                @showSnackbar="showSnackbar"
             >
             </li>
         </v-container>
@@ -19,21 +17,23 @@
 <script>
 import TodoItem from './TodoItem.vue'
 import db from '../firebaseConfig.js'
-import { mapGetters } from 'vuex'
+import { mapState,mapGetters } from 'vuex'
 
 export default {
     name: "OverDue",
     props:[
         'uid',
-        'parsedDisplayDateInHyphen',
         'activeElement'
     ],
     components:{
         TodoItem
     },
     computed:{
-        ...mapGetters([
+        ...mapState([
             'parsedCurrentDateInHyphen',
+            'parsedDisplayDateInHyphen',
+        ]),
+        ...mapGetters([
         ])
 
     },
@@ -43,17 +43,20 @@ export default {
         }
     },
     methods:{
-        getOverDueTodoListByDate(date){ //Refactored 20210403
+        getOverDueTodoListByDate(){
             let v = this
             this.$bind(
                 'overdueList',
                 db.todoItems
                 .where('uid', '==', v.uid)
-                .where('dueTime', '<=', date)
                 .where('deleted', '==', false)
                 .where('status', '==', 1)
+                .where('dueTime', '<', v.parsedCurrentDateInHyphen)
             )
-        }
+        },
+        showSnackbar(res){
+            this.$emit('showSnackbar',res)
+        },
     },
     watch:{
         uid(){ // When user logs in, do the following

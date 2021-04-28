@@ -172,7 +172,7 @@ import EditPriorityPanel from './EditPriorityPanel.vue'
 import ChangeDatePopup from './Popups/ChangeDatePopup.vue'
 import ConfirmDeletePopup from './Popups/ConfirmDeletePopup.vue'
 import db from '../firebaseConfig.js'
-import { mapGetters } from 'vuex'
+import { mapState,mapGetters } from 'vuex'
 
 export default {
     name:'TodoItem',
@@ -185,10 +185,8 @@ export default {
     },
     props:[
         'todo',
-        'todoID',
         'label',
         'activeElement',
-        'hideDone'
     ],
     computed:{
         title(){
@@ -225,7 +223,7 @@ export default {
             return this.todo.id
         },
         passHideDone(){
-            if(this.hideDone && this.status == 2){
+            if(this.userInfo.opt.hideDone && this.status == 2){
                 return false
             }else{
                 return true
@@ -234,9 +232,12 @@ export default {
         targetTodoFirebaseDocRef(){
             return db.todoItems.doc(this.todo.id)
         },
+        ...mapState([
+            'parsedDisplayDateInHyphen',
+            'parsedCurrentDateInHyphen',
+            'userInfo',
+        ]),
         ...mapGetters([
-        'parsedDisplayDateInHyphen',
-        'parsedCurrentDateInHyphen'
         ]),
     },
     data(){
@@ -270,6 +271,7 @@ export default {
             if(toStatus === 2){
                 this.$emit('showSnackbar',[0,`✅ ${this.todo.title} is done.`])
             }
+            
         },
         editTodo(event){
             this.editedValue = event.target.value            
@@ -294,7 +296,6 @@ export default {
             let date = res.date
             this.showDatePicker= false
             this.actionMenu = false
-            
             //handle situation where user may move the todo to the same day it was already on
             if(date === this.parsedDisplayDateInHyphen){ 
                 this.$emit('showSnackbar',[1,`Can't move to same date.`])
@@ -305,7 +306,6 @@ export default {
                     v.$emit('showSnackbar',[0,`"${this.todo.title}" moved.`])
                 })
             }
-            this.$emit('moveToDate',[this.todoID,this.title, date,this.id])
         },
         moveToToday(){
             let date = this.parsedCurrentDateInHyphen

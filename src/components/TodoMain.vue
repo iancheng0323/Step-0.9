@@ -20,7 +20,6 @@
       <TodoMainActionMenu
           class="absolute"
           v-show="actionMenu"
-          :hideDone="hideDone"
           @addRoutine="addRoutine()"
           @addDivider="addDivider()"
           @toggleHideDone="toggleHideDone()"
@@ -38,7 +37,6 @@
         > -->
           <li is="TodoItem" 
               v-for="(todo,index) in dailyTodoList"
-              :hideDone="hideDone"
               :todo="todo"
               :key="index"
               :activeElement="activeElement"
@@ -97,9 +95,7 @@ export default {
     'activeElement',
     'dailyTodoList',
     'mainTodoListRecieved',
-    'displayDate',
     'addedRoutine',
-    'hideDone'
   ],
   components:{
     TodoItem,
@@ -123,7 +119,7 @@ export default {
             this.actionMenu = false
         }
     },
-    displayDate(){
+    parsedDisplayDateInHyphen(){
       this.$forceUpdate()
     }
   },
@@ -152,11 +148,13 @@ export default {
       return(this.parseDateInSlash(this.displayDate))
     },
     ...mapState([
-      'uid'
-    ]),
-    ...mapGetters([
+      'uid',
+      'displayDate',
       'parsedDisplayDateInHyphen',
       'parsedCurrentDateInHyphen',
+      'userInfo',
+    ]),
+    ...mapGetters([
       'parsedDisplayDateWeekdayEng'
     ]),
   },
@@ -231,7 +229,7 @@ export default {
       this.$emit('addComment',res)
     },
     toggleHideDone(){
-      let current = this.hideDone
+      let current = this.userInfo.opt.hideDone
       db.accounts.doc(this.uid).update(
         {
           opt: {

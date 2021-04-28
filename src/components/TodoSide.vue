@@ -1,14 +1,12 @@
 <template>
     <v-container class="pa-0">
             <Calender
-                :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
-                :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                 @changeDate="changeDate"
             ></Calender>
             <OverDue
                 :uid="uid"
                 :activeElement='activeElement'
-                :parsedDisplayDateInHyphen='parsedDisplayDateInHyphen'
+                @showSnackbar="showSnackbar"
             >
             </OverDue>
             <NoDates
@@ -40,6 +38,9 @@ export default {
     methods:{
         changeDate(){
             this.$emit('changeDate')
+        },
+        showSnackbar(res){
+            this.$emit('showSnackbar',res)
         },
     },
 }

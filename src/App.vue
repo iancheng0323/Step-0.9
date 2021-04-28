@@ -155,6 +155,7 @@
 //Firebase Login
 import firebase from 'firebase'
 import db from './firebaseConfig.js'
+import parseDate from './parseDate.js'
 // import AccountCard from './components/AccountCard.vue'
 let provider = new firebase.auth.GoogleAuthProvider();
 
@@ -305,8 +306,12 @@ export default {
         v.redirect()
       }
     })
-    this.$store.commit('setCurrentDate', {currentDate: new Date()}) //Pointing the date to current date
-    this.$store.commit('setDisplayDate',{displayDate: new Date()}) //Set the display date on current date
+    let currentDate = new Date()
+    let parsedDate = parseDate(currentDate)
+    this.$store.commit('setCurrentDate', {currentDate: currentDate}) //Pointing the date to current date
+    this.$store.commit('setDisplayDate',{displayDate: currentDate})
+    this.$store.commit('setParsedDisplayDateInHyphen',{date: parsedDate}) //Set the display date on current date
+    this.$store.commit('setParsedCurrentDateInHyphen',{date: parsedDate}) //Set the display date on current date
     document.body.addEventListener('mouseup',function(){
         v.activeElement = document.activeElement.tagName
     })
