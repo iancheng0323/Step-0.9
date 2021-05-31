@@ -6,6 +6,7 @@
                 v-for="(todo,index) in overdueList"
                 :todo="todo"
                 :key="index"
+                :inOverDue="true"
                 :activeElement="activeElement"
                 @showSnackbar="showSnackbar"
             >

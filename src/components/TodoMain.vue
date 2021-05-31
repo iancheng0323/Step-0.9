@@ -20,9 +20,11 @@
       <TodoMainActionMenu
           class="absolute"
           v-show="actionMenu"
+          :sortByPriority="sortByPriority"
           @addRoutine="addRoutine()"
           @addDivider="addDivider()"
           @toggleHideDone="toggleHideDone()"
+          @toggleSortByPriority="sortByPriority = !sortByPriority"
       ></TodoMainActionMenu>
       <v-divider color="#EEEEEE"></v-divider>
       <ul v-show="mainTodoListRecieved" class="mt-0" ref="mainTodoUl">
@@ -36,13 +38,13 @@
         @end="dragTodo"
         > -->
           <li is="TodoItem" 
-              v-for="(todo,index) in dailyTodoList"
+              v-for="(todo,index) in displayList"
               :todo="todo"
               :key="index"
               :activeElement="activeElement"
               @addComment="addComment"
               @showSnackbar="showSnackbar"
-              ></li>
+          ></li>
         <!-- </draggable> -->
       </ul>
       <p v-if="totalItemCount == 0 && mainTodoListRecieved" class="mt-4 ml-4 grey--text" @click="$refs.AddTodoForm.isAddingTodo = true">
@@ -111,6 +113,7 @@ export default {
       actionMenu: false,
       computedPropertyForceUpdateHelper:0,
       dateOption: false,
+      sortByPriority: true,
     }
   },
   watch:{
@@ -146,6 +149,19 @@ export default {
     },
     parsedDisplayDateInSlash(){
       return(this.parseDateInSlash(this.displayDate))
+    },
+    displayList(){
+      if(this.sortByPriority){
+        return this.prioritySortedList
+      }else{
+        return this.dailyTodoList
+      }
+    },
+    prioritySortedList(){
+      const sorted = [...this.dailyTodoList].sort( function(a,b){
+        return b.priority - a.priority
+      })
+      return sorted
     },
     ...mapState([
       'uid',

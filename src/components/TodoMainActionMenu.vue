@@ -41,6 +41,18 @@
                             
                         </v-list-item-content>
                     </v-list-item>
+                    <v-list-item
+                    @click="toggleSortByPriority()"
+                    class="text-uppercase"
+                    >
+                        <v-list-item-content>
+                            <v-list-item-title
+                            >
+                            <span>{{sortByPriorityText}}</span>
+                            </v-list-item-title>
+                            
+                        </v-list-item-content>
+                    </v-list-item>
             </v-list>
         </v-card>
     </v-expand-transition>
@@ -52,10 +64,12 @@ import { mapState } from 'vuex'
 export default {
     name: 'TodoMainActionMenu',
     props:[
+        'sortByPriority'
     ],
     data(){
         return{
-            hideDoneText: 'Show Done'
+            hideDoneText: 'Show Done',
+            // sortByPriorityText: 'Sort By Priority ✅'
         }
     },
     computed: {
@@ -68,6 +82,9 @@ export default {
         // },
         hideDone(){
             return this.userInfo.opt.hideDone
+        },
+        sortByPriorityText(){
+            return this.sortByPriority ? 'Sort By Priority ✅' :'Sort By Priority ⛔️'
         },
         ...mapState([
             'userInfo'
@@ -82,6 +99,9 @@ export default {
         },
         toggleHideDone(){
             this.$emit('toggleHideDone')
+        },
+        toggleSortByPriority(){
+            this.$emit('toggleSortByPriority')
         }
     },
     watch:{

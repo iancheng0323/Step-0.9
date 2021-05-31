@@ -8,7 +8,7 @@
                     <v-list-item
                     @click="moveToToday"
                     class="" 
-                    v-if="parsedDisplayDateInHyphen != parsedCurrentDateInHyphen || status == 3"
+                    v-if="parsedDisplayDateInHyphen != parsedCurrentDateInHyphen || status == 3 || inOverDue"
                     >
                         <v-list-item-icon class="mr-2">
                             <v-icon dense>today</v-icon>
@@ -52,7 +52,8 @@ export default {
     props:[
         'status',
         'parsedDisplayDateInHyphen',
-        'parsedCurrentDateInHyphen'
+        'parsedCurrentDateInHyphen',
+        'inOverDue'
     ],
     data(){
         return{

@@ -113,6 +113,7 @@
                 :status="status"
                 :parsedDisplayDateInHyphen="parsedDisplayDateInHyphen"
                 :parsedCurrentDateInHyphen="parsedCurrentDateInHyphen"
+                :inOverDue="inOverDue"
                 @moveToToday="moveToToday"
                 @showDatePicker="showDatePicker = true"
                 @deletePop="deletePop = true"
@@ -187,6 +188,7 @@ export default {
         'todo',
         'label',
         'activeElement',
+        'inOverDue'
     ],
     computed:{
         title(){
@@ -297,7 +299,7 @@ export default {
             this.showDatePicker= false
             this.actionMenu = false
             //handle situation where user may move the todo to the same day it was already on
-            if(date === this.parsedDisplayDateInHyphen){ 
+            if(date === this.parsedDisplayDateInHyphen && !this.inOverDue){ 
                 this.$emit('showSnackbar',[1,`Can't move to same date.`])
             }else{
                 this.targetTodoFirebaseDocRef.update({ // update to firebase

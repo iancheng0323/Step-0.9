@@ -177,8 +177,8 @@ export default {
         db.todoItems
         .where('uid', '==', v.uid)
         .where('dueTime', '==', date)
-        .orderBy('creationTimeStamp','desc')
-        .orderBy('priority','desc')
+        .orderBy('creationTimeStamp','asc')
+        // .orderBy('priority','desc')
       ).then( () => v.mainTodoListRecieved = true ) // set the received indicator to true
     },
     getNoDateList(){ //Added 20210419
